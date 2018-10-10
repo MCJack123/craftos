@@ -96,9 +96,4 @@ public class FixedWidthFontRenderer
         }
         return s.length() * FONT_WIDTH;
     }
-
-    public void bindFont()
-    {
-        
-    }
 }
