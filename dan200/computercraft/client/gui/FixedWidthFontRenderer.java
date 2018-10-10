@@ -86,6 +86,7 @@ public class FixedWidthFontRenderer
             // Draw the quads
             drawStringTextPart( x, y, s, textColour, greyScale, p );
         }
+        window.panel.repaint();
     }
 
     public int getStringWidth(String s)
