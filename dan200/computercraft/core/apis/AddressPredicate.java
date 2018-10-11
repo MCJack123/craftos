@@ -1,7 +1,6 @@
 package dan200.computercraft.core.apis;
 
 import com.google.common.net.InetAddresses;
-import dan200.computercraft.ComputerCraft;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -63,7 +62,7 @@ public class AddressPredicate
                 }
                 catch( NumberFormatException e )
                 {
-                    ComputerCraft.log.warn( "Cannot parse CIDR size from {} ({})", filter, prefixSizeStr );
+                    System.out.printf( "Cannot parse CIDR size from {} ({})", filter, prefixSizeStr );
                     continue;
                 }
 
@@ -74,7 +73,7 @@ public class AddressPredicate
                 }
                 catch( IllegalArgumentException e )
                 {
-                    ComputerCraft.log.warn( "Cannot parse IP address from {} ({})", filter, addressStr );
+                    System.out.printf( "Cannot parse IP address from {} ({})", filter, addressStr );
                     continue;
                 }
 

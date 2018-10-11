@@ -1,6 +1,6 @@
 package dan200.computercraft.shared.util;
 
-import net.minecraft.nbt.NBTTagCompound;
+//import net.minecraft.nbt.NBTTagCompound;
 
 public class Palette
 {
@@ -74,7 +74,7 @@ public class Palette
         };
     }
 
-    public NBTTagCompound writeToNBT( NBTTagCompound nbt )
+    /*public NBTTagCompound writeToNBT( NBTTagCompound nbt )
     {
         int[] rgb8 = new int[colours.length];
 
@@ -98,5 +98,5 @@ public class Palette
         {
             colours[i] = decodeRGB8( rgb8[i] );
         }
-    }
+    }*/
 }

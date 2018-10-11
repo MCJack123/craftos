@@ -6,66 +6,30 @@
 
 package dan200.computercraft;
 
-import com.google.common.base.CaseFormat;
-import com.jackmacwindows.craftos.World;
 import dan200.computercraft.api.filesystem.IMount;
 import dan200.computercraft.api.filesystem.IWritableMount;
-import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.core.apis.AddressPredicate;
 import dan200.computercraft.core.filesystem.ComboMount;
 import dan200.computercraft.core.filesystem.FileMount;
 import dan200.computercraft.core.filesystem.JarMount;
-import dan200.computercraft.shared.common.DefaultBundledRedstoneProvider;
-import dan200.computercraft.shared.computer.blocks.BlockCommandComputer;
-import dan200.computercraft.shared.computer.blocks.BlockComputer;
-import dan200.computercraft.shared.computer.blocks.TileComputer;
 import dan200.computercraft.shared.computer.core.ClientComputerRegistry;
-import dan200.computercraft.shared.computer.core.ServerComputerRegistry;
-import dan200.computercraft.shared.media.items.ItemDiskExpanded;
-import dan200.computercraft.shared.media.items.ItemDiskLegacy;
-import dan200.computercraft.shared.media.items.ItemPrintout;
-import dan200.computercraft.shared.media.items.ItemTreasureDisk;
-import dan200.computercraft.shared.network.ComputerCraftPacket;
-import dan200.computercraft.shared.network.PacketHandler;
-import dan200.computercraft.shared.peripheral.common.BlockCable;
-import dan200.computercraft.shared.peripheral.common.BlockPeripheral;
-import dan200.computercraft.shared.peripheral.diskdrive.TileDiskDrive;
-import dan200.computercraft.shared.peripheral.modem.BlockAdvancedModem;
-import dan200.computercraft.shared.peripheral.modem.WirelessNetwork;
-import dan200.computercraft.shared.peripheral.printer.TilePrinter;
-import dan200.computercraft.shared.pocket.items.ItemPocketComputer;
-import dan200.computercraft.shared.pocket.peripherals.PocketModem;
-import dan200.computercraft.shared.pocket.peripherals.PocketSpeaker;
-import dan200.computercraft.shared.proxy.ICCTurtleProxy;
-import dan200.computercraft.shared.proxy.IComputerCraftProxy;
-import dan200.computercraft.shared.turtle.blocks.BlockTurtle;
-import dan200.computercraft.shared.turtle.blocks.TileTurtle;
-import dan200.computercraft.shared.turtle.upgrades.*;
-import dan200.computercraft.shared.util.*;
-import io.netty.buffer.Unpooled;
-import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.Logger;
+import dan200.computercraft.shared.util.IDAssigner;
 
-import javax.annotation.Nonnull;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+//import org.apache.logging.log4j.Logger;
 
 ///////////////
 // UNIVERSAL //
 ///////////////
 
-@Mod(
-    modid = ComputerCraft.MOD_ID, name = "ComputerCraft", version = "${version}",
-    guiFactory = "dan200.computercraft.client.gui.GuiConfigCC$Factory"
-)
 public class ComputerCraft
 {
     public static final String MOD_ID = "computercraft";
@@ -125,48 +89,9 @@ public class ComputerCraft
     public static int maxNotesPerTick = 8;
 
     // Blocks and Items
-    public static class Blocks
-    {
-        public static BlockComputer computer;
-        public static BlockPeripheral peripheral;
-        public static BlockCable cable;
-        public static BlockTurtle turtle;
-        public static BlockTurtle turtleExpanded;
-        public static BlockTurtle turtleAdvanced;
-        public static BlockCommandComputer commandComputer;
-        public static BlockAdvancedModem advancedModem;
-    }
 
-    public static class Items
-    {
-        public static ItemDiskLegacy disk;
-        public static ItemDiskExpanded diskExpanded;
-        public static ItemPrintout printout;
-        public static ItemTreasureDisk treasureDisk;
-        public static ItemPocketComputer pocketComputer;
-    }
 
-    public static class Upgrades
-    {
-        public static TurtleModem wirelessModem;
-        public static TurtleCraftingTable craftingTable;
-        public static TurtleSword diamondSword;
-        public static TurtleShovel diamondShovel;
-        public static TurtleTool diamondPickaxe;
-        public static TurtleAxe diamondAxe;
-        public static TurtleHoe diamondHoe;
-        public static TurtleModem advancedModem;
-        public static TurtleSpeaker turtleSpeaker;
-    }
-
-    public static class PocketUpgrades
-    {
-        public static PocketModem wirelessModem;
-        public static PocketModem advancedModem;
-        public static PocketSpeaker pocketSpeaker;
-    }
-
-    public static class Config {
+    /*public static class Config {
         public static Configuration config;
 
         public static Property http_enable;
@@ -193,34 +118,16 @@ public class ComputerCraft
         public static Property maximumFilesOpen;
         public static Property maxNotesPerTick;
 
-    }
+    }*/
 
     // Registries
     public static ClientComputerRegistry clientComputerRegistry = new ClientComputerRegistry();
-    public static ServerComputerRegistry serverComputerRegistry = new ServerComputerRegistry();
-
-    // Networking
-    public static FMLEventChannel networkEventChannel;
-
-    // Creative
-    public static CreativeTabMain mainCreativeTab;
-
-    // Logging
-    public static Logger log;
+    //public static ServerComputerRegistry serverComputerRegistry = new ServerComputerRegistry();
 
     // API users
-    private static List<IPeripheralProvider> peripheralProviders = new ArrayList<>();
-    private static List<IBundledRedstoneProvider> bundledRedstoneProviders = new ArrayList<>();
-    private static List<IMediaProvider> mediaProviders = new ArrayList<>();
-    private static List<ITurtlePermissionProvider> permissionProviders = new ArrayList<>();
-    private static final Map<String, IPocketUpgrade> pocketUpgrades = new HashMap<>();
 
     // Implementation
-    @Mod.Instance( value = ComputerCraft.MOD_ID )
     public static ComputerCraft instance;
-
-    @SidedProxy( clientSide = "dan200.computercraft.client.proxy.ComputerCraftProxyClient", serverSide = "dan200.computercraft.server.proxy.ComputerCraftProxyServer" )
-    public static IComputerCraftProxy proxy;
 
     public ComputerCraft()
     {
@@ -229,10 +136,9 @@ public class ComputerCraft
     //@Mod.EventHandler
     public void preInit( /*FMLPreInitializationEvent event*/ )
     {
-        log = event.getModLog();
 
         // Load config
-        Config.config = new Configuration( event.getSuggestedConfigurationFile() );
+        /*Config.config = new Configuration( event.getSuggestedConfigurationFile() );
         Config.config.load();
 
         Config.http_enable = Config.config.get( Configuration.CATEGORY_GENERAL, "http_enable", http_enable );
@@ -323,11 +229,11 @@ public class ComputerCraft
         networkEventChannel.register( new PacketHandler() );
 
         proxy.preInit();
-        //turtleProxy.preInit();
+        //turtleProxy.preInit();*/
     }
 
     public static void syncConfig() {
-
+        /*
         http_enable = Config.http_enable.getBoolean();
         http_whitelist = new AddressPredicate( Config.http_whitelist.getStringList() );
         http_blacklist = new AddressPredicate( Config.http_blacklist.getStringList() );
@@ -354,14 +260,14 @@ public class ComputerCraft
 
         maxNotesPerTick = Math.max(1, Config.maxNotesPerTick.getInt());
 
-        Config.config.save();
+        Config.config.save();*/
     }
 
     //@Mod.EventHandler
     public void init( /*FMLInitializationEvent event*/ )
     {
-        proxy.init();
-        turtleProxy.init();
+        //proxy.init();
+        //turtleProxy.init();
     }
 
     //@Mod.EventHandler
@@ -374,7 +280,7 @@ public class ComputerCraft
     {
         //if( FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER )
         {
-            ComputerCraft.serverComputerRegistry.reset();
+           // ComputerCraft.serverComputerRegistry.reset();
             
         }
     }
@@ -384,7 +290,7 @@ public class ComputerCraft
     {
         //if( FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER )
         {
-            ComputerCraft.serverComputerRegistry.reset();
+            //ComputerCraft.serverComputerRegistry.reset();
             
         }
     }
@@ -393,7 +299,7 @@ public class ComputerCraft
     {
         return "${version}";
     }
-
+/*
     public static boolean isClient()
     {
         return proxy.isClient();
@@ -418,7 +324,7 @@ public class ComputerCraft
     {
         return proxy.getFixedWidthFontRenderer();
     }
-/*
+
     public static void playRecord( SoundEvent record, String recordInfo, World world, BlockPos pos )
     {
         proxy.playRecord( record, recordInfo, world, pos );
@@ -473,9 +379,9 @@ public class ComputerCraft
         return new File( getBaseDir(), "resourcepacks" );
     }
 
-    public static File getWorldDir( World world )
+    public static File getWorldDir()
     {
-        return proxy.getWorldDir( world );
+        return new File(System.getProperty("user.home").concat("/.craftos"));
     }
 /*
     public static void registerPocketUpgrade( IPocketUpgrade upgrade )
@@ -636,16 +542,16 @@ public class ComputerCraft
         return upgrades;
     }*/
 
-    public static int createUniqueNumberedSaveDir( World world, String parentSubPath )
+    public static int createUniqueNumberedSaveDir( String parentSubPath )
     {
-        return IDAssigner.getNextIDFromDirectory(new File(getWorldDir(world), parentSubPath));
+        return IDAssigner.getNextIDFromDirectory(new File(getWorldDir(), parentSubPath));
     }
 
-    public static IWritableMount createSaveDirMount( World world, String subPath, long capacity )
+    public static IWritableMount createSaveDirMount( String subPath, long capacity )
     {
         try
         {
-            return new FileMount( new File( getWorldDir( world ), subPath ), capacity );
+            return new FileMount( new File( getWorldDir(), subPath ), capacity );
         }
         catch( Exception e )
         {
@@ -787,12 +693,19 @@ public class ComputerCraft
                         }
                         else
                         {
-                            IOUtils.closeQuietly( zipFile );
+                            //IOUtils.closeQuietly( zipFile );
+                            zipFile.close();
                         }
                     }
                     catch( IOException e )
                     {
-                        if( zipFile != null ) IOUtils.closeQuietly( zipFile );
+                        if( zipFile != null ) {
+                            try {
+                                zipFile.close(); //IOUtils.closeQuietly( zipFile );
+                            } catch (IOException ex) {
+                                // oh well
+                            }
+                        }
                     }
                 }
             }

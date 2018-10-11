@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="io.netty:netty-buffer:4.1.30.Final" type="repository">
+    <properties maven-id="io.netty:netty-buffer:4.1.30.Final" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/netty-buffer-4.1.30.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-common-4.1.30.Final.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -9,7 +9,6 @@ package dan200.computercraft.api;
 import dan200.computercraft.api.filesystem.IMount;
 import dan200.computercraft.api.filesystem.IWritableMount;
 import dan200.computercraft.api.peripheral.IComputerAccess;
-import dan200.computercraft.api.peripheral.IPeripheral;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,7 +48,7 @@ public final class ComputerCraftAPI
         return "${version}";
     }
 
-    /**
+    /*
      * Creates a numbered directory in a subfolder of the save directory for a given world, and returns that number.
      *
      * Use in conjunction with createSaveDirMount() to create a unique place for your peripherals or media items to store files.
@@ -62,13 +61,13 @@ public final class ComputerCraftAPI
      * available for writing.
      * @see #createSaveDirMount(World, String, long)
      */
-    public static int createUniqueNumberedSaveDir( @Nonnull World world, @Nonnull String parentSubPath )
+    public static int createUniqueNumberedSaveDir( @Nonnull String parentSubPath )
     {
         findCC();
         if( computerCraft_createUniqueNumberedSaveDir != null )
         {
             try {
-                return (Integer)computerCraft_createUniqueNumberedSaveDir.invoke( null, world, parentSubPath );
+                return (Integer)computerCraft_createUniqueNumberedSaveDir.invoke( null, parentSubPath );
             } catch (Exception e) {
                 // It failed
             }
@@ -76,7 +75,7 @@ public final class ComputerCraftAPI
         return -1;
     }
 
-    /**
+    /*
      * Creates a file system mount that maps to a subfolder of the save directory for a given world, and returns it.
      *
      * Use in conjunction with IComputerAccess.mount() or IComputerAccess.mountWritable() to mount a folder from the
@@ -95,13 +94,13 @@ public final class ComputerCraftAPI
      * @see IWritableMount
      */
     @Nullable
-    public static IWritableMount createSaveDirMount( @Nonnull World world, @Nonnull String subPath, long capacity )
+    public static IWritableMount createSaveDirMount( @Nonnull String subPath, long capacity )
     {
         findCC();
         if( computerCraft_createSaveDirMount != null )
         {
             try {
-                return (IWritableMount)computerCraft_createSaveDirMount.invoke( null, world, subPath, capacity );
+                return (IWritableMount)computerCraft_createSaveDirMount.invoke( null, subPath, capacity );
             } catch (Exception e){
                 // It failed
             }
@@ -142,7 +141,7 @@ public final class ComputerCraftAPI
         return null;
     }
 
-    /**
+    /*
      * Registers a peripheral handler to convert blocks into {@link IPeripheral} implementations.
      *
      * @param handler The peripheral provider to register.
@@ -312,10 +311,10 @@ public final class ComputerCraftAPI
                 computerCraft_getVersion = findCCMethod( "getVersion", new Class<?>[]{
                 } );
                 computerCraft_createUniqueNumberedSaveDir = findCCMethod( "createUniqueNumberedSaveDir", new Class<?>[]{
-                    World.class, String.class
+                    String.class
                 } );
                 computerCraft_createSaveDirMount = findCCMethod( "createSaveDirMount", new Class<?>[] {
-                    World.class, String.class, Long.TYPE
+                    String.class, Long.TYPE
                 } );
                 computerCraft_createResourceMount = findCCMethod( "createResourceMount", new Class<?>[] {
                     Class.class, String.class, String.class

@@ -469,7 +469,7 @@ public class Computer
         }
         catch( FileSystemException e )
         {
-            ComputerCraft.log.error( "Cannot mount rom", e );
+            System.err.printf( "Cannot mount rom: %s", e );
             return false;
         }
     }
