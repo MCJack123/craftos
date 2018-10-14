@@ -52,7 +52,7 @@ public class IDAssigner
                     }
                     catch( NumberFormatException e )
                     {
-                        ComputerCraft.log.error( "Unexpected file '" + content + "' in '" + location.getAbsolutePath() + "'", e );
+                        System.out.print( "Unexpected file '" + content + "' in '" + location.getAbsolutePath() + "'" );
                     }
                 }
             }
@@ -80,7 +80,7 @@ public class IDAssigner
             }
             catch( IOException e )
             {
-                ComputerCraft.log.error( "Cannot open ID file '" + lastidFile + "'", e );
+                System.out.print( "Cannot open ID file '" + lastidFile + "'" );
                 return 0;
             }
 
@@ -90,7 +90,7 @@ public class IDAssigner
             }
             catch( NumberFormatException e )
             {
-                ComputerCraft.log.error( "Cannot parse ID file '" + lastidFile + "', perhaps it is corrupt?", e );
+                System.out.print( "Cannot parse ID file '" + lastidFile + "', perhaps it is corrupt?" );
                 return 0;
             }
         }
@@ -105,7 +105,7 @@ public class IDAssigner
         }
         catch( IOException e )
         {
-            ComputerCraft.log.error( "An error occured while trying to create the computer folder. Please check you have relevant permissions.", e );
+            System.out.print( "An error occured while trying to create the computer folder. Please check you have relevant permissions." );
         }
         
         return id;

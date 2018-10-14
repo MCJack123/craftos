@@ -204,6 +204,8 @@ public class Computer
     private final int[] m_input;
     private final int[] m_bundledInput;
     private boolean m_inputChanged;
+
+    private final String root_mount_dir = "computer/" + assignID();
         
     private final IPeripheral[] m_peripherals;
 
@@ -277,6 +279,12 @@ public class Computer
         synchronized( this )
         {
             return m_state == State.Running;
+        }
+    }
+
+    public boolean isOff() {
+        synchronized (this) {
+            return m_state == State.Off;
         }
     }
     
@@ -442,7 +450,7 @@ public class Computer
     {
         if( m_rootMount == null )
         {
-            m_rootMount = m_environment.createSaveDirMount( "computer/" + assignID(), m_environment.getComputerSpaceLimit() );
+            m_rootMount = m_environment.createSaveDirMount( root_mount_dir, m_environment.getComputerSpaceLimit() );
         }
         return m_rootMount;
     }
@@ -658,7 +666,7 @@ public class Computer
                 m_terminal.write("Error starting bios.lua" );
                 m_terminal.setCursorPos( 0, 1 );
                 m_terminal.write( "ComputerCraft may be installed incorrectly" );
-
+                System.err.println("Error starting");
                 machine.unload();
                 m_machine = null;
             }
@@ -724,7 +732,6 @@ public class Computer
                         m_terminal.write( "Error mounting lua/rom" );
                         m_terminal.setCursorPos( 0, 1 );
                         m_terminal.write( "ComputerCraft may be installed incorrectly" );
-
                         m_state = State.Running;
                         stopComputer( false );
                         return;
@@ -768,6 +775,7 @@ public class Computer
         }
         
         // Turn the computercraft off
+        System.out.println("turning off");
         final Computer computer = this;
         ComputerThread.queueTask( new ITask() {
             @Override
@@ -875,7 +883,7 @@ public class Computer
                         m_terminal.write( "Error resuming bios.lua" );
                         m_terminal.setCursorPos( 0, 1 );
                         m_terminal.write( "ComputerCraft may be installed incorrectly" );
-
+                        System.out.println("Error resuming");
                         stopComputer( false );
                     }
                 }

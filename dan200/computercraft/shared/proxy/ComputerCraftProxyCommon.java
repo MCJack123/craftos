@@ -1,4 +1,6 @@
-import dan200.computercraft.shared.proxy.IComputerCraftProxy;
+package dan200.computercraft.shared.proxy;
+
+import java.io.File;
 
 public abstract class ComputerCraftProxyCommon implements IComputerCraftProxy {
     public void preInit() {}
@@ -10,5 +12,5 @@ public abstract class ComputerCraftProxyCommon implements IComputerCraftProxy {
     public void deleteDisplayLists( int list, int range ) {}
     public abstract Object getFixedWidthFontRenderer();
 
-    public abstract File getWorldDir( World world );
+    public abstract File getWorldDir();
 }

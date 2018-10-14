@@ -185,7 +185,7 @@ public class LuaJLuaMachine implements ILuaMachine
         }
         catch( LuaError e )
         {
-            ComputerCraft.log.warn( "Could not load bios.lua ", e );
+            System.err.print( "Could not load bios.lua ");
             if( m_mainRoutine != null )
             {
                 ((LuaThread)m_mainRoutine).abandon();
@@ -418,7 +418,7 @@ public class LuaJLuaMachine implements ILuaMachine
                                             {
                                                 if( ComputerCraft.logPeripheralErrors )
                                                 {
-                                                    ComputerCraft.log.error( "Error running task", t );
+                                                    System.out.print( "Error running task" );
                                                 }
                                                 m_computer.queueEvent( "task_complete", new Object[] {
                                                     taskID, false, "Java Exception Thrown: " + t.toString()
@@ -488,7 +488,7 @@ public class LuaJLuaMachine implements ILuaMachine
                         {
                             if( ComputerCraft.logPeripheralErrors )
                             {
-                                ComputerCraft.log.error( "Error calling " + methodName + " on " + apiObject, t );
+                                System.out.print( "Error calling " + methodName + " on " + apiObject );
                             }
                             throw new LuaError( "Java Exception Thrown: " + t.toString(), 0 );
                         }

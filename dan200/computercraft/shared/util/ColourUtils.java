@@ -1,10 +1,6 @@
 package dan200.computercraft.shared.util;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.oredict.OreDictionary;
-import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nonnull;
 
@@ -19,7 +15,7 @@ public final class ColourUtils
 
     private static int[] ids;
 
-    public static int getStackColour( ItemStack stack )
+    /*public static int getStackColour( ItemStack stack )
     {
         if( ids == null )
         {
@@ -37,19 +33,19 @@ public final class ColourUtils
         }
 
         return -1;
-    }
+    }*/
 
     public static int getHexColour( @Nonnull NBTTagCompound tag )
     {
-        if( tag.hasKey( "colourIndex", Constants.NBT.TAG_ANY_NUMERIC ) )
+        if( tag.hasKey( "colourIndex", 99 ) )
         {
             return Colour.VALUES[ tag.getInteger( "colourIndex" ) & 0xF ].getHex();
         }
-        else if( tag.hasKey( "colour", Constants.NBT.TAG_ANY_NUMERIC ) )
+        else if( tag.hasKey( "colour", 99 ) )
         {
             return tag.getInteger( "colour" );
         }
-        else if( tag.hasKey( "color", Constants.NBT.TAG_ANY_NUMERIC ) )
+        else if( tag.hasKey( "color", 99 ) )
         {
             return tag.getInteger( "color" );
         }
@@ -61,7 +57,7 @@ public final class ColourUtils
 
     public static Colour getColour( @Nonnull NBTTagCompound tag )
     {
-        if( tag.hasKey( "colourIndex", Constants.NBT.TAG_ANY_NUMERIC ) )
+        if( tag.hasKey( "colourIndex", 99 ) )
         {
             return Colour.fromInt( tag.getInteger( "colourIndex" ) & 0xF );
         }

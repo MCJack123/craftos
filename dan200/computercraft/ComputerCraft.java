@@ -13,7 +13,10 @@ import dan200.computercraft.core.filesystem.ComboMount;
 import dan200.computercraft.core.filesystem.FileMount;
 import dan200.computercraft.core.filesystem.JarMount;
 import dan200.computercraft.shared.computer.core.ClientComputerRegistry;
+import dan200.computercraft.shared.computer.core.ServerComputerRegistry;
 import dan200.computercraft.shared.util.IDAssigner;
+import dan200.computercraft.shared.network.NetworkManager;
+import dan200.computercraft.shared.network.ComputerCraftPacket;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -88,6 +91,8 @@ public class ComputerCraft
 
     public static int maxNotesPerTick = 8;
 
+    public static NetworkManager networkEventChannel;
+
     // Blocks and Items
 
 
@@ -122,7 +127,7 @@ public class ComputerCraft
 
     // Registries
     public static ClientComputerRegistry clientComputerRegistry = new ClientComputerRegistry();
-    //public static ServerComputerRegistry serverComputerRegistry = new ServerComputerRegistry();
+    public static ServerComputerRegistry serverComputerRegistry = new ServerComputerRegistry();
 
     // API users
 
@@ -223,12 +228,10 @@ public class ComputerCraft
         }
 
         syncConfig();
-
+*/
         // Setup network
-        networkEventChannel = NetworkRegistry.INSTANCE.newEventDrivenChannel( "CC" );
-        networkEventChannel.register( new PacketHandler() );
-
-        proxy.preInit();
+        networkEventChannel = new NetworkManager();
+        //proxy.preInit();
         //turtleProxy.preInit();*/
     }
 
@@ -383,6 +386,27 @@ public class ComputerCraft
     {
         return new File(System.getProperty("user.home").concat("/.craftos"));
     }
+
+    public static void sendToPlayer( int player, ComputerCraftPacket packet )
+    {
+        networkEventChannel.sendTo( packet, player );
+    }
+
+    public static void sendToAllPlayers( ComputerCraftPacket packet )
+    {
+        networkEventChannel.sendToAll( packet );
+    }
+
+    public static void sendToServer( ComputerCraftPacket packet )
+    {
+        networkEventChannel.sendToServer( packet );
+    }
+
+    /*public static void handlePacket( ComputerCraftPacket packet, EntityPlayer player )
+    {
+        proxy.handlePacket( packet, player );
+    }
+
 /*
     public static void registerPocketUpgrade( IPocketUpgrade upgrade )
     {

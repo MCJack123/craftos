@@ -6,14 +6,6 @@
 
 package dan200.computercraft.shared.proxy;
 
-import dan200.computercraft.shared.computer.blocks.TileComputer;
-import dan200.computercraft.shared.network.ComputerCraftPacket;
-import dan200.computercraft.shared.peripheral.diskdrive.TileDiskDrive;
-import dan200.computercraft.shared.peripheral.printer.TilePrinter;
-import dan200.computercraft.shared.turtle.blocks.TileTurtle;
-import com.jackmacwindows.craftos.World;
-
-import javax.annotation.Nonnull;
 import java.io.File;
 
 public interface IComputerCraftProxy
@@ -27,5 +19,5 @@ public interface IComputerCraftProxy
     void deleteDisplayLists( int list, int range );
     Object getFixedWidthFontRenderer();
 
-    File getWorldDir( World world );
+    File getWorldDir();
 }

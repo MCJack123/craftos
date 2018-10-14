@@ -9,6 +9,9 @@ package dan200.computercraft.shared.computer.core;
 import com.google.common.base.Objects;
 import dan200.computercraft.ComputerCraft;
 import dan200.computercraft.shared.common.ClientTerminal;
+import dan200.computercraft.shared.network.ComputerCraftPacket;
+import dan200.computercraft.shared.util.NBTUtil;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class ClientComputer extends ClientTerminal
     implements IComputer
@@ -20,7 +23,7 @@ public class ClientComputer extends ClientTerminal
     private boolean m_on;
     private boolean m_blinking;
     private boolean m_changed;
-
+    private NBTTagCompound m_userData;
 
     private boolean m_changedLastFrame;
 
@@ -50,18 +53,18 @@ public class ClientComputer extends ClientTerminal
         return m_changedLastFrame;
     }
 
-    /*public NBTTagCompound getUserData()
+    public NBTTagCompound getUserData()
     {
         return m_userData;
-    }*/
+    }
 
     public void requestState()
     {
         // Request state from server
-        //ComputerCraftPacket packet = new ComputerCraftPacket();
-        //.m_packetType = ComputerCraftPacket.RequestComputerUpdate;
-        //packet.m_dataInt = new int[] { getInstanceID() };
-        //ComputerCraft.sendToServer( packet );
+        ComputerCraftPacket packet = new ComputerCraftPacket();
+        packet.m_packetType = ComputerCraftPacket.RequestComputerUpdate;
+        packet.m_dataInt = new int[] { getInstanceID() };
+        ComputerCraft.sendToServer( packet );
     }
 
     // IComputer
@@ -100,30 +103,30 @@ public class ClientComputer extends ClientTerminal
     public void turnOn()
     {
         // Send turnOn to server
-        //ComputerCraftPacket packet = new ComputerCraftPacket();
-        //packet.m_packetType = ComputerCraftPacket.TurnOn;
-        //packet.m_dataInt = new int[] { m_instanceID };
-        //ComputerCraft.sendToServer( packet );
+        ComputerCraftPacket packet = new ComputerCraftPacket();
+        packet.m_packetType = ComputerCraftPacket.TurnOn;
+        packet.m_dataInt = new int[] { m_instanceID };
+        ComputerCraft.sendToServer( packet );
     }
 
     @Override
     public void shutdown()
     {
         // Send shutdown to server
-        //ComputerCraftPacket packet = new ComputerCraftPacket();
-        //packet.m_packetType = ComputerCraftPacket.Shutdown;
-        //packet.m_dataInt = new int[] { m_instanceID };
-        //ComputerCraft.sendToServer( packet );
+        ComputerCraftPacket packet = new ComputerCraftPacket();
+        packet.m_packetType = ComputerCraftPacket.Shutdown;
+        packet.m_dataInt = new int[] { m_instanceID };
+        ComputerCraft.sendToServer( packet );
     }
 
     @Override
     public void reboot()
     {
         // Send reboot to server
-       // ComputerCraftPacket packet = new ComputerCraftPacket();
-        //packet.m_packetType = ComputerCraftPacket.Reboot;
-        //packet.m_dataInt = new int[] { m_instanceID };
-        //ComputerCraft.sendToServer( packet );
+        ComputerCraftPacket packet = new ComputerCraftPacket();
+        packet.m_packetType = ComputerCraftPacket.Reboot;
+        packet.m_dataInt = new int[] { m_instanceID };
+        ComputerCraft.sendToServer( packet );
     }
 
     @Override
@@ -177,8 +180,8 @@ public class ClientComputer extends ClientTerminal
         }
     }
 
-    @Override
-    public void handlePacket( ComputerCraftPacket packet, EntityPlayer sender )
+    //@Override
+    public void handlePacket( ComputerCraftPacket packet, int sender )
     {
         switch( packet.m_packetType )
         {

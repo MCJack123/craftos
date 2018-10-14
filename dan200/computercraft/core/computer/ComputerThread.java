@@ -107,7 +107,7 @@ public class ComputerThread
                                 try {
                                     task.execute();
                                 } catch( Throwable e ) {
-                                    ComputerCraft.log.error( "Error running task", e );
+                                    System.out.print( "Error running task" );
                                 }
                             } );
                             

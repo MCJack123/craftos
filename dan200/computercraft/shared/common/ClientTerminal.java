@@ -7,6 +7,7 @@
 package dan200.computercraft.shared.common;
 
 import dan200.computercraft.core.terminal.Terminal;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class ClientTerminal implements ITerminal
 {
@@ -52,7 +53,7 @@ public class ClientTerminal implements ITerminal
         return m_colour;
     }
 
-   /* public void readDescription( NBTTagCompound nbttagcompound )
+    public void readDescription( NBTTagCompound nbttagcompound )
     {
         m_colour = nbttagcompound.getBoolean( "colour" );
         if( nbttagcompound.hasKey( "terminal" ) )
@@ -65,7 +66,7 @@ public class ClientTerminal implements ITerminal
         {
             deleteTerminal();
         }
-    }*/
+    }
 
     private void resizeTerminal( int width, int height )
     {

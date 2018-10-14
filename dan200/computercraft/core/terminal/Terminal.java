@@ -6,6 +6,7 @@
 
 package dan200.computercraft.core.terminal;
 import dan200.computercraft.shared.util.Palette;
+import net.minecraft.nbt.NBTTagCompound;
 //import net.minecraft.nbt.NBTTagCompound;
 
 public class Terminal
@@ -317,7 +318,7 @@ public class Terminal
     {
         m_changed = false;
     }
-/*
+
     public NBTTagCompound writeToNBT( NBTTagCompound nbttagcompound )
     {
         nbttagcompound.setInteger( "term_cursorX", m_cursorX );
@@ -369,5 +370,5 @@ public class Terminal
             m_palette.readFromNBT( nbttagcompound );
         }
         m_changed = true;
-    }*/
+    }
 }

@@ -1,24 +1,18 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.awt.RenderingHints;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class TerminalWindow {
 
     public static final int width = 51;
     public static final int height = 19;
+    public static final int fontWidth = 6;
+    public static final int fontHeight = 9;
+    public static final int fontScale = 2;
+    public static final int charWidth = fontWidth * fontScale;
+    public static final int charHeight = fontHeight * fontScale;
     public TestPane panel;
     private int column = 0;
     private int row = 0;
@@ -90,40 +84,26 @@ public class TerminalWindow {
     public class TestPane extends JPanel {
 
         private BufferedImage img;
-        public char[][] screen = new char[Terminal.width][Terminal.height];
+        public char[][] screen = new char[TerminalWindow.width][TerminalWindow.height];
         // upper nybble is bg, lower nybble is fg
-        public char[][] colors = new char[Terminal.width][Terminal.height];
+        public char[][] colors = new char[TerminalWindow.width][TerminalWindow.height];
         public static final long serialVersionUID = 26;
+        public int blinkX = 0;
+        public int blinkY = 0;
+        public boolean blink = false;
 
         public TestPane() {
             try {
-                img = ImageIO.read(new java.io.File("C:\\Users\\jackb_000\\Downloads\\craftos@2x.png"));
+                img = ImageIO.read(getClass().getResourceAsStream("craftos@2x.png"));
             } catch (IOException ex) {
                 ex.printStackTrace();
+                System.err.println("Failed to read font");
             }
-            for (int x = 0; x < Terminal.width; x++) {
-                for (int y = 0; y < Terminal.height; y++) {
+            for (int x = 0; x < TerminalWindow.width; x++) {
+                for (int y = 0; y < TerminalWindow.height; y++) {
                     colors[x][y] = 0xF0;
                 }
             }
-        }
-
-        public List<BufferedImage> convert(String text) {
-
-            List<BufferedImage> images = new ArrayList<>(text.length());
-
-            for (char c : text.toCharArray()) {
-                System.out.print(c);
-                System.out.print(' ');
-                System.out.print(8*(c >> 4));
-                System.out.print(' ');
-                System.out.println(11*(c & 0x0F));
-                BufferedImage sub = img.getSubimage(8*(c & 0x0F)+1, 11*(c >> 4)+1, 6, 9);
-                images.add(getScaledImage(sub, sub.getWidth()*2, sub.getHeight()*2));
-            }
-
-            return images;
-
         }
 
         public BufferedImage convert(char c) {
@@ -132,20 +112,19 @@ public class TerminalWindow {
             System.out.print(8*(c >> 4));
             System.out.print(' ');
             System.out.println(11*(c & 0x0F));*/
-            BufferedImage sub = img.getSubimage(16*(c & 0x0F)+2, 22*(c >> 4)+2, 12, 18);
+            BufferedImage sub = img.getSubimage(((TerminalWindow.fontWidth + 2) * 2)*(c & 0x0F)+2, ((TerminalWindow.fontHeight + 2) * 2)*(c >> 4)+2, TerminalWindow.charWidth, TerminalWindow.charHeight);
             return sub;
-
         }
 
         @Override
         public Dimension getPreferredSize() {
-            return new Dimension(Terminal.width*12, Terminal.height*18);
+            return new Dimension(TerminalWindow.width*TerminalWindow.charWidth, TerminalWindow.height*TerminalWindow.charHeight);
         }
 
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            System.out.println("painting");
+            //System.out.println("painting");
             Graphics2D g2d = (Graphics2D) g.create();
             /*
             List<BufferedImage> text = convert("This is a test");
@@ -155,16 +134,33 @@ public class TerminalWindow {
                 g2d.drawImage(img, x, y, this);
                 x += img.getWidth();
             }*/
-            for (int x = 0; x < Terminal.width; x++) {
-                for (int y = 0; y < Terminal.height; y++) {
+            for (int x = 0; x < TerminalWindow.width; x++) {
+                for (int y = 0; y < TerminalWindow.height; y++) {
                     BufferedImage c = convert(screen[x][y]);
-                    g2d.setColor(Terminal.colors[colors[x][y] >> 4]);
-                    g2d.fillRect(x*12, y*18, 12, 18);
-                    g2d.setColor(Terminal.colors[colors[x][y] & 0x0F]);
-                    g2d.drawImage(c, x*12, y*18, this);
+                    g2d.setColor(TerminalWindow.colors[colors[x][y] >> 4]);
+                    g2d.setXORMode(Color.white);
+                    g2d.fillRect(x*TerminalWindow.charWidth, y*TerminalWindow.charHeight, TerminalWindow.charWidth, TerminalWindow.charHeight);
+                    g2d.setXORMode(invertColor(TerminalWindow.colors[colors[x][y] & 0x0F], TerminalWindow.colors[colors[x][y] >> 4]));
+                    g2d.setColor(Color.white);
+                    g2d.drawImage(c, x*TerminalWindow.charWidth, y*TerminalWindow.charHeight, this);
+                    g2d.setXORMode(invertColor(TerminalWindow.colors[0], TerminalWindow.colors[colors[x][y] >> 4]));
+                    g2d.setColor(Color.white);
+                    if (blink) {
+                        g2d.drawImage(convert('_'), blinkX*TerminalWindow.charWidth, blinkY*TerminalWindow.charHeight, this);
+                    }
+                    g2d.setXORMode(Color.white);
                 }
             }
             g2d.dispose();
+        }
+
+        private Color invertColor(Color src, Color mod) {
+            int r = (255-src.getRed()) ^ mod.getRed();
+            int g = (255-src.getGreen()) ^ mod.getGreen();
+            int b = (255-src.getBlue()) ^ mod.getBlue();
+            int a = 0;
+            //int hex = (r << 16) & (g << 8) & b;
+            return new Color(r, g, b, a);
         }
 
          /**

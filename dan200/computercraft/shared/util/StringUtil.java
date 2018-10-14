@@ -26,7 +26,7 @@ public class StringUtil
 
     /**
      * Translates a Stat name
-     */
+     *
     @SuppressWarnings("deprecation")
     public static String translateToLocal( String key )
     {
@@ -35,12 +35,12 @@ public class StringUtil
 
     /**
      * Translates a Stat name with format args
-     */
+     *
     @SuppressWarnings("deprecation")
     public static String translateToLocalFormatted( String key, Object... format )
     {
         return net.minecraft.util.text.translation.I18n.translateToLocalFormatted( key, format );
-    }
+    }*/
 
     public static byte[] encodeString( String string )
     {
