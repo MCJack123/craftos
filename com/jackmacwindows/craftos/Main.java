@@ -10,17 +10,17 @@ import java.util.Date;
 
 public class Main implements KeyListener, MouseListener, MouseWheelListener, MouseMotionListener {
 
-    private TerminalWindow term;
-    private Terminal comp_term;
-    private Computer computer;
+    private final TerminalWindow term;
+    private final Terminal comp_term;
+    private final Computer computer;
     private long lastTick;
     private long lastBlink;
     private boolean setListeners = false;
     private int lastDragX = -1;
     private int lastDragY = -1;
-    private static int clockSpeed = 50;
+    private int lastDragButton = 1;
 
-    public Main() {
+    private Main() {
         term = new TerminalWindow();
         CraftOSEnvironment env = new CraftOSEnvironment();
         ServerComputer server = new ServerComputer(0, "Computer", 0, ComputerFamily.Advanced, TerminalWindow.width, TerminalWindow.height);
@@ -45,8 +45,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
 
             }
         }
-        l.runLoop();
-        //System.exit(0);
+        if (l.runLoop()) System.exit(0);
     }
 
     /** Handle the key typed event from the text field. */
@@ -71,12 +70,11 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
 
     /** Handle the key-released event from the text field. */
     public void keyReleased(KeyEvent e) {
-        char c = e.getKeyChar();
         //term.print(new String(e.getKeyChar()));
         computer.queueEvent("key_up", new Object[]{(new ComputerKey(e)).intValue()});
     }
 
-    private void runLoop() {
+    private boolean runLoop() {
         if (term == null) System.err.println("NULL");
         if (term.panel == null) System.err.println("NULL2");
         if (!setListeners) {
@@ -90,7 +88,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
             setListeners = true;
         }
         while (true) {
-            if ((new Date()).getTime() - lastTick >= 1000 / clockSpeed) {
+            if ((new Date()).getTime() - lastTick >= 1000 / ComputerCraft.config.clockSpeed) {
                 lastTick = (new Date()).getTime();
                 computer.advance(1);
                 boolean changed = false;
@@ -129,8 +127,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                 } else if (!comp_term.getCursorBlink()) term.panel.blink = false;
                 if (changed) term.panel.repaint();
                 if (computer.isOff()) {
-                    System.err.println("Computer is off");
-                    return;
+                    return !computer.isCrashed();
                 }
             }
         }
@@ -144,7 +141,8 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
         //System.out.println(mouseEvent.paramString());
-        computer.queueEvent("mouse_click", new Object[]{convertButton(mouseEvent.getButton()), mouseEvent.getX() / TerminalWindow.charWidth + 1, mouseEvent.getY() / TerminalWindow.charHeight + 1});
+        lastDragButton = convertButton(mouseEvent.getButton());
+        computer.queueEvent("mouse_click", new Object[]{lastDragButton, mouseEvent.getX() / TerminalWindow.charWidth + 1, mouseEvent.getY() / TerminalWindow.charHeight + 1});
     }
 
     private int convertButton(int b) {
@@ -155,7 +153,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
-        computer.queueEvent("mouse_up", new Object[]{convertButton(mouseEvent.getButton()), mouseEvent.getX() / TerminalWindow.charWidth + 1, mouseEvent.getY() / TerminalWindow.charHeight + 1});
+        computer.queueEvent("mouse_up", new Object[]{mouseEvent.getButton(), mouseEvent.getX() / TerminalWindow.charWidth + 1, mouseEvent.getY() / TerminalWindow.charHeight + 1});
     }
 
     @Override
@@ -175,9 +173,9 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
 
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
-        //System.out.println(mouseEvent.paramString());
+        System.out.println(mouseEvent.paramString());
         if (lastDragX != mouseEvent.getX() / TerminalWindow.charWidth + 1 || lastDragY != mouseEvent.getY() / TerminalWindow.charHeight + 1) {
-            computer.queueEvent("mouse_drag", new Object[]{convertButton(mouseEvent.getButton()), mouseEvent.getX() / TerminalWindow.charWidth + 1, mouseEvent.getY() / TerminalWindow.charHeight + 1});
+            computer.queueEvent("mouse_drag", new Object[]{lastDragButton, mouseEvent.getX() / TerminalWindow.charWidth + 1, mouseEvent.getY() / TerminalWindow.charHeight + 1});
             lastDragX = mouseEvent.getX() / TerminalWindow.charWidth + 1;
             lastDragY = mouseEvent.getY() / TerminalWindow.charHeight + 1;
         }

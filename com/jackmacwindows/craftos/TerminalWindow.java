@@ -4,48 +4,43 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class TerminalWindow {
+class TerminalWindow {
 
-    public static final int width = 51;
-    public static final int height = 19;
-    public static final int fontWidth = 6;
-    public static final int fontHeight = 9;
-    public static final int fontScale = 2;
-    public static final int charWidth = fontWidth * fontScale;
-    public static final int charHeight = fontHeight * fontScale;
-    public TestPane panel;
-    private int column = 0;
-    private int row = 0;
-    public static Color[] colors = {
+    static final int width = 51;
+    static final int height = 19;
+    private static final int fontWidth = 6;
+    private static final int fontHeight = 9;
+    private static final int fontScale = 2;
+    static final int charWidth = fontWidth * fontScale;
+    static final int charHeight = fontHeight * fontScale;
+    TestPane panel;
+    //private int column = 0;
+    //private int row = 0;
+    private static final Color[] colors = {
         new Color(0xF0F0F0), new Color(0xF2B233), new Color(0xE57FD8), new Color(0x99B2F2),
         new Color(0xDEDE6C), new Color(0x7FCC19), new Color(0xF2B2CC), new Color(0x4C4C4C), 
         new Color(0x999999), new Color(0x4C99B2), new Color(0xB266E5), new Color(0x3366CC), 
         new Color(0x7F664C), new Color(0x57A64E), new Color(0xCC4C4C), new Color(0x191919)
     };
-    public static TerminalWindow currentWindow;
 
-    public TerminalWindow() {
-        currentWindow = this;
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-                }
-
-                JFrame frame = new JFrame("CraftOS Terminal");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setLayout(new BorderLayout());
-                panel = new TestPane();
-                frame.add(panel);
-                frame.pack();
-                frame.setLocationRelativeTo(null);
-                frame.setVisible(true);
+    TerminalWindow() {
+        EventQueue.invokeLater(() -> {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ignored) {
             }
+
+            JFrame frame = new JFrame("CraftOS Terminal");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setLayout(new BorderLayout());
+            panel = new TestPane();
+            frame.add(panel);
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
         });
     }
-
+/*
     public void print(String text) {
         for (char c : text.toCharArray()) {
             if (c == '\n') {
@@ -80,19 +75,19 @@ public class TerminalWindow {
         //System.out.print(column);
         panel.repaint();
     }
-
+*/
     public class TestPane extends JPanel {
 
         private BufferedImage img;
-        public char[][] screen = new char[TerminalWindow.width][TerminalWindow.height];
+        final char[][] screen = new char[TerminalWindow.width][TerminalWindow.height];
         // upper nybble is bg, lower nybble is fg
-        public char[][] colors = new char[TerminalWindow.width][TerminalWindow.height];
+        final char[][] colors = new char[TerminalWindow.width][TerminalWindow.height];
         public static final long serialVersionUID = 26;
-        public int blinkX = 0;
-        public int blinkY = 0;
-        public boolean blink = false;
+        int blinkX = 0;
+        int blinkY = 0;
+        boolean blink = false;
 
-        public TestPane() {
+        TestPane() {
             try {
                 img = ImageIO.read(getClass().getResourceAsStream("craftos@2x.png"));
             } catch (IOException ex) {
@@ -106,19 +101,18 @@ public class TerminalWindow {
             }
         }
 
-        public BufferedImage convert(char c) {
+        BufferedImage convert(char c) {
             /*System.out.print(c);
             System.out.print(' ');
             System.out.print(8*(c >> 4));
             System.out.print(' ');
             System.out.println(11*(c & 0x0F));*/
-            BufferedImage sub = img.getSubimage(((TerminalWindow.fontWidth + 2) * 2)*(c & 0x0F)+2, ((TerminalWindow.fontHeight + 2) * 2)*(c >> 4)+2, TerminalWindow.charWidth, TerminalWindow.charHeight);
-            return sub;
+            return img.getSubimage(((TerminalWindow.fontWidth + 2) * 2)*(c & 0x0F)+2, ((TerminalWindow.fontHeight + 2) * 2)*(c >> 4)+2, TerminalWindow.charWidth, TerminalWindow.charHeight);
         }
 
         @Override
         public Dimension getPreferredSize() {
-            return new Dimension(TerminalWindow.width*TerminalWindow.charWidth, TerminalWindow.height*TerminalWindow.charHeight);
+            return new Dimension(TerminalWindow.width*TerminalWindow.charWidth+(4 * TerminalWindow.fontScale), TerminalWindow.height*TerminalWindow.charHeight+(4 * TerminalWindow.fontScale));
         }
 
         @Override
@@ -139,14 +133,24 @@ public class TerminalWindow {
                     BufferedImage c = convert(screen[x][y]);
                     g2d.setColor(TerminalWindow.colors[colors[x][y] >> 4]);
                     g2d.setXORMode(Color.white);
-                    g2d.fillRect(x*TerminalWindow.charWidth, y*TerminalWindow.charHeight, TerminalWindow.charWidth, TerminalWindow.charHeight);
+                    g2d.fillRect(x*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), y*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), TerminalWindow.charWidth, TerminalWindow.charHeight);
+                    if (x == 0) g2d.fillRect(0, y*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, TerminalWindow.charHeight);
+                    if (y == 0) g2d.fillRect(x*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), 0, TerminalWindow.charWidth, 2 * TerminalWindow.fontScale);
+                    if (x+1 == TerminalWindow.width)
+                        g2d.fillRect((x+1)*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), y*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, TerminalWindow.charHeight);
+                    if (y+1 == TerminalWindow.height)
+                        g2d.fillRect(x*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), (y+1)*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), TerminalWindow.charWidth, 2 * TerminalWindow.fontScale);
+                    if (x == 0 && y == 0) g2d.fillRect(0, 0, 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                    if (x == 0 && y+1 == TerminalWindow.height) g2d.fillRect(0, (y+1)*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                    if (x+1 == TerminalWindow.width && y == 0) g2d.fillRect((x+1)*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), 0, 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                    if (x+1 == TerminalWindow.width && y+1 == TerminalWindow.height) g2d.fillRect((x+1)*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), (y+1)*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
                     g2d.setXORMode(invertColor(TerminalWindow.colors[colors[x][y] & 0x0F], TerminalWindow.colors[colors[x][y] >> 4]));
                     g2d.setColor(Color.white);
-                    g2d.drawImage(c, x*TerminalWindow.charWidth, y*TerminalWindow.charHeight, this);
+                    g2d.drawImage(c, x*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), y*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), this);
                     g2d.setXORMode(invertColor(TerminalWindow.colors[0], TerminalWindow.colors[colors[x][y] >> 4]));
                     g2d.setColor(Color.white);
                     if (blink) {
-                        g2d.drawImage(convert('_'), blinkX*TerminalWindow.charWidth, blinkY*TerminalWindow.charHeight, this);
+                        g2d.drawImage(convert('_'), blinkX*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), blinkY*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), this);
                     }
                     g2d.setXORMode(Color.white);
                 }
@@ -163,13 +167,13 @@ public class TerminalWindow {
             return new Color(r, g, b, a);
         }
 
-         /**
+         /*
          * Resizes an image using a Graphics2D object backed by a BufferedImage.
          * @param srcImg - source image to scale
          * @param w - desired width
          * @param h - desired height
          * @return - the new resized image
-         */
+         *
         private BufferedImage getScaledImage(BufferedImage srcImg, int w, int h){
             BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TRANSLUCENT);
             Graphics2D g2 = resizedImg.createGraphics();
@@ -177,7 +181,7 @@ public class TerminalWindow {
             g2.drawImage(srcImg, 0, 0, w, h, null);
             g2.dispose();
             return resizedImg;
-        }
+        }*/
     }
 
 }

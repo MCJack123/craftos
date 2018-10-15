@@ -184,6 +184,7 @@ public class Computer
     private boolean m_startRequested;
     private State m_state;
     private boolean m_blinking;
+    private boolean m_crashed;
 
     private ILuaMachine m_machine;
     private final List<ILuaAPI> m_apis;
@@ -221,6 +222,7 @@ public class Computer
         m_startRequested = false;
         m_state = State.Off;
         m_blinking = false;
+        m_crashed = false;
 
         m_terminal = terminal;
         m_fileSystem = null;
@@ -285,6 +287,12 @@ public class Computer
     public boolean isOff() {
         synchronized (this) {
             return m_state == State.Off;
+        }
+    }
+
+    public boolean isCrashed() {
+        synchronized (this) {
+            return m_crashed;
         }
     }
     
@@ -620,6 +628,7 @@ public class Computer
         m_apis.add( new PeripheralAPI( m_apiEnvironment ) );
         m_apis.add( new OSAPI( m_apiEnvironment ) );
         m_apis.add( new BitAPI( m_apiEnvironment ) );
+        m_apis.add( new ConfigAPI() );
         //m_apis.add( new BufferAPI( m_apiEnvironment ) );
         if( ComputerCraft.http_enable )
         {
@@ -666,7 +675,7 @@ public class Computer
                 m_terminal.write("Error starting bios.lua" );
                 m_terminal.setCursorPos( 0, 1 );
                 m_terminal.write( "ComputerCraft may be installed incorrectly" );
-                System.err.println("Error starting");
+                m_crashed = true;
                 machine.unload();
                 m_machine = null;
             }
@@ -681,7 +690,7 @@ public class Computer
             m_terminal.write("Error loading bios.lua" );
             m_terminal.setCursorPos( 0, 1 );
             m_terminal.write( "ComputerCraft may be installed incorrectly" );
-
+            m_crashed = true;
             machine.unload();
             m_machine = null;
         }
@@ -697,6 +706,7 @@ public class Computer
             }
             m_state = State.Starting;
             m_ticksSinceStart = 0;
+            m_crashed = false;
         }
         
         // Turn the computercraft on
@@ -733,6 +743,7 @@ public class Computer
                         m_terminal.setCursorPos( 0, 1 );
                         m_terminal.write( "ComputerCraft may be installed incorrectly" );
                         m_state = State.Running;
+                        m_crashed = true;
                         stopComputer( false );
                         return;
                     }
@@ -745,7 +756,7 @@ public class Computer
                         m_terminal.write( "Error loading bios.lua" );
                         m_terminal.setCursorPos( 0, 1 );
                         m_terminal.write( "ComputerCraft may be installed incorrectly" );
-
+                        m_crashed = true;
                         // Init failed, so shutdown
                         m_state = State.Running;
                         stopComputer( false );
@@ -775,7 +786,7 @@ public class Computer
         }
         
         // Turn the computercraft off
-        System.out.println("turning off");
+
         final Computer computer = this;
         ComputerThread.queueTask( new ITask() {
             @Override
@@ -883,7 +894,7 @@ public class Computer
                         m_terminal.write( "Error resuming bios.lua" );
                         m_terminal.setCursorPos( 0, 1 );
                         m_terminal.write( "ComputerCraft may be installed incorrectly" );
-                        System.out.println("Error resuming");
+                        m_crashed = true;
                         stopComputer( false );
                     }
                 }

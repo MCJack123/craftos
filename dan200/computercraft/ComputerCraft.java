@@ -14,9 +14,10 @@ import dan200.computercraft.core.filesystem.FileMount;
 import dan200.computercraft.core.filesystem.JarMount;
 import dan200.computercraft.shared.computer.core.ClientComputerRegistry;
 import dan200.computercraft.shared.computer.core.ServerComputerRegistry;
-import dan200.computercraft.shared.util.IDAssigner;
-import dan200.computercraft.shared.network.NetworkManager;
 import dan200.computercraft.shared.network.ComputerCraftPacket;
+import dan200.computercraft.shared.network.NetworkManager;
+import dan200.computercraft.shared.util.IDAssigner;
+import dan200.computercraft.shared.util.Configuration;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -90,40 +91,13 @@ public class ComputerCraft
     public static int maximumFilesOpen = 128;
 
     public static int maxNotesPerTick = 8;
+    public static int clockSpeed = 20;
 
     public static NetworkManager networkEventChannel;
 
     // Blocks and Items
 
-
-    /*public static class Config {
-        public static Configuration config;
-
-        public static Property http_enable;
-        public static Property http_whitelist;
-        public static Property http_blacklist;
-        public static Property disable_lua51_features;
-        public static Property default_computer_settings;
-        public static Property logPeripheralErrors;
-
-        public static Property enableCommandBlock;
-        public static Property turtlesNeedFuel;
-        public static Property turtleFuelLimit;
-        public static Property advancedTurtleFuelLimit;
-        public static Property turtlesObeyBlockProtection;
-        public static Property turtlesCanPush;
-
-        public static Property modem_range;
-        public static Property modem_highAltitudeRange;
-        public static Property modem_rangeDuringStorm;
-        public static Property modem_highAltitudeRangeDuringStorm;
-
-        public static Property computerSpaceLimit;
-        public static Property floppySpaceLimit;
-        public static Property maximumFilesOpen;
-        public static Property maxNotesPerTick;
-
-    }*/
+    public static Configuration config;
 
     // Registries
     public static ClientComputerRegistry clientComputerRegistry = new ClientComputerRegistry();
@@ -143,6 +117,9 @@ public class ComputerCraft
     {
 
         // Load config
+        File f = new File(getWorldDir().toString() + "/config.ser");
+        if (f.exists()) config = new Configuration(f.toString());
+        else config = new Configuration();
         /*Config.config = new Configuration( event.getSuggestedConfigurationFile() );
         Config.config.load();
 
@@ -236,34 +213,7 @@ public class ComputerCraft
     }
 
     public static void syncConfig() {
-        /*
-        http_enable = Config.http_enable.getBoolean();
-        http_whitelist = new AddressPredicate( Config.http_whitelist.getStringList() );
-        http_blacklist = new AddressPredicate( Config.http_blacklist.getStringList() );
-        disable_lua51_features = Config.disable_lua51_features.getBoolean();
-        default_computer_settings = Config.default_computer_settings.getString();
-        logPeripheralErrors = Config.logPeripheralErrors.getBoolean();
-
-        enableCommandBlock = Config.enableCommandBlock.getBoolean();
-
-        modem_range = Math.min( Config.modem_range.getInt(), 100000 );
-        modem_highAltitudeRange = Math.min( Config.modem_highAltitudeRange.getInt(), 100000 );
-        modem_rangeDuringStorm = Math.min( Config.modem_rangeDuringStorm.getInt(), 100000 );
-        modem_highAltitudeRangeDuringStorm = Math.min( Config.modem_highAltitudeRangeDuringStorm.getInt(), 100000 );
-
-        computerSpaceLimit = Config.computerSpaceLimit.getInt();
-        floppySpaceLimit = Config.floppySpaceLimit.getInt();
-        maximumFilesOpen = Math.max( 0, Config.maximumFilesOpen.getInt() );
-
-        turtlesNeedFuel = Config.turtlesNeedFuel.getBoolean();
-        turtleFuelLimit = Config.turtleFuelLimit.getInt();
-        advancedTurtleFuelLimit = Config.advancedTurtleFuelLimit.getInt();
-        turtlesObeyBlockProtection = Config.turtlesObeyBlockProtection.getBoolean();
-        turtlesCanPush = Config.turtlesCanPush.getBoolean();
-
-        maxNotesPerTick = Math.max(1, Config.maxNotesPerTick.getInt());
-
-        Config.config.save();*/
+        config.serialize(getWorldDir().toString() + "/config.ser");
     }
 
     //@Mod.EventHandler

@@ -17,7 +17,7 @@ class CraftOSEnvironment implements IComputerEnvironment {
         Calendar rightNow = Calendar.getInstance();
         int hour = rightNow.get(Calendar.HOUR_OF_DAY);
         int minute = rightNow.get(Calendar.MINUTE);
-        return hour + (minute/60);
+        return (double)hour + ((double)minute/60.0);
     }
     public boolean isColour() {
         return true;

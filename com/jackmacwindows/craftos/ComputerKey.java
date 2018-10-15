@@ -2,19 +2,19 @@ import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ComputerKey extends Number {
+class ComputerKey extends Number {
 
     private int orig_key;
     private int new_key;
     // these just have to be unique, doesn't matter what number it'll be since it'll be converted internally
-    public static final int VK_LEFT_CONTROL = 41291213,
-    VK_RIGHT_CONTROL = 5390248,
-    VK_LEFT_SHIFT = 4180142,
-    VK_RIGHT_SHIFT = 21940241,
-    VK_LEFT_ALT = 4218947,
-    VK_RIGHT_ALT = 21984412;
+    private static final int VK_LEFT_CONTROL = 41291213;
+    private static final int VK_RIGHT_CONTROL = 5390248;
+    private static final int VK_LEFT_SHIFT = 4180142;
+    private static final int VK_RIGHT_SHIFT = 21940241;
+    private static final int VK_LEFT_ALT = 4218947;
+    private static final int VK_RIGHT_ALT = 21984412;
 
-    public static final Map<Integer, Integer> mappings = new HashMap<>();
+    private static final Map<Integer, Integer> mappings = new HashMap<>();
     static {
         mappings.put(KeyEvent.VK_1, 2);
         mappings.put(KeyEvent.VK_2, 3);
@@ -130,10 +130,12 @@ public class ComputerKey extends Number {
 
     }
 
-    public ComputerKey(int i) {
-        orig_key = i;
-        new_key = mappings.get(i);
-    }
+// --Commented out by Inspection START (10/14/18 22:46):
+//    public ComputerKey(int i) {
+//        orig_key = i;
+//        new_key = mappings.get(i);
+//    }
+// --Commented out by Inspection STOP (10/14/18 22:46)
 
     public ComputerKey(KeyEvent e) {
         orig_key = e.getKeyCode();
