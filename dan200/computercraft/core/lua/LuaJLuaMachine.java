@@ -418,7 +418,8 @@ public class LuaJLuaMachine implements ILuaMachine
                                             {
                                                 if( ComputerCraft.logPeripheralErrors )
                                                 {
-                                                    System.out.print( "Error running task" );
+                                                    System.out.printf( "Error running task: %s", t.toString() );
+                                                    t.printStackTrace();
                                                 }
                                                 m_computer.queueEvent( "task_complete", new Object[] {
                                                     taskID, false, "Java Exception Thrown: " + t.toString()
@@ -489,6 +490,7 @@ public class LuaJLuaMachine implements ILuaMachine
                             if( ComputerCraft.logPeripheralErrors )
                             {
                                 System.out.print( "Error calling " + methodName + " on " + apiObject );
+                                t.printStackTrace();
                             }
                             throw new LuaError( "Java Exception Thrown: " + t.toString(), 0 );
                         }

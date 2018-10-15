@@ -89,7 +89,8 @@ public class FileMount implements IWritableMount
     {
         m_rootPath = rootPath;
         m_capacity = capacity + MINIMUM_FILE_SIZE;
-        m_usedSpace = created() ? measureUsedSpace( m_rootPath ) : MINIMUM_FILE_SIZE;
+        if (capacity != 0) m_usedSpace = created() ? measureUsedSpace( m_rootPath ) : MINIMUM_FILE_SIZE;
+        else m_usedSpace = 0;
     }
 
     // IMount implementation

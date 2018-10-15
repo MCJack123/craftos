@@ -489,6 +489,12 @@ public class Computer
             return false;
         }
     }
+
+    public FileSystem getFileSystem() {
+        synchronized (this) {
+            return m_fileSystem;
+        }
+    }
             
     // Redstone
 

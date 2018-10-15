@@ -7,6 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="CraftOS-PC" />
+    <orderEntry type="module" module-name="craftos" />
+    <orderEntry type="library" name="com.google.code.findbugs:jsr305:3.0.2" level="project" />
   </component>
 </module>

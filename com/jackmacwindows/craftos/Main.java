@@ -13,12 +13,14 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     private final TerminalWindow term;
     private final Terminal comp_term;
     private final Computer computer;
+    private final MountAPI mounter;
     private long lastTick;
     private long lastBlink;
     private boolean setListeners = false;
     private int lastDragX = -1;
     private int lastDragY = -1;
     private int lastDragButton = 1;
+    private boolean setMounter = false;
 
     private Main() {
         term = new TerminalWindow();
@@ -32,6 +34,8 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
         comp_term = server.getTerminal();
         computer = new Computer(env, comp_term, 0);
         computer.turnOn();
+        mounter = new MountAPI(computer.getFileSystem());
+        computer.addAPI(mounter);
         lastTick = (new Date()).getTime();
         computer.advance(1);
     }
@@ -88,6 +92,11 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
             setListeners = true;
         }
         while (true) {
+            if (!setMounter && computer.getFileSystem() != null) {
+                mounter.setFileSystem(computer.getFileSystem());
+                setMounter = true;
+                System.out.println("Set mounter");
+            }
             if ((new Date()).getTime() - lastTick >= 1000 / ComputerCraft.config.clockSpeed) {
                 lastTick = (new Date()).getTime();
                 computer.advance(1);

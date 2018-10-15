@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/CraftOS-PC.iml" filepath="$PROJECT_DIR$/CraftOS-PC.iml" />
+      <module fileurl="file://$PROJECT_DIR$/craftos.iml" filepath="$PROJECT_DIR$/craftos.iml" />
       <module fileurl="file://$PROJECT_DIR$/com/jackmacwindows/jackmacwindows.iml" filepath="$PROJECT_DIR$/com/jackmacwindows/jackmacwindows.iml" />
     </modules>
   </component>

@@ -107,7 +107,8 @@ public class ComputerThread
                                 try {
                                     task.execute();
                                 } catch( Throwable e ) {
-                                    System.out.print( "Error running task" );
+                                    System.out.printf( "Error running task: %s", e.toString());
+                                    //System.out.println(e.getStackTrace());
                                 }
                             } );
                             
