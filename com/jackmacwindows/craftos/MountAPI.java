@@ -1,4 +1,3 @@
-import dan200.computercraft.ComputerCraft;
 import dan200.computercraft.api.filesystem.IWritableMount;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
@@ -17,6 +16,7 @@ public class MountAPI implements ILuaAPI {
 
     private FileSystem fs;
     private Map<String, IWritableMount> mounts = new HashMap<>();
+    private Map<String, Boolean> isReadOnly = new HashMap<>();
 
     MountAPI(FileSystem fs) {
         this.fs = fs;
@@ -45,12 +45,13 @@ public class MountAPI implements ILuaAPI {
     public void shutdown() {
         for (String key : mounts.keySet()) fs.unmount(key);
         mounts.clear();
+        isReadOnly.clear();
     }
 
     @Nonnull
     @Override
     public String[] getMethodNames() {
-        return new String[]{"mount", "unmount", "list"};
+        return new String[]{"mount", "unmount", "list", "isReadOnly"};
     }
 
     @Nullable
@@ -77,9 +78,9 @@ public class MountAPI implements ILuaAPI {
                     try {
                         f = new File((String)arguments[1]);
                         mount = new FileMount(f, 0);
-                        String s1 = (String)arguments[0];
-                        String s2 = (String)arguments[1];
-                        System.out.printf("%s %s\n", s1, s2);
+                        //String s1 = (String)arguments[0];
+                        //String s2 = (String)arguments[1];
+                        //System.out.printf("%s %s\n", s1, s2);
                     } catch (NullPointerException e) {
                         e.printStackTrace();
                         throw new LuaException("Error while creating mount");
@@ -87,12 +88,14 @@ public class MountAPI implements ILuaAPI {
                     if (arguments.length > 2 && !(boolean)arguments[2]) {
                         try {
                             fs.mount((String)arguments[0], "/" + arguments[0], mount);
+                            isReadOnly.put((String)arguments[0], true);
                         } catch (FileSystemException e) {
                             throw new LuaException("Could not mount drive: " + e.getMessage());
                         }
                     } else {
                         try {
                             fs.mountWritable((String)arguments[0], "/" + arguments[0], mount);
+                            isReadOnly.put((String)arguments[0], false);
                         } catch (FileSystemException e) {
                             throw new LuaException("Could not mount drive read-write: " + e.getMessage());
                         }
@@ -105,7 +108,7 @@ public class MountAPI implements ILuaAPI {
                         throw new LuaException("Expected 1 argument, got " + arguments.length);
                     }
                     if (!(arguments[0] instanceof String)) {
-                        throw new LuaException("Expected argument #1 to be string, got " + arguments[0].getClass().getName());
+                        throw new LuaException("Expected argument #1 to be string");
                     }
                     IWritableMount m = mounts.get(arguments[0]);
                     if (m == null) {
@@ -113,12 +116,15 @@ public class MountAPI implements ILuaAPI {
                     }
                     fs.unmount("/" + arguments[0]);
                     mounts.remove(arguments[0]);
+                    isReadOnly.remove(arguments[0]);
                     break;
                 case 2:
                     // list()
                     Map<Object, Object> retval = new HashMap<>();
-                    for (String key : mounts.keySet()) retval.put(key, mounts.get(key).toString());
+                    for (String key : mounts.keySet()) retval.put(key, ((FileMount)mounts.get(key)).m_rootPath.getAbsolutePath());
                     return new Object[]{retval};
+                case 3:
+                    return new Object[]{isReadOnly.get(arguments[0])};
             }
         } catch (NullPointerException e) {
             e.printStackTrace();

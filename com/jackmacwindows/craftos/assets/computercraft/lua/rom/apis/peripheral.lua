@@ -122,3 +122,11 @@ function find( sType, fnFilter )
 	end
 	return table.unpack( tResults )
 end
+
+function create(side, type, opt1, opt2)
+	periphemu.create(side, type, opt1)
+end
+
+function remove(side)
+	periphemu.remove(side)
+end

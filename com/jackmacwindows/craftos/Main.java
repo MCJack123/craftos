@@ -36,6 +36,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
         computer.turnOn();
         mounter = new MountAPI(computer.getFileSystem());
         computer.addAPI(mounter);
+        computer.addAPI(new PeriphemuAPI(computer, env));
         lastTick = (new Date()).getTime();
         computer.advance(1);
     }
@@ -109,10 +110,11 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                 if (comp_term.getChanged()) {
                     changed = true;
                     //System.out.println("changed");
+                    char[] text, bg, fg;
                     for (int y = 0; y < TerminalWindow.height; y++) {
-                        char[] text = comp_term.getLine(y).toString().toCharArray();
-                        char[] bg = comp_term.getBackgroundColourLine(y).toString().toCharArray();
-                        char[] fg = comp_term.getTextColourLine(y).toString().toCharArray();
+                        text = comp_term.getLine(y).toString().toCharArray();
+                        bg = comp_term.getBackgroundColourLine(y).toString().toCharArray();
+                        fg = comp_term.getTextColourLine(y).toString().toCharArray();
                         //System.out.println(y);
                         //System.out.println(bg);
                         //System.out.println(fg);
@@ -134,7 +136,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                     lastBlink = (new Date()).getTime();
                     term.panel.blink = !term.panel.blink;
                 } else if (!comp_term.getCursorBlink()) term.panel.blink = false;
-                if (changed) term.panel.repaint();
+                if (changed) {term.panel.repaint(); System.gc(); Runtime.getRuntime().gc();}
                 if (computer.isOff()) {
                     return !computer.isCrashed();
                 }

@@ -81,7 +81,7 @@ public class FileMount implements IWritableMount
         }
     }
     
-    private File m_rootPath;
+    public File m_rootPath;
     private long m_capacity;
     private long m_usedSpace;
     

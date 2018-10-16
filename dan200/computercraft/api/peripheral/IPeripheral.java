@@ -12,7 +12,7 @@ import dan200.computercraft.api.lua.LuaException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/**
+/*
  * The interface that defines a peripheral. See {@link IPeripheralProvider} for how to associate blocks with peripherals.
  */
 public interface IPeripheral
@@ -113,6 +113,8 @@ public interface IPeripheral
     default void detach( @Nonnull IComputerAccess computer )
     {
     }
+
+    default void tick() {}
 
     /**
      * Determine whether this peripheral is equivalent to another one.

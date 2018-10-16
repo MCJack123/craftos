@@ -33,6 +33,7 @@ shell.setAlias( "rm", "delete" )
 shell.setAlias( "clr", "clear" )
 shell.setAlias( "rs", "redstone" )
 shell.setAlias( "sh", "shell" )
+shell.setAlias( "umount", "unmount" )
 if term.isColor() then
     shell.setAlias( "background", "bg" )
     shell.setAlias( "foreground", "fg" )

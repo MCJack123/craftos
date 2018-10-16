@@ -153,6 +153,7 @@ class TerminalWindow {
                         g2d.drawImage(convert('_'), blinkX*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), blinkY*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), this);
                     }
                     g2d.setXORMode(Color.white);
+                    c = null;
                 }
             }
             g2d.dispose();
