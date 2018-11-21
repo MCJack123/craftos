@@ -77,7 +77,7 @@ class TerminalWindow {
         panel.repaint();
     }
 */
-    public void setPalette(Palette p) {
+    void setPalette(Palette p) {
         for (int i = 0; i < 16; i++) colors[i] = new Color(Palette.encodeRGB8(p.getColour(15-i)));
         panel.palette = colors;
     }
@@ -89,7 +89,7 @@ class TerminalWindow {
         // upper nybble is bg, lower nybble is fg
         final char[][] colors = new char[TerminalWindow.width][TerminalWindow.height];
         public static final long serialVersionUID = 26;
-        public Color[] palette;
+        Color[] palette;
         int blinkX = 0;
         int blinkY = 0;
         boolean blink = false;
@@ -165,7 +165,6 @@ class TerminalWindow {
                         g2d.drawImage(convert('_'), blinkX*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), blinkY*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), this);
                     }
                     g2d.setXORMode(Color.white);
-                    c = null;
                 }
             }
             g2d.dispose();

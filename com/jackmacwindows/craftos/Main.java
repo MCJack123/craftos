@@ -80,8 +80,8 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     }
 
     private boolean runLoop() {
-        if (term == null) System.err.println("NULL");
-        if (term.panel == null) System.err.println("NULL2");
+        if (term == null) {System.err.println("NULL"); return false;}
+        if (term.panel == null) {System.err.println("NULL2"); return false;}
         if (!setListeners) {
             term.panel.setFocusable(true);
             term.panel.requestFocusInWindow();
