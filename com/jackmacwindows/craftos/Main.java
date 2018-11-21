@@ -56,7 +56,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     /** Handle the key typed event from the text field. */
     public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
-        if (c == 0x1B) {System.exit(0); return;}
+        //if (c == 0x1B) {System.exit(0); return;}
         String s = String.valueOf(c);
         //if (c == '\b') s = "\b \b";
         //System.out.print(s);
@@ -110,6 +110,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                 if (comp_term.getChanged()) {
                     changed = true;
                     //System.out.println("changed");
+                    if (comp_term.getPalette() != term.p) term.setPalette(comp_term.getPalette());
                     char[] text, bg, fg;
                     for (int y = 0; y < TerminalWindow.height; y++) {
                         text = comp_term.getLine(y).toString().toCharArray();
@@ -153,7 +154,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     public void mousePressed(MouseEvent mouseEvent) {
         //System.out.println(mouseEvent.paramString());
         lastDragButton = convertButton(mouseEvent.getButton());
-        computer.queueEvent("mouse_click", new Object[]{lastDragButton, mouseEvent.getX() / TerminalWindow.charWidth + 1, mouseEvent.getY() / TerminalWindow.charHeight + 1});
+        computer.queueEvent("mouse_click", new Object[]{lastDragButton, convertX(mouseEvent.getX()), convertY(mouseEvent.getY())});
     }
 
     private int convertButton(int b) {
@@ -162,9 +163,21 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
         return 1;
     }
 
+    private int convertX(int x) {
+        if (x < 2 * TerminalWindow.fontScale) x = 2 * TerminalWindow.fontScale;
+        else if (x > TerminalWindow.charWidth * TerminalWindow.width + 2 * TerminalWindow.fontScale) x = TerminalWindow.charWidth * TerminalWindow.width + 2 * TerminalWindow.fontScale;
+        return (x-2 * TerminalWindow.fontScale) / TerminalWindow.charWidth + 1;
+    }
+
+    private int convertY(int x) {
+        if (x < 2 * TerminalWindow.fontScale) x = 2 * TerminalWindow.fontScale;
+        else if (x > TerminalWindow.charHeight * TerminalWindow.height + 2 * TerminalWindow.fontScale) x = TerminalWindow.charHeight * TerminalWindow.height + 2 * TerminalWindow.fontScale;
+        return (x-2 * TerminalWindow.fontScale) / TerminalWindow.charHeight + 1;
+    }
+
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
-        computer.queueEvent("mouse_up", new Object[]{mouseEvent.getButton(), mouseEvent.getX() / TerminalWindow.charWidth + 1, mouseEvent.getY() / TerminalWindow.charHeight + 1});
+        computer.queueEvent("mouse_up", new Object[]{mouseEvent.getButton(), convertX(mouseEvent.getX()), convertY(mouseEvent.getY())});
     }
 
     @Override
@@ -179,16 +192,16 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
-        computer.queueEvent("mouse_scroll", new Object[]{mouseWheelEvent.getWheelRotation() > 0 ? 1 : -1, mouseWheelEvent.getX() / TerminalWindow.charWidth + 1, mouseWheelEvent.getY() / TerminalWindow.charHeight + 1});
+        computer.queueEvent("mouse_scroll", new Object[]{mouseWheelEvent.getWheelRotation() > 0 ? 1 : -1, convertX(mouseWheelEvent.getX()), convertY(mouseWheelEvent.getY())});
     }
 
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
         System.out.println(mouseEvent.paramString());
-        if (lastDragX != mouseEvent.getX() / TerminalWindow.charWidth + 1 || lastDragY != mouseEvent.getY() / TerminalWindow.charHeight + 1) {
-            computer.queueEvent("mouse_drag", new Object[]{lastDragButton, mouseEvent.getX() / TerminalWindow.charWidth + 1, mouseEvent.getY() / TerminalWindow.charHeight + 1});
-            lastDragX = mouseEvent.getX() / TerminalWindow.charWidth + 1;
-            lastDragY = mouseEvent.getY() / TerminalWindow.charHeight + 1;
+        if (lastDragX != convertX(mouseEvent.getX()) || lastDragY != convertY(mouseEvent.getY())) {
+            computer.queueEvent("mouse_drag", new Object[]{lastDragButton, convertX(mouseEvent.getX()), convertY(mouseEvent.getY())});
+            lastDragX = convertX(mouseEvent.getX());
+            lastDragY = convertY(mouseEvent.getY());
         }
     }
 
