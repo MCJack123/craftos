@@ -8,12 +8,12 @@ CraftOS-PC is a port of the CraftOS operating system from the popular Minecraft 
 * Full terminal interaction (mouse/keyboard)
 * Color support
 * Most programs written for ComputerCraft should work out-of-the-box
+* HTTP
+* Peripherals (printers, speakers, monitors)
+* Mountable drives
 
 ## What doesn't work
-* HTTP (for now, it's a bug)
-* Peripherals (printers, disk drives, speakers, monitors)
-* Networking
-* Support for mounting external folders (WIP)
+* Networking/multi-computer support
 
 ## How to use
 Just download and run the JAR file available in the releases and the terminal will automatically start.
