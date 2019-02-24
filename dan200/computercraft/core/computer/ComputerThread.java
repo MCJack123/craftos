@@ -6,8 +6,6 @@
 
 package dan200.computercraft.core.computer;
 
-import dan200.computercraft.ComputerCraft;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.WeakHashMap;
@@ -122,6 +120,7 @@ public class ComputerThread
                                 // Task ran for too long
                                 // Initiate escape plan
                                 Computer computer = task.getOwner();
+
                                 if( computer != null )
                                 {
                                     // Step 1: Soft abort

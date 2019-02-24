@@ -189,7 +189,8 @@ public class OSAPI implements ILuaAPI
             "day",
             "cancelTimer",
             "cancelAlarm",
-            "epoch"
+            "epoch",
+                "debug"
         };
     }
 
@@ -361,10 +362,7 @@ public class OSAPI implements ILuaAPI
                 int token = getInt( args, 0 );
                 synchronized( m_timers )
                 {
-                    if( m_timers.containsKey( token ) )
-                    {
-                        m_timers.remove( token );
-                    }
+                    m_timers.remove( token );
                 }
                 return null;
             }
@@ -374,10 +372,7 @@ public class OSAPI implements ILuaAPI
                 int token = getInt( args, 0 );
                 synchronized( m_alarms )
                 {
-                    if( m_alarms.containsKey( token ) )
-                    {
-                        m_alarms.remove( token );
-                    }
+                    m_alarms.remove( token );
                 }
                 return null;
             }
@@ -385,31 +380,32 @@ public class OSAPI implements ILuaAPI
             {
                 // epoch
                 String param = optString( args, 0, "ingame" );
-                switch( param )
-                {
-                    case "utc":
-                    {
+                switch( param ) {
+                    case "utc": {
                         // Get utc epoch
-                        Calendar c = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
-                        return new Object[] { getEpochForCalendar( c ) };
+                        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                        return new Object[]{getEpochForCalendar(c)};
                     }
-                    case "local":
-                    {
+                    case "local": {
                         // Get local epoch
                         Calendar c = Calendar.getInstance();
-                        return new Object[] { getEpochForCalendar( c ) };
+                        return new Object[]{getEpochForCalendar(c)};
                     }
                     case "ingame":
                         // Get in-game epoch
-                        synchronized( m_alarms )
-                        {
-                            return new Object[] {
-                                m_day * 86400000 + (int) (m_time * 3600000.0f)
+                        synchronized (m_alarms) {
+                            return new Object[]{
+                                    m_day * 86400000 + (int) (m_time * 3600000.0f)
                             };
                         }
                     default:
-                        throw new LuaException( "Unsupported operation" );
+                        throw new LuaException("Unsupported operation");
                 }
+            }
+            case 16:
+            {
+                System.out.println(getString(args, 0));
+                return null;
             }
             default:
             {

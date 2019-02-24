@@ -96,29 +96,33 @@ public class FileMount implements IWritableMount
     // IMount implementation
     
     @Override
-    public boolean exists( @Nonnull String path ) throws IOException
-    {
+    public boolean exists( @Nonnull String path ) {
         if( !created() )
         {
+            //System.out.println("Doesn't exist");
             return path.length() == 0;
         }
         else
         {
+            //System.out.println("getRealPath");
             File file = getRealPath( path );
+            //System.out.println("done getRealPath");
             return file.exists();
         }
     }
     
     @Override
-    public boolean isDirectory( @Nonnull String path ) throws IOException
-    {
+    public boolean isDirectory( @Nonnull String path ) {
         if( !created() )
         {
+            //System.out.println("Doesn't exist D");
             return path.length() == 0;
         }
         else
         {
+            //System.out.println("getRealPath D");
             File file = getRealPath( path );
+            //System.out.println("done getRealPath D");
             return file.exists() && file.isDirectory();
         }
     }
@@ -138,7 +142,10 @@ public class FileMount implements IWritableMount
             File file = getRealPath( path );
             if( file.exists() && file.isDirectory() )
             {
+                //System.out.println("Listing");
                 String[] paths = file.list();
+                //System.out.println("Listed");
+                //System.out.println(paths.length);
                 for( String subPath : paths )
                 {
                     if( new File( file, subPath ).exists() )
@@ -340,8 +347,7 @@ public class FileMount implements IWritableMount
     }
     
     @Override
-    public long getRemainingSpace() throws IOException
-    {
+    public long getRemainingSpace() {
         return Math.max( m_capacity - m_usedSpace, 0 );
     }
     
@@ -350,12 +356,13 @@ public class FileMount implements IWritableMount
         return new File( m_rootPath, path );
     }
     
-    private boolean created()
+    public boolean created()
     {
+        //System.out.println(m_rootPath.toString());
         return m_rootPath.exists();
     }
     
-    private void create() throws IOException
+    public void create() throws IOException
     {
         if( !m_rootPath.exists() )
         {

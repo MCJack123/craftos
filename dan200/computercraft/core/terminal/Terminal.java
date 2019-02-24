@@ -26,9 +26,12 @@ public class Terminal
     private TextBuffer m_textColour[];
     private TextBuffer m_backgroundColour[];
 
+    private TextBuffer m_pixelColor[];
+
     private final Palette m_palette;
 
     private boolean m_changed;
+    private boolean m_pixel_mode;
 
     public Terminal( int width, int height )
     {
@@ -41,11 +44,14 @@ public class Terminal
         m_text = new TextBuffer[ m_height ];
         m_textColour = new TextBuffer[ m_height ];
         m_backgroundColour = new TextBuffer[ m_height ];
+        m_pixelColor = new TextBuffer[m_height * 9];
         for( int i=0; i<m_height; ++i )
         {
             m_text[i] = new TextBuffer( ' ', m_width );
             m_textColour[i] = new TextBuffer( base16.charAt( m_cursorColour ), m_width );
             m_backgroundColour[i] = new TextBuffer( base16.charAt( m_cursorBackgroundColour ), m_width );
+            for (int j = 0; j < 9; j++)
+                m_pixelColor[i*9+j] = new TextBuffer((char)15, m_width*6);
         }
                 
         m_cursorX = 0;
@@ -53,6 +59,7 @@ public class Terminal
         m_cursorBlink = false;
         
         m_changed = false;
+        m_pixel_mode = false;
 
         m_palette = new Palette();
     }
@@ -253,6 +260,8 @@ public class Terminal
             m_text[ y ].fill( ' ' );
             m_textColour[ y ].fill( base16.charAt( m_cursorColour ) );
             m_backgroundColour[ y ].fill( base16.charAt( m_cursorBackgroundColour ) );
+            for (int j = 0; j < 9; j++)
+                m_pixelColor[y*9+j].fill((char)15);
         }
         m_changed = true;
     }
@@ -370,5 +379,31 @@ public class Terminal
             m_palette.readFromNBT( nbttagcompound );
         }
         m_changed = true;
+    }
+
+    public void setGraphicsMode(boolean graphicsMode) {
+        this.m_pixel_mode = graphicsMode;
+        m_changed = true;
+    }
+
+    public boolean getGraphicsMode() {
+        //System.out.println(m_pixel_mode);
+        return m_pixel_mode;
+    }
+
+    public void setPixel(int x, int y, char colour) {
+        //if (colour > 15) System.err.println("Color too high");
+        m_pixelColor[y].setChar(x, colour);
+        m_changed = true;
+    }
+
+    public char getPixel(int x, int y) {
+        return m_pixelColor[y].charAt(x);
+    }
+
+    public TextBuffer getPixelLine(int y) {
+        if (y >= 0 && y < m_height * 9)
+            return m_pixelColor[y];
+        return null;
     }
 }

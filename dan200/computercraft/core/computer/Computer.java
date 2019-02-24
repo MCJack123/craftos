@@ -644,12 +644,14 @@ public class Computer
     
     private void initLua()
     {
+        //System.out.println("Starting lua");
         // Create the lua machine
         ILuaMachine machine = new LuaJLuaMachine( this );
         
         // Add the APIs
         for(ILuaAPI api : m_apis)
         {
+            //System.out.println("Adding " + api.getNames()[0] + " API");
             machine.addAPI( api );
             api.startup();
         }
@@ -658,7 +660,9 @@ public class Computer
         InputStream biosStream;
         try
         {
+            //System.out.println("Loading BIOS");
             biosStream = m_environment.createResourceFile( "computercraft", "lua/bios.lua" );
+            //System.out.println("Loaded BIOS");
         }
         catch( Exception e )
         {
@@ -673,6 +677,7 @@ public class Computer
                 biosStream.close();
             } catch( IOException e ) {
                 // meh
+                System.out.println("biosStream close failed");
             }
             
             if( machine.isFinished() )
@@ -756,7 +761,7 @@ public class Computer
                         
                     // Init lua
                     initLua();
-                    if( m_machine == null )
+                    if( m_machine == null || m_machine.isFinished() )
                     {
                         m_terminal.reset();
                         m_terminal.write( "Error loading bios.lua" );
@@ -782,6 +787,7 @@ public class Computer
         
     private void stopComputer( final boolean reboot )
     {
+        System.out.println("Shutting down");
         synchronized( this )
         {
             if( m_state != State.Running )
@@ -887,12 +893,26 @@ public class Computer
                 {
                     if( m_state != State.Running )
                     {
+                        System.out.println("Machine is off");
                         return;
                     }
                 }
+
+                //System.out.println("Queuing event");
                 
                 synchronized( m_machine )
                 {
+                    if( m_machine.isFinished() )
+                    {
+                        m_terminal.reset();
+                        m_terminal.write( "Error running bios.lua" );
+                        m_terminal.setCursorPos( 0, 1 );
+                        m_terminal.write( "ComputerCraft may be installed incorrectly" );
+                        m_crashed = true;
+                        m_state = State.Off;
+                        //stopComputer( false );
+                        return;
+                    }
                     m_machine.handleEvent( event, arguments );
                     if( m_machine.isFinished() )
                     {

@@ -2,10 +2,8 @@ import dan200.computercraft.api.filesystem.IMount;
 import dan200.computercraft.api.filesystem.IWritableMount;
 import dan200.computercraft.core.computer.IComputerEnvironment;
 import dan200.computercraft.core.filesystem.FileMount;
-import dan200.computercraft.core.filesystem.JarMount;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 
@@ -36,13 +34,14 @@ class CraftOSEnvironment implements IComputerEnvironment {
         return new FileMount(new File(getWorldDir().getAbsolutePath() + "/" + subPath), capacity);
     }
     public IMount createResourceMount( String domain, String subPath ) {
-        //return new FileMount(new File(getClass().getResource("assets/" + domain + "/" + subPath).toString()), 0);
+        return new FileMount(new File(getClass().getResource("assets/" + domain + "/" + subPath).toString().replaceAll("file:\\\\", "").replaceAll("file:/", "")), 0);/*
         try {
             return new JarMount(new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath()), "assets/" + domain + "/" + subPath);
         } catch (IOException e) {
             System.err.println("Couldn't mount " + domain + "/" + subPath);
             return null;
         }
+        //*/
     }
     public InputStream createResourceFile( String domain, String subPath ) {
         return getClass().getResourceAsStream("assets/" + domain + "/" + subPath);

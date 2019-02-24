@@ -10,8 +10,8 @@ class TerminalWindow {
 
     static final int width = 51;
     static final int height = 19;
-    private static final int fontWidth = 6;
-    private static final int fontHeight = 9;
+    static final int fontWidth = 6;
+    static final int fontHeight = 9;
     static final int fontScale = 2;
     static final int charWidth = fontWidth * fontScale;
     static final int charHeight = fontHeight * fontScale;
@@ -88,6 +88,8 @@ class TerminalWindow {
         final char[][] screen = new char[TerminalWindow.width][TerminalWindow.height];
         // upper nybble is bg, lower nybble is fg
         final char[][] colors = new char[TerminalWindow.width][TerminalWindow.height];
+        final char[][] pixels = new char[TerminalWindow.width*TerminalWindow.fontWidth][TerminalWindow.height*TerminalWindow.fontHeight];
+        boolean isPixel = false;
         public static final long serialVersionUID = 26;
         Color[] palette;
         int blinkX = 0;
@@ -136,35 +138,67 @@ class TerminalWindow {
                 g2d.drawImage(img, x, y, this);
                 x += img.getWidth();
             }*/
-            for (int x = 0; x < TerminalWindow.width; x++) {
-                for (int y = 0; y < TerminalWindow.height; y++) {
-                    BufferedImage c = convert(screen[x][y]);
-                    g2d.setColor(palette[colors[x][y] >> 4]);
-                    g2d.setXORMode(Color.white);
-                    g2d.fillRect(x*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), y*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), TerminalWindow.charWidth, TerminalWindow.charHeight);
-                    if (x == 0) g2d.fillRect(0, y*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, TerminalWindow.charHeight);
-                    if (y == 0) g2d.fillRect(x*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), 0, TerminalWindow.charWidth, 2 * TerminalWindow.fontScale);
-                    if (x+1 == TerminalWindow.width)
-                        g2d.fillRect((x+1)*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), y*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, TerminalWindow.charHeight);
-                    if (y+1 == TerminalWindow.height)
-                        g2d.fillRect(x*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), (y+1)*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), TerminalWindow.charWidth, 2 * TerminalWindow.fontScale);
-                    if (x == 0 && y == 0)
-                        g2d.fillRect(0, 0, 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
-                    if (x == 0 && y+1 == TerminalWindow.height)
-                        g2d.fillRect(0, (y+1)*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
-                    if (x+1 == TerminalWindow.width && y == 0)
-                        g2d.fillRect((x+1)*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), 0, 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
-                    if (x+1 == TerminalWindow.width && y+1 == TerminalWindow.height)
-                        g2d.fillRect((x+1)*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), (y+1)*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
-                    g2d.setXORMode(invertColor(palette[colors[x][y] & 0x0F], palette[colors[x][y] >> 4]));
-                    g2d.setColor(palette[0]);
-                    g2d.drawImage(c, x*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), y*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), this);
-                    g2d.setXORMode(invertColor(palette[0], palette[colors[x][y] >> 4]));
-                    g2d.setColor(Color.white);
-                    if (blink) {
-                        g2d.drawImage(convert('_'), blinkX*TerminalWindow.charWidth+(2 * TerminalWindow.fontScale), blinkY*TerminalWindow.charHeight+(2 * TerminalWindow.fontScale), this);
+            if (isPixel) {
+                g2d.setXORMode(Color.white);
+                g2d.setColor(palette[15]);
+                g2d.fillRect(0, 0, (width+1)*fontWidth*fontScale, (height+1)*fontHeight*fontScale);
+                g2d.setXORMode(palette[15]);
+                for (int x = 0; x < TerminalWindow.width * TerminalWindow.fontWidth * fontScale; x+=fontScale) {
+                    for (int y = 0; y < TerminalWindow.height * TerminalWindow.fontHeight * fontScale; y+=fontScale) {
+                        char c = pixels[x/fontScale][y/fontScale];
+                        g2d.setColor(palette[c]);
+                        g2d.fillRect(x + (2 * TerminalWindow.fontScale), y + (2 * TerminalWindow.fontScale), TerminalWindow.fontScale, TerminalWindow.fontScale);
+                        /*if (x == 0)
+                            g2d.fillRect(0, y + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, TerminalWindow.fontScale);
+                        if (y == 0)
+                            g2d.fillRect(x + (2 * TerminalWindow.fontScale), 0, TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                        if (x + fontScale == TerminalWindow.width * TerminalWindow.fontWidth * fontScale)
+                            g2d.fillRect((x + fontScale) + (2 * TerminalWindow.fontScale), y + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, TerminalWindow.fontScale);
+                        if (y + fontScale == TerminalWindow.height * TerminalWindow.fontHeight * fontScale)
+                            g2d.fillRect(x + (2 * TerminalWindow.fontScale), (y + fontScale) + (2 * TerminalWindow.fontScale), TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                        if (x == 0 && y == 0)
+                            g2d.fillRect(0, 0, 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                        if (x == 0 && y + fontScale == TerminalWindow.height * TerminalWindow.fontHeight * fontScale)
+                            g2d.fillRect(0, (y + fontScale) + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                        if (x + fontScale == TerminalWindow.width * TerminalWindow.fontWidth * fontScale && y == 0)
+                            g2d.fillRect((x + fontScale) + (2 * TerminalWindow.fontScale), 0, 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                        if (x + fontScale == TerminalWindow.width * TerminalWindow.fontWidth * fontScale && y + fontScale == TerminalWindow.height * fontScale * TerminalWindow.fontHeight)
+                            g2d.fillRect((x + fontScale) + (2 * TerminalWindow.fontScale), (y + fontScale) + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);*/
                     }
-                    g2d.setXORMode(Color.white);
+                }
+            } else {
+                for (int x = 0; x < TerminalWindow.width; x++) {
+                    for (int y = 0; y < TerminalWindow.height; y++) {
+                        BufferedImage c = convert(screen[x][y]);
+                        g2d.setColor(palette[colors[x][y] >> 4]);
+                        g2d.setXORMode(Color.white);
+                        g2d.fillRect(x * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), y * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), TerminalWindow.charWidth, TerminalWindow.charHeight);
+                        if (x == 0)
+                            g2d.fillRect(0, y * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, TerminalWindow.charHeight);
+                        if (y == 0)
+                            g2d.fillRect(x * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), 0, TerminalWindow.charWidth, 2 * TerminalWindow.fontScale);
+                        if (x + 1 == TerminalWindow.width)
+                            g2d.fillRect((x + 1) * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), y * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, TerminalWindow.charHeight);
+                        if (y + 1 == TerminalWindow.height)
+                            g2d.fillRect(x * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), (y + 1) * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), TerminalWindow.charWidth, 2 * TerminalWindow.fontScale);
+                        if (x == 0 && y == 0)
+                            g2d.fillRect(0, 0, 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                        if (x == 0 && y + 1 == TerminalWindow.height)
+                            g2d.fillRect(0, (y + 1) * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                        if (x + 1 == TerminalWindow.width && y == 0)
+                            g2d.fillRect((x + 1) * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), 0, 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                        if (x + 1 == TerminalWindow.width && y + 1 == TerminalWindow.height)
+                            g2d.fillRect((x + 1) * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), (y + 1) * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                        g2d.setXORMode(invertColor(palette[colors[x][y] & 0x0F], palette[colors[x][y] >> 4]));
+                        g2d.setColor(palette[0]);
+                        g2d.drawImage(c, x * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), y * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), this);
+                        g2d.setXORMode(invertColor(palette[0], palette[colors[x][y] >> 4]));
+                        g2d.setColor(Color.white);
+                        if (blink) {
+                            g2d.drawImage(convert('_'), blinkX * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), blinkY * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), this);
+                        }
+                        g2d.setXORMode(Color.white);
+                    }
                 }
             }
             g2d.dispose();

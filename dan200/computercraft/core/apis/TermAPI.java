@@ -78,7 +78,11 @@ public class TermAPI implements ILuaAPI
             "setPaletteColour",
             "setPaletteColor",
             "getPaletteColour",
-            "getPaletteColor"
+            "getPaletteColor",
+                "setGraphicsMode",
+                "getGraphicsMode",
+                "setPixel",
+                "getPixel",
         };
     }
     
@@ -97,8 +101,7 @@ public class TermAPI implements ILuaAPI
         return colour;
     }
 
-    public static Object[] encodeColour( int colour ) throws LuaException
-    {
+    public static Object[] encodeColour( int colour ) {
         return new Object[] {
             1 << colour
         };
@@ -297,6 +300,53 @@ public class TermAPI implements ILuaAPI
                     }
                 }
                 return null;
+            }
+            case 23:
+            {
+                // setGraphicsMode
+                synchronized (m_terminal) {
+                    m_terminal.clear();
+                    m_terminal.setGraphicsMode(getBoolean(args, 0));
+                    m_terminal.setCursorPos(0, 0);
+                }
+                return null;
+            }
+            case 24:
+            {
+                // getGraphicsMode
+                return new Object[] { m_terminal.getGraphicsMode() };
+            }
+            case 25:
+            {
+                // setPixel
+                synchronized (m_terminal) {
+                    int colour = getInt( args, 2 );
+                    if( colour <= 0 )
+                    {
+                        throw new LuaException( "Colour out of range" );
+                    }
+                    colour = getHighestBit( colour ) - 1;
+                    if( colour < 0 || colour > 15 )
+                    {
+                        throw new LuaException( "Colour out of range" );
+                    }
+                    m_terminal.setPixel(getInt(args, 0), getInt(args, 1), (char)colour);
+                }
+                return null;
+            }
+            case 26:
+            {
+                // getPixel
+                synchronized (m_terminal) {
+                    return encodeColour(m_terminal.getPixel(getInt(args, 0), getInt(args, 1)));
+                }
+            }
+            case 27:
+            case 28:
+            case 29:
+            case 30:
+            {
+                throw new LuaException("Attempted to call non-overridden terminal function");
             }
             default:
             {

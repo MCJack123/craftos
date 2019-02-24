@@ -93,7 +93,9 @@ public class FSAPI implements ILuaAPI
                 // list
                 String path = getString( args, 0 );
                 try {
+                    //System.out.println("Listing directory");
                     String[] results = m_fileSystem.list( path );
+                    //System.out.println("Listed directory");
                     Map<Object,Object> table = new HashMap<>();
                     for(int i=0; i<results.length; ++i ) {
                         table.put( i+1, results[i] );

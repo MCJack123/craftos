@@ -65,8 +65,7 @@ public class FileSystem
             }
         }
         
-        public boolean isReadOnly( String path ) throws FileSystemException
-        {
+        public boolean isReadOnly( String path ) {
             return (m_writableMount == null);
         }
                 
@@ -100,11 +99,15 @@ public class FileSystem
         
         public void list( String path, List<String> contents ) throws FileSystemException
         {
+            //System.out.println("toLocal");
             path = toLocal( path );
+            //System.out.println("done toLocal");
             try
             {
+                //System.out.println("Starting if");
                 if( m_mount.exists( path ) && m_mount.isDirectory( path ) )
                 {
+                    //System.out.println("FS Listing");
                     m_mount.list( path, contents );
                 }
                 else
@@ -347,23 +350,16 @@ public class FileSystem
         mount( new MountWrapper( label, location, mount ) );
     }
     
-    private synchronized void mount( MountWrapper wrapper ) throws FileSystemException
-    {
+    private synchronized void mount( MountWrapper wrapper ) {
         String location = wrapper.getLocation();
-        if( m_mounts.containsKey( location ) )
-        {
-            m_mounts.remove( location );
-        }
+        m_mounts.remove( location );
         m_mounts.put( location, wrapper );
     }
         
     public synchronized void unmount( String path )
     {
         path = sanitizePath( path );
-        if( m_mounts.containsKey( path ) )
-        {
-            m_mounts.remove( path );
-        }
+        m_mounts.remove( path );
     }
         
     public synchronized String combine( String path, String childPath )
@@ -804,7 +800,7 @@ public class FileSystem
         }
         
         // Recombine the output parts into a new string
-        StringBuilder result = new StringBuilder( "" );
+        StringBuilder result = new StringBuilder();
         Iterator<String> it = outputParts.iterator();
         while( it.hasNext() ) {
             String part = it.next();

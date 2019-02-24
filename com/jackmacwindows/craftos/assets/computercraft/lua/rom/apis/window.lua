@@ -182,8 +182,23 @@ function create( parent, nX, nY, nWidth, nHeight, bStartVisible )
         end
     end
 
+    local function deepcopy(orig)
+        local orig_type = type(orig)
+        local copy
+        if orig_type == 'table' then
+            copy = {}
+            for orig_key, orig_value in next, orig, nil do
+                copy[deepcopy(orig_key)] = deepcopy(orig_value)
+            end
+            setmetatable(copy, deepcopy(getmetatable(orig)))
+        else -- number, string, boolean, etc
+            copy = orig
+        end
+        return copy
+    end
+
     -- Terminal implementation
-    local window = {}
+    local window = deepcopy(parent)
 
     function window.write( sText )
         sText = tostring( sText )
@@ -466,7 +481,113 @@ function create( parent, nX, nY, nWidth, nHeight, bStartVisible )
             window.redraw()
         end
     end
+--[[
+    window._swChar = function(x, y, b, f, c)
+        if not term.getGraphicsMode() then error("cannot use software fonts in text mode", 2) end
+        local cv = term.currentFont[string.byte(c)]
+        for py = 0, term.currentFont.height-1 do
+            for px = 0, term.currentFont.width do
+                --os.debug(tostring(f))
+                if bit.band(cv[py], bit.blshift(1, px)) then term.setPixel(x + px, y + py, f)
+                else term.setPixel(x + px, y + py, b) end
+            end
+        end
+    end
 
+    window._swWrite = function(text)
+        if not term.getGraphicsMode() then error("cannot use software fonts in text mode", 2) end
+        local w, h = term.getSize()
+        if term.currentFont.yPos > h * 9 then return end
+        for s in string.gmatch(text, ".") do
+            if term.currentFont.xPos + term.currentFont.width > w * 6 then
+                term.currentFont.xPos = 0
+                term.currentFont.yPos = term.currentFont.yPos + term.currentFont.height
+                if term.currentFont.yPos > h * 9 then return end
+            end
+            term._swChar(term.currentFont.xPos, term.currentFont.yPos, term.getBackgroundColor(), term.getTextColor(), s)
+        end
+    end
+
+    window._swBlit = function(text, bg, fg)
+        if not term.getGraphicsMode() then error("cannot use software fonts in text mode", 2) end
+        local w, h = term.getSize()
+        if term.currentFont.yPos > h * 9 then return end
+        for i = 1, string.len(text) + 1 do
+            if term.currentFont.xPos + term.currentFont.width > w * 6 then
+                term.currentFont.xPos = 0
+                term.currentFont.yPos = term.currentFont.yPos + term.currentFont.height
+                if term.currentFont.yPos > h * 9 then return end
+            end
+            local pbg = bit.blshift(1, string.find("0123456789abcdef", bg[i]) - 1)
+            local pfg = bit.blshift(1, string.find("0123456789abcdef", fg[i]) - 1)
+            term._swChar(term.currentFont.xPos, term.currentFont.yPos, pbg, pfg, text[i])
+        end
+    end
+
+    window._swSetCursorPos = function(x, y)
+        if not term.getGraphicsMode() then error("cannot use software fonts in text mode", 2) end
+        term.currentFont.xPos = x
+        term.currentFont.yPos = y
+    end
+
+    window._swGetCursorPos = function()
+        if not term.getGraphicsMode() then error("cannot use software fonts in text mode", 2) end
+        return term.currentFont.xPos, term.currentFont.yPos
+    end
+
+    window.setSoftwareFont = function(font)
+        if not term.getGraphicsMode() then error("cannot use software fonts in text mode", 2) end
+        if type(font.width) ~= "number" or type(font.height) ~= "number" or font.width == 0 or font.height == 0 then
+            error("invalid font (missing size)", 2)
+        end
+        for i = 0,256 do if type(font[i]) ~= "table" then error("invalid font (bad character)", 2) end end
+        if font.xPos == nil then font.xPos = 0 end
+        if font.yPos == nil then font.yPos = 0 end
+        term.currentFont = font
+    end
+
+    window.getSoftwareFont = function()
+        if not term.getGraphicsMode() then error("cannot use software fonts in text mode", 2) end
+        return term.currentFont
+    end
+
+    window.getNativeFont = function()
+        if not term.getGraphicsMode() then error("cannot use software fonts in text mode", 2) end
+        return term.defaultFont
+    end
+
+    window.write = function(text)
+        if term.getGraphicsMode() then
+            window._swWrite(text)
+        else
+            window._hwWrite(text)
+        end
+    end
+
+    window.blit = function(text, bg, fg)
+        if term.getGraphicsMode() then
+            window._swBlit(text, bg, fg)
+        else
+            window._hwBlit(text, bg, fg)
+        end
+    end
+
+    window.setCursorPos = function(x, y)
+        if term.getGraphicsMode() then
+            window._swSetCursorPos(x, y)
+        else
+            window._hwSetCursorPos(x, y)
+        end
+    end
+
+    window.getCursorPos = function()
+        if term.getGraphicsMode() then
+            return window._swGetCursorPos()
+        else
+            return window._hwGetCursorPos()
+        end
+    end
+]]
     if bVisible then
         window.redraw()
     end

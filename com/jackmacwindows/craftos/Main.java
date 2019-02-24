@@ -111,7 +111,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                     changed = true;
                     //System.out.println("changed");
                     if (comp_term.getPalette() != term.p) term.setPalette(comp_term.getPalette());
-                    char[] text, bg, fg;
+                    char[] text, bg, fg, pixels;
                     for (int y = 0; y < TerminalWindow.height; y++) {
                         text = comp_term.getLine(y).toString().toCharArray();
                         bg = comp_term.getBackgroundColourLine(y).toString().toCharArray();
@@ -129,6 +129,14 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                             }
                         }
                     }
+                    for (int y = 0; y < TerminalWindow.height * TerminalWindow.fontHeight; y++) {
+                        pixels = comp_term.getPixelLine(y).toString().toCharArray();
+                        for (int x = 0; x < pixels.length && x < TerminalWindow.width * TerminalWindow.fontWidth; x++) {
+                            term.panel.pixels[x][y] = pixels[x];
+                        }
+                    }
+                    term.panel.isPixel = comp_term.getGraphicsMode();
+                    //System.out.println(term.panel.isPixel);
                     //System.out.println("repainting");
                     comp_term.clearChanged();
                 }

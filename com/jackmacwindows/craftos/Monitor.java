@@ -45,7 +45,7 @@ public class Monitor implements IMonitorProvider {
         if (terminal.getChanged()) {
             changed = true;
             System.out.println("changed");
-            char[] text, bg, fg;
+            char[] text, bg, fg, pixels;
             for (int y = 0; y < TerminalWindow.height; y++) {
                 text = terminal.getLine(y).toString().toCharArray();
                 bg = terminal.getBackgroundColourLine(y).toString().toCharArray();
@@ -63,6 +63,13 @@ public class Monitor implements IMonitorProvider {
                     }
                 }
             }
+            for (int y = 0; y < TerminalWindow.height * TerminalWindow.fontHeight; y++) {
+                pixels = terminal.getPixelLine(y).toString().toCharArray();
+                for (int x = 0; x < pixels.length && x < TerminalWindow.width * TerminalWindow.fontWidth; x++) {
+                    window.panel.pixels[x][y] = pixels[x];
+                }
+            }
+            window.panel.isPixel = terminal.getGraphicsMode();
             //System.out.println("repainting");
             terminal.clearChanged();
         }
