@@ -157,13 +157,14 @@ mainTerm.loadFontFile = function()
     if fs.exists("rom/fonts/term_font.ccfnt") then
         local font_file = fs.open("rom/fonts/term_font.ccfnt", "r")
         if font_file ~= nil then
-            os.debug("Got font")
+            --os.debug("Got font")
             local contents = font_file.readAll()
             --os.debug(contents)
             mainTerm.defaultFont = textutils.unserialize(contents)
             font_file.close()
-        end
-    end
+            if mainTerm.defaultFont == nil then error("Font file is in incorrect format") end
+        else error("Could not open font file") end
+    else error("Could not find font file") end
     mainTerm.currentFont = mainTerm.defaultFont
 end
 

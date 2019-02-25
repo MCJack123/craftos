@@ -1,7 +1,11 @@
 
 local function drawPixelInternal( xPos, yPos )
-    term.setCursorPos( xPos, yPos )
-    term.write(" ")
+    if term.getGraphicsMode() then
+        term.setPixel(xPos, yPos, term.getBackgroundColor())
+    else
+        term.setCursorPos( xPos, yPos )
+        term.write(" ")
+    end
 end
 
 local tColourLookup = {}

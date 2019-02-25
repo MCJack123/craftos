@@ -28,7 +28,11 @@ public class Computer
     public static final String[] s_sideNames = new String[] {
         "bottom", "top", "back", "front", "right", "left",
     };
-    
+
+    public void setCrashed() {
+        m_crashed = true;
+    }
+
     private enum State
     {
         Off,
@@ -256,6 +260,11 @@ public class Computer
     public IAPIEnvironment getAPIEnvironment()
     {
         return m_apiEnvironment;
+    }
+
+    public Terminal getTerminal()
+    {
+        return m_terminal;
     }
     
     public void turnOn()
@@ -837,7 +846,7 @@ public class Computer
                     {
                         synchronized( m_terminal )
                         {
-                            m_terminal.reset();
+                            if (!m_crashed) m_terminal.reset();
                         }
 
                         synchronized( m_machine )
@@ -916,9 +925,10 @@ public class Computer
                     m_machine.handleEvent( event, arguments );
                     if( m_machine.isFinished() )
                     {
-                        m_terminal.reset();
+                        if (m_terminal.getCursorY() != 0) m_terminal.reset();
+                        else m_terminal.setCursorPos(0, 1);
                         m_terminal.write( "Error resuming bios.lua" );
-                        m_terminal.setCursorPos( 0, 1 );
+                        m_terminal.setCursorPos( 0, m_terminal.getCursorY() + 1 );
                         m_terminal.write( "ComputerCraft may be installed incorrectly" );
                         m_crashed = true;
                         stopComputer( false );

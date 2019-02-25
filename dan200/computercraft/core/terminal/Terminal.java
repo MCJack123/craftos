@@ -71,6 +71,7 @@ public class Terminal
         m_cursorX = 0;
         m_cursorY = 0;
         m_cursorBlink = false;
+        m_pixel_mode = false;
         clear();
         m_changed = true;
         m_palette.resetColours();

@@ -1,24 +1,24 @@
-os.debug("Loaded shell")
+--os.debug("Loaded shell")
 local multishell = multishell
 local parentShell = shell
-os.debug("Getting parent")
+--os.debug("Getting parent")
 local parentTerm = term.current()
-os.debug("Checking multishell")
+--os.debug("Checking multishell")
 if multishell then
-    os.debug("Getting current")
+   -- os.debug("Getting current")
     local c = multishell.getCurrent()
-    os.debug("Got current")
+    --os.debug("Got current")
     multishell.setTitle( c, "shell" )
-    os.debug("Set title")
+    --os.debug("Set title")
 end
-os.debug("After multishell")
+--os.debug("After multishell")
 local bExit = false
 local sDir = (parentShell and parentShell.dir()) or ""
 local sPath = (parentShell and parentShell.path()) or ".:/rom/programs"
 local tAliases = (parentShell and parentShell.aliases()) or {}
 local tCompletionInfo = (parentShell and parentShell.getCompletionInfo()) or {}
 local tProgramStack = {}
-os.debug("Creating functions")
+--os.debug("Creating functions")
 local shell = {}
 local function createShellEnv( sDir )
     local tEnv = {}
@@ -474,7 +474,7 @@ if multishell then
     end
 end
 
-os.debug("Starting shell")
+--os.debug("Starting shell")
 
 local tArgs = { ... }
 if #tArgs > 0 then
@@ -506,7 +506,7 @@ else
         write( shell.dir() .. "> " )
         term.setTextColour( textColour )
 
-        os.debug("Reading")
+        --os.debug("Reading")
         local sLine
         if settings.get( "shell.autocomplete" ) then
             sLine = read( nil, tCommandHistory, shell.complete )
@@ -517,5 +517,6 @@ else
             table.insert( tCommandHistory, sLine )
         end
         shell.run( sLine )
+        if term.getGraphicsMode() then term.setGraphicsMode(false) end
     end
 end

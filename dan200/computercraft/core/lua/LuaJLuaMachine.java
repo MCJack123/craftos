@@ -247,7 +247,10 @@ public class LuaJLuaMachine implements ILuaMachine
         }
         catch( LuaError e )
         {
-            System.err.println("Got error: " + e.getMessage());
+            m_computer.getTerminal().reset();
+            m_computer.getTerminal().setTextColour(14);
+            m_computer.getTerminal().write(e.getMessage());
+            m_computer.setCrashed();
             ((LuaThread)m_mainRoutine).abandon();
             m_mainRoutine = null;
         }
