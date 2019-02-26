@@ -1,3 +1,5 @@
+if term.getGraphicsMode == nil then error("This requires CraftOS-PC v1.2 or later.") end
+
 function term.setHex(color, hex)
     term.setPaletteColor(color, bit.brshift(bit.band(hex, 0xFF0000), 16) / 256, bit.brshift(bit.band(hex, 0x00FF00), 8) / 256, bit.band(hex, 0x0000FF) / 256)
 end
@@ -27,7 +29,6 @@ error = function(...)
     origerror(...)
 end
 
-if term.getGraphicsMode == nil then error("This requires CraftOS-PC v1.2 or later.") end
 local args = { ... }
 if #args < 1 then error("Usage: display_image <file.ccbmp>") end
 

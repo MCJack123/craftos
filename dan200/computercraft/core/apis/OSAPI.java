@@ -189,8 +189,8 @@ public class OSAPI implements ILuaAPI
             "day",
             "cancelTimer",
             "cancelAlarm",
-            "epoch",
-                "debug"
+            "epoch"
+                //"debug"
         };
     }
 

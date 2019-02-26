@@ -96,7 +96,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
             if (!setMounter && computer.getFileSystem() != null) {
                 mounter.setFileSystem(computer.getFileSystem());
                 setMounter = true;
-                System.out.println("Set mounter");
+                //System.out.println("Set mounter");
             }
             if ((new Date()).getTime() - lastTick >= 1000 / ComputerCraft.config.clockSpeed) {
                 lastTick = (new Date()).getTime();
@@ -172,15 +172,31 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     }
 
     private int convertX(int x) {
-        if (x < 2 * TerminalWindow.fontScale) x = 2 * TerminalWindow.fontScale;
-        else if (x > TerminalWindow.charWidth * TerminalWindow.width + 2 * TerminalWindow.fontScale) x = TerminalWindow.charWidth * TerminalWindow.width + 2 * TerminalWindow.fontScale;
-        return (x-2 * TerminalWindow.fontScale) / TerminalWindow.charWidth + 1;
+        if (comp_term.getGraphicsMode()) {
+            if (x < 2 * TerminalWindow.fontScale) return 0;
+            else if (x >= TerminalWindow.charWidth * TerminalWindow.width + 2 * TerminalWindow.fontScale)
+                return TerminalWindow.fontWidth * TerminalWindow.width - 1;
+            return (x - (2 * TerminalWindow.fontScale)) / TerminalWindow.fontScale;
+        } else {
+            if (x < 2 * TerminalWindow.fontScale) x = 2 * TerminalWindow.fontScale;
+            else if (x > TerminalWindow.charWidth * TerminalWindow.width + 2 * TerminalWindow.fontScale)
+                x = TerminalWindow.charWidth * TerminalWindow.width + 2 * TerminalWindow.fontScale;
+            return (x - 2 * TerminalWindow.fontScale) / TerminalWindow.charWidth + 1;
+        }
     }
 
     private int convertY(int x) {
-        if (x < 2 * TerminalWindow.fontScale) x = 2 * TerminalWindow.fontScale;
-        else if (x > TerminalWindow.charHeight * TerminalWindow.height + 2 * TerminalWindow.fontScale) x = TerminalWindow.charHeight * TerminalWindow.height + 2 * TerminalWindow.fontScale;
-        return (x-2 * TerminalWindow.fontScale) / TerminalWindow.charHeight + 1;
+        if (comp_term.getGraphicsMode()) {
+            if (x < 2 * TerminalWindow.fontScale) return 0;
+            else if (x >= TerminalWindow.charHeight * TerminalWindow.height + 2 * TerminalWindow.fontScale)
+                return TerminalWindow.fontHeight * TerminalWindow.height - 1;
+            return (x - (2 * TerminalWindow.fontScale)) / TerminalWindow.fontScale;
+        } else {
+            if (x < 2 * TerminalWindow.fontScale) x = 2 * TerminalWindow.fontScale;
+            else if (x > TerminalWindow.charHeight * TerminalWindow.height + 2 * TerminalWindow.fontScale)
+                x = TerminalWindow.charHeight * TerminalWindow.height + 2 * TerminalWindow.fontScale;
+            return (x - 2 * TerminalWindow.fontScale) / TerminalWindow.charHeight + 1;
+        }
     }
 
     @Override
@@ -205,7 +221,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
 
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
-        System.out.println(mouseEvent.paramString());
+        //System.out.println(mouseEvent.paramString());
         if (lastDragX != convertX(mouseEvent.getX()) || lastDragY != convertY(mouseEvent.getY())) {
             computer.queueEvent("mouse_drag", new Object[]{lastDragButton, convertX(mouseEvent.getX()), convertY(mouseEvent.getY())});
             lastDragX = convertX(mouseEvent.getX());

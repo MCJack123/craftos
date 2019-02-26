@@ -1,3 +1,5 @@
+if term.getGraphicsMode == nil then error("This requires CraftOS-PC v1.2 or later.") end
+
 origerror = error
 error = function(text, level, ...)
     term.setGraphicsMode(false)

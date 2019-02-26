@@ -307,7 +307,7 @@ public class TermAPI implements ILuaAPI
                 synchronized (m_terminal) {
                     m_terminal.clear();
                     m_terminal.setGraphicsMode(getBoolean(args, 0));
-                    m_terminal.setCursorPos(0, 0);
+                    m_terminal.setCursorPos(1, 1);
                 }
                 return null;
             }

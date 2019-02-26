@@ -1,3 +1,5 @@
+if term.getGraphicsMode == nil then error("This requires CraftOS-PC v1.2 or later.") end
+
 local _swChar = function(x, y, b, f, c)
     if not term.getGraphicsMode() then error("cannot use software fonts in text mode", 2) end
     local cv = term.native().currentFont[string.byte(c)]
@@ -54,4 +56,4 @@ getCursorPos = function()
     return term.native().currentFont.xPos, term.native().currentFont.yPos
 end
 
-term.loadFontFile()
+if term.loadFontFile ~= nil then term.loadFontFile() end

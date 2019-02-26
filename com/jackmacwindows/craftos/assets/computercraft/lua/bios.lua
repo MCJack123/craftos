@@ -1,4 +1,3 @@
-os.debug("Starting BIOS")
 local nativegetfenv = getfenv
 if _VERSION == "Lua 5.1" then
     -- If we're on Lua 5.1, install parts of the Lua 5.2/5.3 API so that programs can be written against it
@@ -203,67 +202,6 @@ function sleep( nTime )
     repeat
         local sEvent, param = os.pullEvent( "timer" )
     until param == timer
-end
-
-local junOff = 31 + 28 + 31 + 30 + 31 + 30
-function dayToString(day)
-    if day <= 31 then return "Jan " .. day
-    elseif day > 31 and day <= 31 + 28 then return "Feb " .. day - 31
-    elseif day > 31 + 28 and day <= 31 + 28 + 31 then return "Mar " .. day - 31 - 28
-    elseif day > 31 + 28 + 31 and day <= 31 + 28 + 31 + 30 then return "Apr " .. day - 31 - 28 - 31
-    elseif day > 31 + 28 + 31 + 30 and day <= 31 + 28 + 31 + 30 + 31 then return "May " .. day - 31 - 28 - 31 - 30
-    elseif day > 31 + 28 + 31 + 30 + 31 and day <= junOff then return "Jun " .. day - 31 - 28 - 31 - 30 - 31
-    elseif day > junOff and day <= junOff + 31 then return "Jul " .. day - junOff
-    elseif day > junOff + 31 and day <= junOff + 31 + 31 then return "Aug " .. day - junOff - 31
-    elseif day > junOff + 31 + 31 and day <= junOff + 31 + 31 + 30 then return "Sep " .. day - junOff - 31 - 31
-    elseif day > junOff + 31 + 31 + 30 and day <= junOff + 31 + 31 + 30 + 31 then return "Oct " .. day - junOff - 31 - 31 - 30
-    elseif day > junOff + 31 + 31 + 30 + 31 and day <= junOff + 31 + 31 + 30 + 31 + 30 then return "Nov " .. day - junOff - 31 - 31 - 30 - 31
-    else return "Dec " .. day - junOff - 31 - 31 - 30 - 31 - 30 end
-end
-
-function getLine(filename, lineno)
-    local i = 1
-    local retval = ""
-    if type(filename) ~= "string" or (not fs.exists(filename)) then return "" end
-    for line in io.lines(filename) do
-        if i == lineno then retval = line end
-        i=i+1
-    end
-    return retval
-end
-
-function fmtTime(t, h)
-    if textutils ~= nil and textutils.formatTime ~= nil then
-        return textutils.formatTime(t, h)
-    else
-        return tostring(t)
-    end
-end
-
-function traceback(errortext, class, lineno)
-    local i = 4
-    local statuse, erre = nil
-    os.debug(dayToString(os.day()) .. " " .. fmtTime(os.time(), false) .. " [Traceback] ")
-    if class ~= nil then
-        os.debug(class)
-        if lineno ~= nil then os.debug("[" .. lineno .. "]") end
-        os.debug(": ")
-    end
-    os.debug(errortext)
-    while erre ~= "bios.lua:610: " do
-        statuse, erre = pcall(function() error("", i) end)
-        if erre == "bios.lua:610: " then break
-        elseif erre == "" then break end
-        local filename = string.sub(erre, 1, string.find(erre, ":")-1)
-        if string.find(erre, ":") == nil or string.find(erre, ":", string.find(erre, ":")+1) == nil then
-            os.debug("    at " .. erre)
-        else
-            local lineno = tonumber(string.sub(erre, string.find(erre, ":")+1, string.find(erre, ":", string.find(erre, ":")+1)-1))
-            --if i == 4 then lineno=lineno-1 end
-            os.debug("    at " .. erre .. getLine(filename, lineno))
-        end
-        i=i+1
-    end
 end
 
 function write( sText )
