@@ -101,10 +101,17 @@ local colormap = {
     colors.gray
 }
 
-for y = 0, 162, 2 * g do
-    b = (81 - y) / 164
-    for x = 0, 302, 2 * g do
-        a = (x - 151) / 164
+local width, height = term.getSize();
+width = width * 6
+height = height * 9
+
+_G.raycast_width = width
+_G.raycast_height = height
+
+for y = 0, (height - 2), 2 * g do
+    b = ((height / 2) - y) / height
+    for x = 0, (width - 2), 2 * g do
+        a = (x - (width / 2)) / height
 
         e = a^2 + b^2 + 1
         f = 2*b - 12
@@ -171,12 +178,15 @@ for y = 0, 162, 2 * g do
 
         if y > 110 and (c == colors.red or c == colors.blue) then c = colors.black end
 
-        term.setPixel(304 - x, 164 - y, c)
-        term.setPixel(304 - x, 164 - (y + 1), l)
-        term.setPixel(304 - (x + 1), 164 - y, m)
-        term.setPixel(304 - (x + 1), 164 - (y + 1), c)
+        term.setPixel(width - x, height - y, c)
+        term.setPixel(width - x, height - (y + 1), l)
+        term.setPixel(width - (x + 1), height - y, m)
+        term.setPixel(width - (x + 1), height - (y + 1), c)
     end
 end
 
 os.pullEvent("char")
 term.setGraphicsMode(false)
+os.pullEvent("char")
+print(width)
+print(height)

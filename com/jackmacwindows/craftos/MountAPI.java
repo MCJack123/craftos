@@ -56,7 +56,7 @@ public class MountAPI implements ILuaAPI {
 
     @Nullable
     @Override
-    public Object[] callMethod(@Nonnull ILuaContext context, int method, @Nonnull Object[] arguments) throws LuaException, InterruptedException {
+    public Object[] callMethod(@Nonnull ILuaContext context, int method, @Nonnull Object[] arguments) throws LuaException {
         if (fs == null) {
             throw new LuaException("File system not initialized");
         }
@@ -77,7 +77,7 @@ public class MountAPI implements ILuaAPI {
                     IWritableMount mount;
                     try {
                         f = new File((String)arguments[1]);
-                        mount = new FileMount(f, 0);
+                        mount = new FileMount(f, 100000000);
                         //String s1 = (String)arguments[0];
                         //String s2 = (String)arguments[1];
                         //System.out.printf("%s %s\n", s1, s2);

@@ -5,9 +5,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Date;
 
-public class Monitor implements IMonitorProvider {
+public class Monitor implements IMonitorProvider, ResizeListener {
 
-    private TerminalWindow window = new TerminalWindow();
+    private TerminalWindow window = new TerminalWindow(this);
     private Terminal terminal = new Terminal(TerminalWindow.width, TerminalWindow.height);
     private long lastBlink = 0;
 
@@ -80,5 +80,11 @@ public class Monitor implements IMonitorProvider {
         } else if (!terminal.getCursorBlink()) window.panel.blink = false;
         if (changed) {
             window.panel.repaint(); System.gc(); Runtime.getRuntime().gc();}
+    }
+
+    @Override
+    public void didResizeWindow(int width, int height) {
+        terminal.m_width = width;
+        terminal.m_height = height;
     }
 }

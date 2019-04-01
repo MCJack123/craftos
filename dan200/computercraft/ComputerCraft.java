@@ -49,8 +49,8 @@ public class ComputerCraft
     public static final int pocketComputerGUIID = 106;
 
     // Configuration options
-    private static final String[] DEFAULT_HTTP_WHITELIST = new String[] { "*" };
-    private static final String[] DEFAULT_HTTP_BLACKLIST = new String[] {
+    public static final String[] DEFAULT_HTTP_WHITELIST = new String[] { "*" };
+    public static final String[] DEFAULT_HTTP_BLACKLIST = new String[] {
         "127.0.0.0/8",
         "10.0.0.0/8",
         "172.16.0.0/12",
@@ -213,6 +213,15 @@ public class ComputerCraft
     }
 
     public static void syncConfig() {
+        http_enable = config.http_enable;
+        http_whitelist = new AddressPredicate(config.http_whitelist);
+        http_blacklist = new AddressPredicate(config.http_blacklist);
+        disable_lua51_features = config.disable_lua51_features;
+        default_computer_settings = config.default_computer_settings;
+        logPeripheralErrors = config.logPeripheralErrors;
+
+        computerSpaceLimit = config.computerSpaceLimit;
+        maximumFilesOpen = config.maximumFilesOpen;
         config.serialize(getWorldDir().toString() + "/config.ser");
     }
 

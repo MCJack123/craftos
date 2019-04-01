@@ -330,7 +330,11 @@ public class TermAPI implements ILuaAPI
                     {
                         throw new LuaException( "Colour out of range" );
                     }
-                    m_terminal.setPixel(getInt(args, 0), getInt(args, 1), (char)colour);
+                    int x = getInt(args, 0);
+                    int y = getInt(args, 1);
+                    if (x >= m_terminal.m_width * 6 || y >= m_terminal.m_height * 9 || x < 0 || y < 0)
+                        throw new LuaException("Position " + x + ", " + y + " out of bounds");
+                    m_terminal.setPixel(x, y, (char)colour);
                 }
                 return null;
             }

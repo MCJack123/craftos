@@ -3,13 +3,15 @@ import dan200.computercraft.shared.util.Palette;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 class TerminalWindow {
 
-    static final int width = 51;
-    static final int height = 19;
+    static int width = 51;
+    static int height = 19;
     static final int fontWidth = 6;
     static final int fontHeight = 9;
     static final int fontScale = 2;
@@ -20,18 +22,20 @@ class TerminalWindow {
     //private int row = 0;
     private Color[] colors = new Color[16];
     public Palette p = Palette.DEFAULT;
+    private ResizeListener delegate;
 
-    TerminalWindow() {
+    TerminalWindow(ResizeListener d) {
         for (int i = 0; i < 16; i++) {
             double[] c = p.getColour(i);
             colors[i] = new Color((float)c[0], (float)c[1], (float)c[2], 0.0f);
         }
+        delegate = d;
         EventQueue.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ignored) {
             }
-            JFrame frame = new JFrame("CraftOS Terminal");
+            TerminalFrame frame = new TerminalFrame("CraftOS Terminal");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLayout(new BorderLayout());
             panel = new TestPane(colors);
@@ -82,13 +86,35 @@ class TerminalWindow {
         panel.palette = colors;
     }
 
-    public class TestPane extends JPanel {
+    private void resize() {
+        int newWidth = (panel.getWidth() - 4*fontScale) / charWidth;
+        int newHeight = (panel.getHeight() - 4*fontScale) / charHeight;
+        if (newWidth == TerminalWindow.width && newHeight == TerminalWindow.height) return;
+        TerminalWindow.width = newWidth;
+        TerminalWindow.height = newHeight;
+        panel.didResizeWindow(TerminalWindow.width, TerminalWindow.height);
+        delegate.didResizeWindow(TerminalWindow.width, TerminalWindow.height);
+    }
+
+    public class TerminalFrame extends JFrame {
+        TerminalFrame(String title) {
+            super(title);
+            addComponentListener(new ComponentAdapter() {
+                public void componentResized(ComponentEvent evt) {
+                    //System.out.println("Got resize event");
+                    TerminalWindow.this.resize();
+                }
+            });
+        }
+    }
+
+    public class TestPane extends JPanel implements ResizeListener {
 
         private BufferedImage img;
-        final char[][] screen = new char[TerminalWindow.width][TerminalWindow.height];
+        char[][] screen = new char[TerminalWindow.width][TerminalWindow.height];
         // upper nybble is bg, lower nybble is fg
-        final char[][] colors = new char[TerminalWindow.width][TerminalWindow.height];
-        final char[][] pixels = new char[TerminalWindow.width*TerminalWindow.fontWidth][TerminalWindow.height*TerminalWindow.fontHeight];
+        char[][] colors = new char[TerminalWindow.width][TerminalWindow.height];
+        char[][] pixels = new char[TerminalWindow.width*TerminalWindow.fontWidth][TerminalWindow.height*TerminalWindow.fontHeight];
         boolean isPixel = false;
         public static final long serialVersionUID = 26;
         Color[] palette;
@@ -211,6 +237,36 @@ class TerminalWindow {
             int a = 0;
             //int hex = (r << 16) & (g << 8) & b;
             return new Color(r, g, b, a);
+        }
+
+        @Override
+        public void didResizeWindow(int width, int height) {
+            char[][] newScreen = new char[width][height];
+            char[][] newColors = new char[width][height];
+            char[][] newPixels = new char[width*fontWidth][height*fontHeight];
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    try {
+                        newScreen[x][y] = screen[x][y];
+                        newColors[x][y] = colors[x][y];
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        newScreen[x][y] = 0;
+                        newColors[x][y] = 0xF0;
+                    }
+                }
+            }
+            for (int x = 0; x < width * fontWidth; x++) {
+                for (int y = 0; y < height * fontHeight; y++) {
+                    try {
+                        newPixels[x][y] = pixels[x][y];
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        newPixels[x][y] = 0;
+                    }
+                }
+            }
+            screen = newScreen;
+            colors = newColors;
+            pixels = newPixels;
         }
 
          /*

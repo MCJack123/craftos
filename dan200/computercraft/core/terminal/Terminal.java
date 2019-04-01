@@ -19,8 +19,8 @@ public class Terminal
     private int m_cursorColour;
     private int m_cursorBackgroundColour;
 
-    private int m_width;
-    private int m_height;
+    public int m_width;
+    public int m_height;
 
     private TextBuffer m_text[];
     private TextBuffer m_textColour[];
@@ -97,6 +97,7 @@ public class Terminal
         TextBuffer[] oldText = m_text;
         TextBuffer[] oldTextColour = m_textColour;
         TextBuffer[] oldBackgroundColour = m_backgroundColour;
+        TextBuffer[] oldPixelColor = m_pixelColor;
 
         m_width = width;
         m_height = height;
@@ -104,6 +105,7 @@ public class Terminal
         m_text = new TextBuffer[ m_height ];
         m_textColour = new TextBuffer[ m_height ];
         m_backgroundColour = new TextBuffer[ m_height ];
+        m_pixelColor = new TextBuffer[ m_height * 9 ];
         for( int i=0; i<m_height; ++i )
         {
             if( i >= oldHeight )
@@ -111,21 +113,29 @@ public class Terminal
                 m_text[ i ] = new TextBuffer( ' ', m_width );
                 m_textColour[ i ] = new TextBuffer( base16.charAt( m_cursorColour ), m_width );
                 m_backgroundColour[ i ] = new TextBuffer( base16.charAt( m_cursorBackgroundColour ), m_width );
+                for (int j = 0; j < 9; j++)
+                    m_pixelColor[i*9+j] = new TextBuffer((char)15, m_width*6);
             }
             else if( m_width == oldWidth )
             {
                 m_text[ i ] = oldText[ i ];
                 m_textColour[ i ] = oldTextColour[ i ];
                 m_backgroundColour[ i ] = oldBackgroundColour[ i ];
+                for (int j = 0; j < 9; j++)
+                    m_pixelColor[i*9+j] = oldPixelColor[i];
             }
             else
             {
                 m_text[ i ] = new TextBuffer( ' ', m_width );
                 m_textColour[ i ] = new TextBuffer( base16.charAt( m_cursorColour ), m_width );
                 m_backgroundColour[ i ] = new TextBuffer( base16.charAt( m_cursorBackgroundColour ), m_width );
+                for (int j = 0; j < 9; j++)
+                    m_pixelColor[i*9+j] = new TextBuffer((char)15, m_width*6);
                 m_text[ i ].write( oldText[ i ] );
                 m_textColour[ i ].write( oldTextColour[ i ] );
                 m_backgroundColour[ i ].write( oldBackgroundColour[ i ] );
+                for (int j = 0; j < 9; j++)
+                    m_pixelColor[i*9+j].write(oldPixelColor[i]);
             }
         }
         m_changed = true;

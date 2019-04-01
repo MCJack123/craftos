@@ -8,7 +8,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.Date;
 
-public class Main implements KeyListener, MouseListener, MouseWheelListener, MouseMotionListener {
+public class Main implements KeyListener, MouseListener, MouseWheelListener, MouseMotionListener, ResizeListener {
 
     private final TerminalWindow term;
     private final Terminal comp_term;
@@ -23,7 +23,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     private boolean setMounter = false;
 
     private Main() {
-        term = new TerminalWindow();
+        term = new TerminalWindow(this);
         CraftOSEnvironment env = new CraftOSEnvironment();
         ServerComputer server = new ServerComputer(0, "Computer", 0, ComputerFamily.Advanced, TerminalWindow.width, TerminalWindow.height);
         ComputerCraft.instance = new ComputerCraft();
@@ -107,38 +107,41 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                     term.panel.blinkY = comp_term.getCursorY();
                     changed = true;
                 }
-                if (comp_term.getChanged()) {
-                    changed = true;
-                    //System.out.println("changed");
-                    if (comp_term.getPalette() != term.p) term.setPalette(comp_term.getPalette());
-                    char[] text, bg, fg, pixels;
-                    for (int y = 0; y < TerminalWindow.height; y++) {
-                        text = comp_term.getLine(y).toString().toCharArray();
-                        bg = comp_term.getBackgroundColourLine(y).toString().toCharArray();
-                        fg = comp_term.getTextColourLine(y).toString().toCharArray();
-                        //System.out.println(y);
-                        //System.out.println(bg);
-                        //System.out.println(fg);
-                        //System.out.println(text);
-                        for (int x = 0; x < text.length && x < TerminalWindow.width; x++) {
-                            try {
-                                term.panel.screen[x][y] = text[x];
-                                term.panel.colors[x][y] = (char) (((char) ("0123456789abcdef".indexOf(bg[x])) << 4) | (char) ("0123456789abcdef".indexOf(fg[x])));
-                            } catch (NullPointerException n) {
-                                //System.out.printf("Error printing: (%d, %d)\n", x, y);
+                synchronized (comp_term) {
+                    if (comp_term.getChanged()) {
+                        changed = true;
+                        //System.out.println("changed");
+                        if (comp_term.getPalette() != term.p) term.setPalette(comp_term.getPalette());
+                        char[] text, bg, fg, pixels;
+                        for (int y = 0; y < TerminalWindow.height; y++) {
+                            text = comp_term.getLine(y).toString().toCharArray();
+                            bg = comp_term.getBackgroundColourLine(y).toString().toCharArray();
+                            fg = comp_term.getTextColourLine(y).toString().toCharArray();
+                            //System.out.println(y);
+                            //System.out.println(bg);
+                            //System.out.println(fg);
+                            //System.out.println(text);
+                            for (int x = 0; x < text.length && x < TerminalWindow.width; x++) {
+                                try {
+                                    term.panel.screen[x][y] = text[x];
+                                    term.panel.colors[x][y] = (char) (((char) ("0123456789abcdef".indexOf(bg[x])) << 4) | (char) ("0123456789abcdef".indexOf(fg[x])));
+                                } catch (NullPointerException n) {
+                                    //System.out.printf("Error printing: (%d, %d)\n", x, y);
+                                }
                             }
                         }
-                    }
-                    for (int y = 0; y < TerminalWindow.height * TerminalWindow.fontHeight; y++) {
-                        pixels = comp_term.getPixelLine(y).toString().toCharArray();
-                        for (int x = 0; x < pixels.length && x < TerminalWindow.width * TerminalWindow.fontWidth; x++) {
-                            term.panel.pixels[x][y] = pixels[x];
+
+                        for (int y = 0; y < TerminalWindow.height * TerminalWindow.fontHeight; y++) {
+                            pixels = comp_term.getPixelLine(y).toString().toCharArray();
+                            for (int x = 0; x < pixels.length && x < TerminalWindow.width * TerminalWindow.fontWidth; x++) {
+                                term.panel.pixels[x][y] = pixels[x];
+                            }
                         }
+                        term.panel.isPixel = comp_term.getGraphicsMode();
+                        //System.out.println(term.panel.isPixel);
+                        //System.out.println("repainting");
+                        comp_term.clearChanged();
                     }
-                    term.panel.isPixel = comp_term.getGraphicsMode();
-                    //System.out.println(term.panel.isPixel);
-                    //System.out.println("repainting");
-                    comp_term.clearChanged();
                 }
                 if ((new Date()).getTime() - lastBlink >= 500 && comp_term.getCursorBlink()) {
                     changed = true;
@@ -232,5 +235,12 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     @Override
     public void mouseMoved(MouseEvent mouseEvent) {
 
+    }
+
+    @Override
+    public void didResizeWindow(int width, int height) {
+        System.out.println("Resized to " + Integer.toString(width) + "x" + Integer.toString(height));
+        comp_term.resize(width, height);
+        computer.queueEvent("term_resize", new Object[] {width, height});
     }
 }

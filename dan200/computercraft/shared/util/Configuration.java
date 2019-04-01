@@ -6,8 +6,8 @@ import java.io.*;
 
 public class Configuration implements Serializable {
     public boolean http_enable;
-    //public  http_whitelist;
-    //public static Property http_blacklist;
+    public String[] http_whitelist;
+    public String[] http_blacklist;
     public boolean disable_lua51_features;
     public String default_computer_settings;
     public boolean logPeripheralErrors;
@@ -35,13 +35,17 @@ public class Configuration implements Serializable {
                 return maxNotesPerTick;
             case "clockSpeed":
                 return clockSpeed;
+            case "http_whitelist":
+                return http_whitelist;
+            case "http_blacklist":
+                return http_blacklist;
             default:
                 return null;
         }
     }
 
     public String[] list() {
-        return new String[] {"http_enable", "disable_lua51_features", "default_computer_settings", "logPeripheralErrors", "computerSpaceLimit", "maximumFilesOpen", "maxNotesPerTick", "clockSpeed"};
+        return new String[] {"http_enable", "disable_lua51_features", "default_computer_settings", "logPeripheralErrors", "computerSpaceLimit", "maximumFilesOpen", "maxNotesPerTick", "clockSpeed", "http_whitelist", "http_blacklist"};
     }
 
     public int getType(String name) {
@@ -62,6 +66,10 @@ public class Configuration implements Serializable {
                 return 2;
             case "clockSpeed":
                 return 2;
+            case "http_whitelist":
+                return 3;
+            case "http_blacklist":
+                return 3;
             default:
                 return -1;
         }
@@ -85,6 +93,10 @@ public class Configuration implements Serializable {
                 maxNotesPerTick = ((Double) value).intValue();
             case "clockSpeed":
                 clockSpeed = ((Double) value).intValue();
+            case "http_whitelist":
+                http_whitelist = (String[]) value;
+            case "http_blacklist":
+                http_blacklist = (String[]) value;
         }
     }
 
@@ -122,6 +134,8 @@ public class Configuration implements Serializable {
             this.maximumFilesOpen = obj.maximumFilesOpen;
             this.maxNotesPerTick = obj.maxNotesPerTick;
             this.clockSpeed = obj.clockSpeed;
+            this.http_whitelist = obj.http_whitelist;
+            this.http_blacklist = obj.http_blacklist;
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -144,5 +158,7 @@ public class Configuration implements Serializable {
         maximumFilesOpen = ComputerCraft.maximumFilesOpen;
         maxNotesPerTick = ComputerCraft.maxNotesPerTick;
         clockSpeed = ComputerCraft.clockSpeed;
+        http_whitelist = ComputerCraft.DEFAULT_HTTP_WHITELIST;
+        http_blacklist = ComputerCraft.DEFAULT_HTTP_BLACKLIST;
     }
 }

@@ -113,7 +113,7 @@ public class ComputerThread
                             // Run the task
                             worker.setDaemon(true);
                             worker.start();
-                            worker.join( 7000 );
+                            worker.join( 17000 );
                             
                             if( worker.isAlive() )
                             {
