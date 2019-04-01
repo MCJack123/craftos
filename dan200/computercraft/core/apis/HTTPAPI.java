@@ -10,6 +10,7 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.core.apis.http.HTTPCheck;
 import dan200.computercraft.core.apis.http.HTTPRequest;
+import dan200.computercraft.core.apis.http.HTTPServer;
 import dan200.computercraft.core.apis.http.HTTPTask;
 
 import javax.annotation.Nonnull;
@@ -22,6 +23,7 @@ public class HTTPAPI implements ILuaAPI
 {
     private final IAPIEnvironment m_apiEnvironment;
     private final List<HTTPTask> m_httpTasks;
+    private HTTPServer server;
     
     public HTTPAPI( IAPIEnvironment environment )
     {
@@ -40,6 +42,7 @@ public class HTTPAPI implements ILuaAPI
     @Override
     public void startup( )
     {
+        server = new HTTPServer(m_apiEnvironment);
     }
 
     @Override
@@ -72,6 +75,7 @@ public class HTTPAPI implements ILuaAPI
             }
             m_httpTasks.clear();
         }
+        server = null;
     }
 
     @Nonnull
@@ -79,9 +83,11 @@ public class HTTPAPI implements ILuaAPI
     public String[] getMethodNames()
     {
          return new String[] {
-            "request",
-            "checkURL"
-        };
+             "request",
+             "checkURL",
+             "addListener",
+             "removeListener"
+         };
     }
 
     @Override
@@ -157,6 +163,17 @@ public class HTTPAPI implements ILuaAPI
                 {
                     return new Object[] { false, e.getMessage() };
                 }
+            }
+            case 2:
+            {
+                // addListener(port)
+                server.listen(getInt(args, 0));
+                return null;
+            }
+            case 3:
+            {
+                server.stop(getInt(args, 0));
+                return null;
             }
             default:
             {

@@ -51,7 +51,7 @@ public class ComputerCraft
     // Configuration options
     public static final String[] DEFAULT_HTTP_WHITELIST = new String[] { "*" };
     public static final String[] DEFAULT_HTTP_BLACKLIST = new String[] {
-        "127.0.0.0/8",
+        /*"127.0.0.0/8",*/
         "10.0.0.0/8",
         "172.16.0.0/12",
         "192.168.0.0/16",

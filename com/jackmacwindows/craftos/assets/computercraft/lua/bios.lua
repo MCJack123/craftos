@@ -772,6 +772,25 @@ if http then
         end
         return ok, err
     end
+
+    http.listen = function( _port, _callback )
+        if type( _port ) ~= "number" then
+            error( "bad argument #1 (expected number, got " .. type( _port ) .. ")", 2 )
+        end
+        if type( _callback ) ~= "function" then
+            error( "bad argument #2 (expected function, got " .. type( _callback ) .. ")", 2)
+        end
+        http.addListener( _port )
+        while true do
+            local ev, p1, p2, p3 = os.pullEvent()
+            if ev == "server_stop" then
+                http.removeListener( _port )
+                break
+            elseif ev == "http_request" and p1 == _port then
+                _callback( p2, p3 )
+            end
+        end
+    end
     
     local nativeCheckURL = http.checkURL
     http.checkURLAsync = nativeCheckURL
