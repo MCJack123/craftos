@@ -46,22 +46,26 @@ public class Monitor implements IMonitorProvider, ResizeListener {
             changed = true;
             System.out.println("changed");
             char[] text, bg, fg, pixels;
-            for (int y = 0; y < TerminalWindow.height; y++) {
-                text = terminal.getLine(y).toString().toCharArray();
-                bg = terminal.getBackgroundColourLine(y).toString().toCharArray();
-                fg = terminal.getTextColourLine(y).toString().toCharArray();
-                //System.out.println(y);
-                //System.out.println(bg);
-                //System.out.println(fg);
-                //System.out.println(text);
-                for (int x = 0; x < text.length && x < TerminalWindow.width; x++) {
-                    try {
-                        window.panel.screen[x][y] = text[x];
-                        window.panel.colors[x][y] = (char) (((char) ("0123456789abcdef".indexOf(bg[x])) << 4) | (char) ("0123456789abcdef".indexOf(fg[x])));
-                    } catch (NullPointerException n) {
-                        //System.out.printf("Error printing: (%d, %d)\n", x, y);
+            try {
+                for (int y = 0; y < TerminalWindow.height; y++) {
+                    text = terminal.getLine(y).toString().toCharArray();
+                    bg = terminal.getBackgroundColourLine(y).toString().toCharArray();
+                    fg = terminal.getTextColourLine(y).toString().toCharArray();
+                    //System.out.println(y);
+                    //System.out.println(bg);
+                    //System.out.println(fg);
+                    //System.out.println(text);
+                    for (int x = 0; x < text.length && x < TerminalWindow.width; x++) {
+                        try {
+                            window.panel.screen[x][y] = text[x];
+                            window.panel.colors[x][y] = (char) (((char) ("0123456789abcdef".indexOf(bg[x])) << 4) | (char) ("0123456789abcdef".indexOf(fg[x])));
+                        } catch (NullPointerException n) {
+                            //System.out.printf("Error printing: (%d, %d)\n", x, y);
+                        }
                     }
                 }
+            } catch (NullPointerException e) {
+                return;
             }
             for (int y = 0; y < TerminalWindow.height * TerminalWindow.fontHeight; y++) {
                 pixels = terminal.getPixelLine(y).toString().toCharArray();
