@@ -47,6 +47,9 @@ class TerminalWindow {
             frame.pack();
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
+            try {
+                frame.setIconImage(ImageIO.read(getClass().getResourceAsStream("Ccblink.gif")));
+            } catch (IOException ignored) {}
             openWindows++;
         });
     }
