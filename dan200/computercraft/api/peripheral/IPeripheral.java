@@ -114,6 +114,8 @@ public interface IPeripheral
     {
     }
 
+    default void willDetach() {}
+
     default void tick() {}
 
     /**

@@ -7,9 +7,24 @@ import java.util.Date;
 
 public class Monitor implements IMonitorProvider, ResizeListener {
 
-    private TerminalWindow window = new TerminalWindow(this);
-    private Terminal terminal = new Terminal(TerminalWindow.width, TerminalWindow.height);
+    private TerminalWindow window;
+    private Terminal terminal;
+    private PeriphemuAPI api;
+    private String side;
     private long lastBlink = 0;
+
+    public Monitor(PeriphemuAPI p, String s) {
+        api = p;
+        side = s;
+        window = new TerminalWindow(this, "CraftOS Terminal: Monitor ".concat(s));
+        terminal = new Terminal(window.width, window.height);
+        terminal.reset();
+    }
+
+    @Override
+    public void finalize() {
+        destroy();
+    }
 
     @Override
     public Terminal getTerminal() {
@@ -18,7 +33,7 @@ public class Monitor implements IMonitorProvider, ResizeListener {
 
     @Override
     public void setTextScale(int scale) {
-        // TODO: add proper text scaling
+        window.setCharScale(scale);
     }
 
     @Override
@@ -44,10 +59,10 @@ public class Monitor implements IMonitorProvider, ResizeListener {
         }
         if (terminal.getChanged()) {
             changed = true;
-            System.out.println("changed");
+            //System.out.println("changed");
             char[] text, bg, fg, pixels;
             try {
-                for (int y = 0; y < TerminalWindow.height; y++) {
+                for (int y = 0; y < window.height; y++) {
                     text = terminal.getLine(y).toString().toCharArray();
                     bg = terminal.getBackgroundColourLine(y).toString().toCharArray();
                     fg = terminal.getTextColourLine(y).toString().toCharArray();
@@ -55,10 +70,10 @@ public class Monitor implements IMonitorProvider, ResizeListener {
                     //System.out.println(bg);
                     //System.out.println(fg);
                     //System.out.println(text);
-                    for (int x = 0; x < text.length && x < TerminalWindow.width; x++) {
+                    for (int x = 0; x < text.length && x < window.width; x++) {
                         try {
                             window.panel.screen[x][y] = text[x];
-                            window.panel.colors[x][y] = (char) (((char) ("0123456789abcdef".indexOf(bg[x])) << 4) | (char) ("0123456789abcdef".indexOf(fg[x])));
+                            window.panel.colors[x][y] = (char) (((char) ("fedcba9876543210".indexOf(bg[x])) << 4) | (char) ("fedcba9876543210".indexOf(fg[x])));
                         } catch (NullPointerException n) {
                             //System.out.printf("Error printing: (%d, %d)\n", x, y);
                         }
@@ -67,9 +82,9 @@ public class Monitor implements IMonitorProvider, ResizeListener {
             } catch (NullPointerException e) {
                 return;
             }
-            for (int y = 0; y < TerminalWindow.height * TerminalWindow.fontHeight; y++) {
+            for (int y = 0; y < window.height * TerminalWindow.fontHeight; y++) {
                 pixels = terminal.getPixelLine(y).toString().toCharArray();
-                for (int x = 0; x < pixels.length && x < TerminalWindow.width * TerminalWindow.fontWidth; x++) {
+                for (int x = 0; x < pixels.length && x < window.width * TerminalWindow.fontWidth; x++) {
                     window.panel.pixels[x][y] = pixels[x];
                 }
             }
@@ -83,12 +98,20 @@ public class Monitor implements IMonitorProvider, ResizeListener {
             window.panel.blink = !window.panel.blink;
         } else if (!terminal.getCursorBlink()) window.panel.blink = false;
         if (changed) {
-            window.panel.repaint(); System.gc(); Runtime.getRuntime().gc();}
+            window.panel.repaint();
+            System.gc();
+            Runtime.getRuntime().gc();
+        }
     }
 
     @Override
     public void didResizeWindow(int width, int height) {
-        terminal.m_width = width;
-        terminal.m_height = height;
+        terminal.resize(width, height);
+        api.didResize(side);
+    }
+
+    @Override
+    public void willClose() {
+        api.remove(side);
     }
 }

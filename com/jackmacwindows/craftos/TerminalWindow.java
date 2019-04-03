@@ -5,18 +5,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 class TerminalWindow {
 
-    static int width = 51;
-    static int height = 19;
+    int width = 51;
+    int height = 19;
+    private static int openWindows = 0;
     static final int fontWidth = 6;
     static final int fontHeight = 9;
-    static final int fontScale = 2;
-    static final int charWidth = fontWidth * fontScale;
-    static final int charHeight = fontHeight * fontScale;
+    static final int fontScale = 1;
+    private int charScale = 2;
+    int charWidth = fontWidth * fontScale * charScale;
+    int charHeight = fontHeight * fontScale * charScale;
     TestPane panel;
     //private int column = 0;
     //private int row = 0;
@@ -24,7 +28,7 @@ class TerminalWindow {
     public Palette p = Palette.DEFAULT;
     private ResizeListener delegate;
 
-    TerminalWindow(ResizeListener d) {
+    TerminalWindow(ResizeListener d, String title) {
         for (int i = 0; i < 16; i++) {
             double[] c = p.getColour(i);
             colors[i] = new Color((float)c[0], (float)c[1], (float)c[2], 0.0f);
@@ -35,14 +39,15 @@ class TerminalWindow {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ignored) {
             }
-            TerminalFrame frame = new TerminalFrame("CraftOS Terminal");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            TerminalFrame frame = new TerminalFrame(title);
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setLayout(new BorderLayout());
             panel = new TestPane(colors);
             frame.add(panel);
             frame.pack();
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
+            openWindows++;
         });
     }
 /*
@@ -86,14 +91,20 @@ class TerminalWindow {
         panel.palette = colors;
     }
 
+    void setCharScale(int scale) {
+        charScale = scale;
+        charWidth = fontWidth * fontScale * charScale;
+        charHeight = fontHeight * fontScale * charScale;
+    }
+
     private void resize() {
         int newWidth = (panel.getWidth() - 4*fontScale) / charWidth;
         int newHeight = (panel.getHeight() - 4*fontScale) / charHeight;
-        if (newWidth == TerminalWindow.width && newHeight == TerminalWindow.height) return;
-        TerminalWindow.width = newWidth;
-        TerminalWindow.height = newHeight;
-        panel.didResizeWindow(TerminalWindow.width, TerminalWindow.height);
-        delegate.didResizeWindow(TerminalWindow.width, TerminalWindow.height);
+        if (newWidth == this.width && newHeight == this.height) return;
+        this.width = newWidth;
+        this.height = newHeight;
+        panel.didResizeWindow(this.width, this.height);
+        delegate.didResizeWindow(this.width, this.height);
     }
 
     public class TerminalFrame extends JFrame {
@@ -105,16 +116,22 @@ class TerminalWindow {
                     TerminalWindow.this.resize();
                 }
             });
+            addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent event) {
+                    delegate.willClose();
+                }
+            });
         }
     }
 
     public class TestPane extends JPanel implements ResizeListener {
 
         private BufferedImage img;
-        char[][] screen = new char[TerminalWindow.width][TerminalWindow.height];
+        char[][] screen = new char[width][height];
         // upper nybble is bg, lower nybble is fg
-        char[][] colors = new char[TerminalWindow.width][TerminalWindow.height];
-        char[][] pixels = new char[TerminalWindow.width*TerminalWindow.fontWidth][TerminalWindow.height*TerminalWindow.fontHeight];
+        char[][] colors = new char[width][height];
+        char[][] pixels = new char[width*TerminalWindow.fontWidth][height*TerminalWindow.fontHeight];
         boolean isPixel = false;
         public static final long serialVersionUID = 26;
         Color[] palette;
@@ -124,14 +141,14 @@ class TerminalWindow {
 
         TestPane(Color[] p) {
             try {
-                img = ImageIO.read(getClass().getResourceAsStream("craftos@2x.png"));
+                img = ImageIO.read(getClass().getResourceAsStream("craftos.png"));
             } catch (IOException ex) {
                 ex.printStackTrace();
                 System.err.println("Failed to read font");
             }
             palette = p;
-            for (int x = 0; x < TerminalWindow.width; x++) {
-                for (int y = 0; y < TerminalWindow.height; y++) {
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
                     colors[x][y] = 0xF0;
                 }
             }
@@ -143,12 +160,12 @@ class TerminalWindow {
             System.out.print(8*(c >> 4));
             System.out.print(' ');
             System.out.println(11*(c & 0x0F));*/
-            return img.getSubimage(((TerminalWindow.fontWidth + 2) * 2)*(c & 0x0F)+2, ((TerminalWindow.fontHeight + 2) * 2)*(c >> 4)+2, TerminalWindow.charWidth, TerminalWindow.charHeight);
+            return img.getSubimage(((TerminalWindow.fontWidth + 2) * fontScale)*(c & 0x0F)+fontScale, ((TerminalWindow.fontHeight + 2) * fontScale)*(c >> 4)+fontScale, fontWidth * fontScale, fontHeight * fontScale);
         }
 
         @Override
         public Dimension getPreferredSize() {
-            return new Dimension(TerminalWindow.width*TerminalWindow.charWidth+(4 * TerminalWindow.fontScale), TerminalWindow.height*TerminalWindow.charHeight+(4 * TerminalWindow.fontScale));
+            return new Dimension(width*charWidth+(4 * TerminalWindow.fontScale), height*charHeight+(4 * TerminalWindow.fontScale));
         }
 
         @Override
@@ -156,6 +173,7 @@ class TerminalWindow {
             super.paintComponent(g);
             //System.out.println("painting");
             Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             /*
             List<BufferedImage> text = convert("This is a test");
             int x = (getWidth() - (8 * text.size())) / 2;
@@ -169,62 +187,63 @@ class TerminalWindow {
                 g2d.setColor(palette[15]);
                 g2d.fillRect(0, 0, (width+1)*fontWidth*fontScale, (height+1)*fontHeight*fontScale);
                 g2d.setXORMode(palette[15]);
-                for (int x = 0; x < TerminalWindow.width * TerminalWindow.fontWidth * fontScale; x+=fontScale) {
-                    for (int y = 0; y < TerminalWindow.height * TerminalWindow.fontHeight * fontScale; y+=fontScale) {
+                for (int x = 0; x < width * TerminalWindow.fontWidth * fontScale; x+=fontScale) {
+                    for (int y = 0; y < height * TerminalWindow.fontHeight * fontScale; y+=fontScale) {
                         char c = pixels[x/fontScale][y/fontScale];
                         g2d.setColor(palette[c]);
-                        g2d.fillRect(x + (2 * TerminalWindow.fontScale), y + (2 * TerminalWindow.fontScale), TerminalWindow.fontScale, TerminalWindow.fontScale);
+                        g2d.fillRect(x + (2 * TerminalWindow.fontScale * charScale), y + (2 * TerminalWindow.fontScale * charScale), TerminalWindow.fontScale, TerminalWindow.fontScale);
                         /*if (x == 0)
-                            g2d.fillRect(0, y + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, TerminalWindow.fontScale);
+                            g2d.fillRect(0, y + (2 * TerminalWindow.fontScale * charScale), 2 * TerminalWindow.fontScale * charScale, TerminalWindow.fontScale);
                         if (y == 0)
-                            g2d.fillRect(x + (2 * TerminalWindow.fontScale), 0, TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
-                        if (x + fontScale == TerminalWindow.width * TerminalWindow.fontWidth * fontScale)
-                            g2d.fillRect((x + fontScale) + (2 * TerminalWindow.fontScale), y + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, TerminalWindow.fontScale);
-                        if (y + fontScale == TerminalWindow.height * TerminalWindow.fontHeight * fontScale)
-                            g2d.fillRect(x + (2 * TerminalWindow.fontScale), (y + fontScale) + (2 * TerminalWindow.fontScale), TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                            g2d.fillRect(x + (2 * TerminalWindow.fontScale * charScale), 0, TerminalWindow.fontScale, 2 * TerminalWindow.fontScale * charScale);
+                        if (x + fontScale == width * TerminalWindow.fontWidth * fontScale)
+                            g2d.fillRect((x + fontScale) + (2 * TerminalWindow.fontScale * charScale), y + (2 * TerminalWindow.fontScale * charScale), 2 * TerminalWindow.fontScale * charScale, TerminalWindow.fontScale);
+                        if (y + fontScale == height * TerminalWindow.fontHeight * fontScale)
+                            g2d.fillRect(x + (2 * TerminalWindow.fontScale * charScale), (y + fontScale) + (2 * TerminalWindow.fontScale * charScale), TerminalWindow.fontScale, 2 * TerminalWindow.fontScale * charScale);
                         if (x == 0 && y == 0)
-                            g2d.fillRect(0, 0, 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
-                        if (x == 0 && y + fontScale == TerminalWindow.height * TerminalWindow.fontHeight * fontScale)
-                            g2d.fillRect(0, (y + fontScale) + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
-                        if (x + fontScale == TerminalWindow.width * TerminalWindow.fontWidth * fontScale && y == 0)
-                            g2d.fillRect((x + fontScale) + (2 * TerminalWindow.fontScale), 0, 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
-                        if (x + fontScale == TerminalWindow.width * TerminalWindow.fontWidth * fontScale && y + fontScale == TerminalWindow.height * fontScale * TerminalWindow.fontHeight)
-                            g2d.fillRect((x + fontScale) + (2 * TerminalWindow.fontScale), (y + fontScale) + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);*/
+                            g2d.fillRect(0, 0, 2 * TerminalWindow.fontScale * charScale, 2 * TerminalWindow.fontScale * charScale);
+                        if (x == 0 && y + fontScale == height * TerminalWindow.fontHeight * fontScale)
+                            g2d.fillRect(0, (y + fontScale) + (2 * TerminalWindow.fontScale * charScale), 2 * TerminalWindow.fontScale * charScale, 2 * TerminalWindow.fontScale * charScale);
+                        if (x + fontScale == width * TerminalWindow.fontWidth * fontScale && y == 0)
+                            g2d.fillRect((x + fontScale) + (2 * TerminalWindow.fontScale * charScale), 0, 2 * TerminalWindow.fontScale * charScale, 2 * TerminalWindow.fontScale * charScale);
+                        if (x + fontScale == width * TerminalWindow.fontWidth * fontScale && y + fontScale == height * fontScale * TerminalWindow.fontHeight)
+                            g2d.fillRect((x + fontScale) + (2 * TerminalWindow.fontScale * charScale), (y + fontScale) + (2 * TerminalWindow.fontScale * charScale), 2 * TerminalWindow.fontScale * charScale, 2 * TerminalWindow.fontScale * charScale);*/
                     }
                 }
             } else {
-                for (int x = 0; x < TerminalWindow.width; x++) {
-                    for (int y = 0; y < TerminalWindow.height; y++) {
+                for (int x = 0; x < width; x++) {
+                    for (int y = 0; y < height; y++) {
                         BufferedImage c = convert(screen[x][y]);
                         g2d.setColor(palette[colors[x][y] >> 4]);
                         g2d.setXORMode(Color.white);
-                        g2d.fillRect(x * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), y * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), TerminalWindow.charWidth, TerminalWindow.charHeight);
+                        g2d.fillRect(x * charWidth + (2 * TerminalWindow.fontScale * charScale), y * charHeight + (2 * TerminalWindow.fontScale * charScale), charWidth, charHeight);
                         if (x == 0)
-                            g2d.fillRect(0, y * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, TerminalWindow.charHeight);
+                            g2d.fillRect(0, y * charHeight + (2 * TerminalWindow.fontScale * charScale), 2 * TerminalWindow.fontScale * charScale, charHeight);
                         if (y == 0)
-                            g2d.fillRect(x * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), 0, TerminalWindow.charWidth, 2 * TerminalWindow.fontScale);
-                        if (x + 1 == TerminalWindow.width)
-                            g2d.fillRect((x + 1) * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), y * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, TerminalWindow.charHeight);
-                        if (y + 1 == TerminalWindow.height)
-                            g2d.fillRect(x * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), (y + 1) * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), TerminalWindow.charWidth, 2 * TerminalWindow.fontScale);
+                            g2d.fillRect(x * charWidth + (2 * TerminalWindow.fontScale * charScale), 0, charWidth, 2 * TerminalWindow.fontScale * charScale);
+                        if (x + 1 == width)
+                            g2d.fillRect((x + 1) * charWidth + (2 * TerminalWindow.fontScale * charScale), y * charHeight + (2 * TerminalWindow.fontScale * charScale), 2 * TerminalWindow.fontScale * charScale, charHeight);
+                        if (y + 1 == height)
+                            g2d.fillRect(x * charWidth + (2 * TerminalWindow.fontScale * charScale), (y + 1) * charHeight + (2 * TerminalWindow.fontScale * charScale), charWidth, 2 * TerminalWindow.fontScale * charScale);
                         if (x == 0 && y == 0)
-                            g2d.fillRect(0, 0, 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
-                        if (x == 0 && y + 1 == TerminalWindow.height)
-                            g2d.fillRect(0, (y + 1) * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
-                        if (x + 1 == TerminalWindow.width && y == 0)
-                            g2d.fillRect((x + 1) * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), 0, 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
-                        if (x + 1 == TerminalWindow.width && y + 1 == TerminalWindow.height)
-                            g2d.fillRect((x + 1) * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), (y + 1) * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), 2 * TerminalWindow.fontScale, 2 * TerminalWindow.fontScale);
+                            g2d.fillRect(0, 0, 2 * TerminalWindow.fontScale * charScale, 2 * TerminalWindow.fontScale * charScale);
+                        if (x == 0 && y + 1 == height)
+                            g2d.fillRect(0, (y + 1) * charHeight + (2 * TerminalWindow.fontScale * charScale), 2 * TerminalWindow.fontScale * charScale, 2 * TerminalWindow.fontScale * charScale);
+                        if (x + 1 == width && y == 0)
+                            g2d.fillRect((x + 1) * charWidth + (2 * TerminalWindow.fontScale * charScale), 0, 2 * TerminalWindow.fontScale * charScale, 2 * TerminalWindow.fontScale * charScale);
+                        if (x + 1 == width && y + 1 == height)
+                            g2d.fillRect((x + 1) * charWidth + (2 * TerminalWindow.fontScale * charScale), (y + 1) * charHeight + (2 * TerminalWindow.fontScale * charScale), 2 * TerminalWindow.fontScale * charScale, 2 * TerminalWindow.fontScale * charScale);
                         g2d.setXORMode(invertColor(palette[colors[x][y] & 0x0F], palette[colors[x][y] >> 4]));
                         g2d.setColor(palette[0]);
-                        g2d.drawImage(c, x * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), y * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), this);
-                        g2d.setXORMode(invertColor(palette[0], palette[colors[x][y] >> 4]));
-                        g2d.setColor(Color.white);
-                        if (blink) {
-                            g2d.drawImage(convert('_'), blinkX * TerminalWindow.charWidth + (2 * TerminalWindow.fontScale), blinkY * TerminalWindow.charHeight + (2 * TerminalWindow.fontScale), this);
-                        }
+                        g2d.drawImage(c, x * charWidth + (2 * TerminalWindow.fontScale * charScale), y * charHeight + (2 * TerminalWindow.fontScale * charScale), charWidth, charHeight, this);
                         g2d.setXORMode(Color.white);
                     }
+                }
+                if (blink) {
+                    g2d.setXORMode(invertColor(palette[0], palette[colors[blinkX][blinkY] >> 4]));
+                    g2d.setColor(Color.white);
+                    g2d.drawImage(convert('_'), blinkX * charWidth + (2 * TerminalWindow.fontScale * charScale), blinkY * charHeight + (2 * TerminalWindow.fontScale * charScale), charWidth, charHeight, this);
+                    g2d.setXORMode(Color.white);
                 }
             }
             g2d.dispose();
@@ -267,6 +286,11 @@ class TerminalWindow {
             screen = newScreen;
             colors = newColors;
             pixels = newPixels;
+        }
+
+        @Override
+        public void willClose() {
+
         }
 
          /*

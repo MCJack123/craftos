@@ -23,9 +23,9 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     private boolean setMounter = false;
 
     private Main() {
-        term = new TerminalWindow(this);
+        term = new TerminalWindow(this, "CraftOS Terminal");
         CraftOSEnvironment env = new CraftOSEnvironment();
-        ServerComputer server = new ServerComputer(0, "Computer", 0, ComputerFamily.Advanced, TerminalWindow.width, TerminalWindow.height);
+        ServerComputer server = new ServerComputer(0, "Computer", 0, ComputerFamily.Advanced, term.width, term.height);
         ComputerCraft.instance = new ComputerCraft();
         ComputerCraft.instance.preInit();
         ComputerCraft.instance.init(); // does nothing right now, but it might later?
@@ -112,7 +112,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                             //System.out.println("changed");
                             if (comp_term.getPalette() != term.p) term.setPalette(comp_term.getPalette());
                             char[] text, bg, fg, pixels;
-                                for (int y = 0; y < TerminalWindow.height; y++) {
+                                for (int y = 0; y < term.height; y++) {
                                     text = comp_term.getLine(y).toString().toCharArray();
                                     bg = comp_term.getBackgroundColourLine(y).toString().toCharArray();
                                     fg = comp_term.getTextColourLine(y).toString().toCharArray();
@@ -120,7 +120,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                                     //System.out.println(bg);
                                     //System.out.println(fg);
                                     //System.out.println(text);
-                                    for (int x = 0; x < text.length && x < TerminalWindow.width; x++) {
+                                    for (int x = 0; x < text.length && x < term.width; x++) {
                                         try {
                                             term.panel.screen[x][y] = text[x];
                                             term.panel.colors[x][y] = (char) (((char) ("0123456789abcdef".indexOf(bg[x])) << 4) | (char) ("0123456789abcdef".indexOf(fg[x])));
@@ -130,9 +130,9 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                                     }
                                 }
 
-                            for (int y = 0; y < TerminalWindow.height * TerminalWindow.fontHeight; y++) {
+                            for (int y = 0; y < term.height * TerminalWindow.fontHeight; y++) {
                                 pixels = comp_term.getPixelLine(y).toString().toCharArray();
-                                for (int x = 0; x < pixels.length && x < TerminalWindow.width * TerminalWindow.fontWidth; x++) {
+                                for (int x = 0; x < pixels.length && x < term.width * TerminalWindow.fontWidth; x++) {
                                     term.panel.pixels[x][y] = pixels[x];
                                 }
                             }
@@ -158,6 +158,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                 computer.advance(1);
             }
         }
+        //return true;
     }
 
     @Override
@@ -181,28 +182,28 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     private int convertX(int x) {
         if (comp_term.getGraphicsMode()) {
             if (x < 2 * TerminalWindow.fontScale) return 0;
-            else if (x >= TerminalWindow.charWidth * TerminalWindow.width + 2 * TerminalWindow.fontScale)
-                return TerminalWindow.fontWidth * TerminalWindow.width - 1;
+            else if (x >= term.charWidth * term.width + 2 * TerminalWindow.fontScale)
+                return TerminalWindow.fontWidth * term.width - 1;
             return (x - (2 * TerminalWindow.fontScale)) / TerminalWindow.fontScale;
         } else {
             if (x < 2 * TerminalWindow.fontScale) x = 2 * TerminalWindow.fontScale;
-            else if (x > TerminalWindow.charWidth * TerminalWindow.width + 2 * TerminalWindow.fontScale)
-                x = TerminalWindow.charWidth * TerminalWindow.width + 2 * TerminalWindow.fontScale;
-            return (x - 2 * TerminalWindow.fontScale) / TerminalWindow.charWidth + 1;
+            else if (x > term.charWidth * term.width + 2 * TerminalWindow.fontScale)
+                x = term.charWidth * term.width + 2 * TerminalWindow.fontScale;
+            return (x - 2 * TerminalWindow.fontScale) / term.charWidth + 1;
         }
     }
 
     private int convertY(int x) {
         if (comp_term.getGraphicsMode()) {
             if (x < 2 * TerminalWindow.fontScale) return 0;
-            else if (x >= TerminalWindow.charHeight * TerminalWindow.height + 2 * TerminalWindow.fontScale)
-                return TerminalWindow.fontHeight * TerminalWindow.height - 1;
+            else if (x >= term.charHeight * term.height + 2 * TerminalWindow.fontScale)
+                return TerminalWindow.fontHeight * term.height - 1;
             return (x - (2 * TerminalWindow.fontScale)) / TerminalWindow.fontScale;
         } else {
             if (x < 2 * TerminalWindow.fontScale) x = 2 * TerminalWindow.fontScale;
-            else if (x > TerminalWindow.charHeight * TerminalWindow.height + 2 * TerminalWindow.fontScale)
-                x = TerminalWindow.charHeight * TerminalWindow.height + 2 * TerminalWindow.fontScale;
-            return (x - 2 * TerminalWindow.fontScale) / TerminalWindow.charHeight + 1;
+            else if (x > term.charHeight * term.height + 2 * TerminalWindow.fontScale)
+                x = term.charHeight * term.height + 2 * TerminalWindow.fontScale;
+            return (x - 2 * TerminalWindow.fontScale) / term.charHeight + 1;
         }
     }
 
@@ -243,8 +244,13 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
 
     @Override
     public void didResizeWindow(int width, int height) {
-        System.out.println("Resized to " + Integer.toString(width) + "x" + Integer.toString(height));
+        System.out.println("Resized to " + width + "x" + height);
         comp_term.resize(width, height);
-        computer.queueEvent("term_resize", new Object[] {width, height});
+        computer.queueEvent("term_resize", new Object[] {});
+    }
+
+    @Override
+    public void willClose() {
+        System.exit(0);
     }
 }

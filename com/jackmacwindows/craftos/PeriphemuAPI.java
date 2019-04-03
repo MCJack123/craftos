@@ -33,7 +33,7 @@ public class PeriphemuAPI implements ILuaAPI {
         sides.put("left", 5);
     }
 
-    public PeriphemuAPI(Computer comp, IComputerEnvironment env) {
+    PeriphemuAPI(Computer comp, IComputerEnvironment env) {
         computer = comp;
         environment = env;
     }
@@ -63,6 +63,17 @@ public class PeriphemuAPI implements ILuaAPI {
         peripherals.clear();
     }
 
+    public boolean remove(String side) {
+        try {
+            peripherals.get(sides.get(side)).willDetach();
+            computer.setPeripheral(sides.get(side), null);
+            peripherals.remove(sides.get(side));
+        } catch (NullPointerException e) {
+            return false;
+        }
+        return true;
+    }
+
     @Nonnull
     @Override
     public String[] getMethodNames() {
@@ -71,7 +82,7 @@ public class PeriphemuAPI implements ILuaAPI {
 
     @Nullable
     @Override
-    public Object[] callMethod(@Nonnull ILuaContext context, int method, @Nonnull Object[] arguments) throws LuaException, InterruptedException {
+    public Object[] callMethod(@Nonnull ILuaContext context, int method, @Nonnull Object[] arguments) throws LuaException {
         switch (method) {
             case 0:
                 // create(side, type, options...)
@@ -81,22 +92,26 @@ public class PeriphemuAPI implements ILuaAPI {
                 String side = (String)arguments[0];
                 IPeripheral peripheral;
                 String type = (String)arguments[1];
-                if (type.equals("monitor")) {
-                    peripheral = new MonitorPeripheral(new Monitor());
-                } else if (type.equals("printer")) {
-                    if (arguments.length < 3) {
-                        throw new LuaException("expected 3 arguments, got 2");
-                    }
-                    try {
-                        peripheral = new PrinterPeripheral(new TextPrinter(computer.getFileSystem().openForWrite((String)arguments[2], false)));
-                    } catch (FileSystemException e) {
-                        e.printStackTrace();
-                        throw new LuaException("could not open file to write");
-                    }
-                } else if (type.equals("speaker")) {
-                    peripheral = new SpeakerPeripheral(new Speaker(environment));
-                } else {
-                    throw new LuaException("invalid peripheral type " + type);
+                switch (type) {
+                    case "monitor":
+                        peripheral = new MonitorPeripheral(new Monitor(this, side));
+                        break;
+                    case "printer":
+                        if (arguments.length < 3) {
+                            throw new LuaException("expected 3 arguments, got 2");
+                        }
+                        try {
+                            peripheral = new PrinterPeripheral(new TextPrinter(computer.getFileSystem().openForWrite((String) arguments[2], false)));
+                        } catch (FileSystemException e) {
+                            e.printStackTrace();
+                            throw new LuaException("could not open file to write");
+                        }
+                        break;
+                    case "speaker":
+                        peripheral = new SpeakerPeripheral(new Speaker(environment));
+                        break;
+                    default:
+                        throw new LuaException("invalid peripheral type " + type);
                 }
                 computer.setPeripheral(sides.get(side), peripheral);
                 peripherals.put(sides.get(side), peripheral);
@@ -104,10 +119,13 @@ public class PeriphemuAPI implements ILuaAPI {
             case 1:
                 // remove(side)
                 if (arguments.length != 1) throw new LuaException("expected 1 argument, got " + arguments.length);
-                computer.setPeripheral(sides.get(arguments[0]), null);
-                peripherals.remove(sides.get(arguments[0]));
-                break;
+                //((MonitorPeripheral)sides.get(arguments[0])).
+                return new Object[] {remove((String)arguments[0])};
         }
         return null;
+    }
+
+    void didResize(String side) {
+        computer.queueEvent("monitor_resize", new Object[] {side});
     }
 }
