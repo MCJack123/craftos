@@ -62,22 +62,22 @@ local tRedstoneSides = redstone.getSides()
 local function completeSide( sText, bAddSpaces )
     return completeMultipleChoice( sText, tRedstoneSides, bAddSpaces )
 end
-local function completeFile( shell, nIndex, sText, tPreviousText )
+local function completeFile( shell, nIndex, sText )
     if nIndex == 1 then
         return fs.complete( sText, shell.dir(), true, false )
     end
 end
-local function completeDir( shell, nIndex, sText, tPreviousText )
+local function completeDir( shell, nIndex, sText )
     if nIndex == 1 then
         return fs.complete( sText, shell.dir(), false, true )
     end
 end
-local function completeEither( shell, nIndex, sText, tPreviousText )
+local function completeEither( shell, nIndex, sText )
     if nIndex == 1 then
         return fs.complete( sText, shell.dir(), true, true )
     end
 end
-local function completeEitherEither( shell, nIndex, sText, tPreviousText )
+local function completeEitherEither( shell, nIndex, sText )
     if nIndex == 1 then
         local tResults = fs.complete( sText, shell.dir(), true, true )
         for n=1,#tResults do
@@ -91,49 +91,51 @@ local function completeEitherEither( shell, nIndex, sText, tPreviousText )
         return fs.complete( sText, shell.dir(), true, true )
     end
 end
-local function completeProgram( shell, nIndex, sText, tPreviousText )
+local function completeProgram( shell, nIndex, sText )
     if nIndex == 1 then
         return shell.completeProgram( sText )
     end
 end
-local function completeHelp( shell, nIndex, sText, tPreviousText )
+local function completeHelp( _, nIndex, sText )
     if nIndex == 1 then
         return help.completeTopic( sText )
     end
 end
-local function completeAlias( shell, nIndex, sText, tPreviousText )
+local function completeAlias( shell, nIndex, sText )
     if nIndex == 2 then
         return shell.completeProgram( sText )
     end
 end
-local function completePeripheral( shell, nIndex, sText, tPreviousText )
+local function completePeripheral( _, nIndex, sText )
     if nIndex == 1 then
         return completePeripheralName( sText )
     end
 end
 local tGPSOptions = { "host", "host ", "locate" }
-local function completeGPS( shell, nIndex, sText, tPreviousText )
+local function completeGPS( _, nIndex, sText )
     if nIndex == 1 then
         return completeMultipleChoice( sText, tGPSOptions )
     end
 end
 local tLabelOptions = { "get", "get ", "set ", "clear", "clear " }
-local function completeLabel( shell, nIndex, sText, tPreviousText )
+local function completeLabel( _, nIndex, sText )
     if nIndex == 1 then
         return completeMultipleChoice( sText, tLabelOptions )
     elseif nIndex == 2 then
         return completePeripheralName( sText )
     end
 end
-local function completeMonitor( shell, nIndex, sText, tPreviousText )
+local function completeMonitor( shell, nIndex, sText )
     if nIndex == 1 then
         return completePeripheralName( sText, true )
+    elseif nIndex == 2 and string.find("resolution", sText) == 1 then
+        return string.sub("resolution ", string.len(sText))
     elseif nIndex == 2 then
         return shell.completeProgram( sText )
     end
 end
 local tRedstoneOptions = { "probe", "set ", "pulse " }
-local function completeRedstone( shell, nIndex, sText, tPreviousText )
+local function completeRedstone( _, nIndex, sText )
     if nIndex == 1 then
         return completeMultipleChoice( sText, tRedstoneOptions )
     elseif nIndex == 2 then
@@ -141,7 +143,7 @@ local function completeRedstone( shell, nIndex, sText, tPreviousText )
     end
 end
 local tDJOptions = { "play", "play ", "stop " }
-local function completeDJ( shell, nIndex, sText, tPreviousText )
+local function completeDJ( _, nIndex, sText )
     if nIndex == 1 then
         return completeMultipleChoice( sText, tDJOptions )
     elseif nIndex == 2 then
@@ -159,12 +161,12 @@ local function completePastebin( shell, nIndex, sText, tPreviousText )
     end
 end
 local tChatOptions = { "host ", "join " }
-local function completeChat( shell, nIndex, sText, tPreviousText )
+local function completeChat( _, nIndex, sText )
     if nIndex == 1 then
         return completeMultipleChoice( sText, tChatOptions )
     end
 end
-local function completeSet( shell, nIndex, sText, tPreviousText )
+local function completeSet( _, nIndex, sText )
     if nIndex == 1 then
         return completeMultipleChoice( sText, settings.getNames(), true )
     end
@@ -173,9 +175,40 @@ local tCommands
 if commands then
     tCommands = commands.list()
 end
-local function completeExec( shell, nIndex, sText, tPreviousText )
+local function completeExec( _, nIndex, sText )
     if nIndex == 1 and commands then
         return completeMultipleChoice( sText, tCommands, true )
+    end
+end
+local tPeripherals = {"monitor", "speaker", "printer"}
+local function completeAttach(_, nIndex, sText)
+    if nIndex == 1 then
+        return completePeripheralName(sText, true)
+    elseif nIndex == 2 then
+        return completeMultipleChoice(sText, tPeripherals)
+    end
+end
+local function completeDetach(_, nIndex, sText)
+    if nIndex == 1 then
+        return completePeripheralName(sText)
+    end
+end
+local tConfig = config.list()
+local function completeConfig(_, nIndex, sText, tPreviousText)
+    if nIndex == 1 then
+        return completeMultipleChoice(sText, {"list", "set", "get"})
+    elseif nIndex == 2 and tPreviousText ~= "list " then
+        return completeMultipleChoice(sText, tConfig)
+    end
+end
+local function completeUnmount(shell, nIndex, sText)
+    if nIndex == 1 then
+        return fs.complete(sText, shell.dir(), false, true)
+    end
+end
+local function completeBMPView(shell, nIndex, sText)
+    if nIndex == 1 then
+        return fs.complete(sText, shell.dir(), true, false)
     end
 end
 shell.setCompletionFunction( "rom/programs/alias.lua", completeAlias )
@@ -205,23 +238,28 @@ shell.setCompletionFunction( "rom/programs/fun/advanced/paint.lua", completeFile
 shell.setCompletionFunction( "rom/programs/http/pastebin.lua", completePastebin )
 shell.setCompletionFunction( "rom/programs/rednet/chat.lua", completeChat )
 shell.setCompletionFunction( "rom/programs/command/exec.lua", completeExec )
+shell.setCompletionFunction( "rom/programs/attach.lua", completeAttach )
+shell.setCompletionFunction( "rom/programs/detach.lua", completeDetach )
+shell.setCompletionFunction( "rom/programs/config.lua", completeConfig )
+shell.setCompletionFunction( "rom/programs/unmount.lua", completeUnmount )
+shell.setCompletionFunction( "rom/programs/fun/advanced/bmpview.lua", completeBMPView )
 
 if turtle then
     local tGoOptions = { "left", "right", "forward", "back", "down", "up" }
-    local function completeGo( shell, nIndex, sText )
+    local function completeGo( _, _, sText )
         return completeMultipleChoice( sText, tGoOptions, true)
     end
     local tTurnOptions = { "left", "right" }
-    local function completeTurn( shell, nIndex, sText )
+    local function completeTurn( _, _, sText )
             return completeMultipleChoice( sText, tTurnOptions, true )
     end
     local tEquipOptions = { "left", "right" }
-    local function completeEquip( shell, nIndex, sText )
+    local function completeEquip( _, nIndex, sText )
         if nIndex == 2 then
             return completeMultipleChoice( sText, tEquipOptions )
         end
     end
-    local function completeUnequip( shell, nIndex, sText )
+    local function completeUnequip( _, nIndex, sText )
         if nIndex == 1 then
             return completeMultipleChoice( sText, tEquipOptions )
         end
@@ -237,18 +275,18 @@ end
 if fs.exists( "/rom/autorun" ) and fs.isDir( "/rom/autorun" ) then
     local tFiles = fs.list( "/rom/autorun" )
     table.sort( tFiles )
-    for n, sFile in ipairs( tFiles ) do
+    for _, sFile in ipairs( tFiles ) do
         if string.sub( sFile, 1, 1 ) ~= "." then
-            local sPath = "/rom/autorun/"..sFile
-            if not fs.isDir( sPath ) then
-                shell.run( sPath )
+            local sNPath = "/rom/autorun/"..sFile
+            if not fs.isDir( sNPath ) then
+                shell.run( sNPath )
             end
         end
     end
 end
 
 local function findStartups( sBaseDir )
-    local tStartups = nil
+    local tStartups
     local sBasePath = "/" .. fs.combine( sBaseDir, "startup" )
     local sStartupNode = shell.resolveProgram( sBasePath )
     if sStartupNode then
@@ -261,9 +299,9 @@ local function findStartups( sBaseDir )
             tStartups = {}
         end
         for _,v in pairs( fs.list( sBasePath ) ) do
-            local sPath = "/" .. fs.combine( sBasePath, v )
-            if not fs.isDir( sPath ) then
-                tStartups[ #tStartups + 1 ] = sPath
+            local sNPath = "/" .. fs.combine( sBasePath, v )
+            if not fs.isDir( sNPath ) then
+                tStartups[ #tStartups + 1 ] = sNPath
             end
         end
     end
@@ -271,12 +309,12 @@ local function findStartups( sBaseDir )
 end
 
 -- Run the user created startup, either from disk drives or the root
-local tUserStartups = nil
+local tUserStartups
 if settings.get( "shell.allow_startup" ) then
     tUserStartups = findStartups( "/" )
 end
 if settings.get( "shell.allow_disk_startup" ) then
-    for n,sName in pairs( peripheral.getNames() ) do
+    for _,sName in pairs( peripheral.getNames() ) do
         if disk.isPresent( sName ) and disk.hasData( sName ) then
             local startups = findStartups( disk.getMountPath( sName ) )
             if startups then

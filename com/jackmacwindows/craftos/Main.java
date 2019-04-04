@@ -29,7 +29,6 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
         ComputerCraft.instance = new ComputerCraft();
         ComputerCraft.instance.preInit();
         ComputerCraft.instance.init(); // does nothing right now, but it might later?
-        //ComputerCraft.networkEventChannel.registerClient(client);
         ComputerCraft.networkEventChannel.setServer(server);
         comp_term = server.getTerminal();
         computer = new Computer(env, comp_term, 0);
@@ -56,11 +55,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     /** Handle the key typed event from the text field. */
     public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
-        //if (c == 0x1B) {System.exit(0); return;}
         String s = String.valueOf(c);
-        //if (c == '\b') s = "\b \b";
-        //System.out.print(s);
-        //term.print(s);
         computer.queueEvent("key", new Object[]{(new ComputerKey(e)).intValue(), false});
         if (c >= 32 && c < 128) computer.queueEvent("char", new Object[]{s});
     }
@@ -69,13 +64,11 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     public void keyPressed(KeyEvent e) {
         char c = e.getKeyChar();
         if (c == 't' && e.isControlDown()) computer.queueEvent("terminate", new Object[]{});
-        //term.print(new String(e.getKeyChar()));
         else computer.queueEvent("key", new Object[]{(new ComputerKey(e)).intValue(), true});
     }
 
     /** Handle the key-released event from the text field. */
     public void keyReleased(KeyEvent e) {
-        //term.print(new String(e.getKeyChar()));
         computer.queueEvent("key_up", new Object[]{(new ComputerKey(e)).intValue()});
     }
 
@@ -96,7 +89,6 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
             if (!setMounter && computer.getFileSystem() != null) {
                 mounter.setFileSystem(computer.getFileSystem());
                 setMounter = true;
-                //System.out.println("Set mounter");
             }
             if ((new Date()).getTime() - lastTick >= 1000 / ComputerCraft.config.clockSpeed) {
                 boolean changed = false;
@@ -109,24 +101,17 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                     synchronized (comp_term) {
                         if (comp_term.getChanged()) {
                             changed = true;
-                            //System.out.println("changed");
                             if (comp_term.getPalette() != term.p) term.setPalette(comp_term.getPalette());
                             char[] text, bg, fg, pixels;
                                 for (int y = 0; y < term.height; y++) {
                                     text = comp_term.getLine(y).toString().toCharArray();
                                     bg = comp_term.getBackgroundColourLine(y).toString().toCharArray();
                                     fg = comp_term.getTextColourLine(y).toString().toCharArray();
-                                    //System.out.println(y);
-                                    //System.out.println(bg);
-                                    //System.out.println(fg);
-                                    //System.out.println(text);
                                     for (int x = 0; x < text.length && x < term.width; x++) {
                                         try {
                                             term.panel.screen[x][y] = text[x];
                                             term.panel.colors[x][y] = (char) (((char) ("0123456789abcdef".indexOf(bg[x])) << 4) | (char) ("0123456789abcdef".indexOf(fg[x])));
-                                        } catch (NullPointerException n) {
-                                            //System.out.printf("Error printing: (%d, %d)\n", x, y);
-                                        }
+                                        } catch (NullPointerException ignored) {}
                                     }
                                 }
 
@@ -137,8 +122,6 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                                 }
                             }
                             term.panel.isPixel = comp_term.getGraphicsMode();
-                            //System.out.println(term.panel.isPixel);
-                            //System.out.println("repainting");
                             comp_term.clearChanged();
                         }
                     }
@@ -158,7 +141,6 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                 computer.advance(1);
             }
         }
-        //return true;
     }
 
     @Override
@@ -168,7 +150,6 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
 
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
-        //System.out.println(mouseEvent.paramString());
         lastDragButton = convertButton(mouseEvent.getButton());
         computer.queueEvent("mouse_click", new Object[]{lastDragButton, convertX(mouseEvent.getX()), convertY(mouseEvent.getY())});
     }
@@ -229,7 +210,6 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
 
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
-        //System.out.println(mouseEvent.paramString());
         if (lastDragX != convertX(mouseEvent.getX()) || lastDragY != convertY(mouseEvent.getY())) {
             computer.queueEvent("mouse_drag", new Object[]{lastDragButton, convertX(mouseEvent.getX()), convertY(mouseEvent.getY())});
             lastDragX = convertX(mouseEvent.getX());
@@ -244,7 +224,6 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
 
     @Override
     public void didResizeWindow(int width, int height) {
-        System.out.println("Resized to " + width + "x" + height);
         comp_term.resize(width, height);
         computer.queueEvent("term_resize", new Object[] {});
     }

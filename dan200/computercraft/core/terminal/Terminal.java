@@ -22,11 +22,11 @@ public class Terminal
     public int m_width;
     public int m_height;
 
-    private TextBuffer m_text[];
-    private TextBuffer m_textColour[];
-    private TextBuffer m_backgroundColour[];
+    private TextBuffer[] m_text;
+    private TextBuffer[] m_textColour;
+    private TextBuffer[] m_backgroundColour;
 
-    private TextBuffer m_pixelColor[];
+    private TextBuffer[] m_pixelColor;
 
     private final Palette m_palette;
 
@@ -398,12 +398,10 @@ public class Terminal
     }
 
     public boolean getGraphicsMode() {
-        //System.out.println(m_pixel_mode);
         return m_pixel_mode;
     }
 
     public void setPixel(int x, int y, char colour) {
-        //if (colour > 15) System.err.println("Color too high");
         m_pixelColor[y].setChar(x, colour);
         m_changed = true;
     }
