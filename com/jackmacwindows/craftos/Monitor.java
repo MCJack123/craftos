@@ -60,6 +60,7 @@ public class Monitor implements IMonitorProvider, ResizeListener {
         if (terminal.getChanged()) {
             changed = true;
             //System.out.println("changed");
+            if (terminal.getPalette() != window.p) window.setPalette(terminal.getPalette());
             char[] text, bg, fg, pixels;
             try {
                 for (int y = 0; y < window.height; y++) {
@@ -73,7 +74,7 @@ public class Monitor implements IMonitorProvider, ResizeListener {
                     for (int x = 0; x < text.length && x < window.width; x++) {
                         try {
                             window.panel.screen[x][y] = text[x];
-                            window.panel.colors[x][y] = (char) (((char) ("fedcba9876543210".indexOf(bg[x])) << 4) | (char) ("fedcba9876543210".indexOf(fg[x])));
+                            window.panel.colors[x][y] = (char) (((char) ("0123456789abcdef".indexOf(bg[x])) << 4) | (char) ("0123456789abcdef".indexOf(fg[x])));
                         } catch (NullPointerException n) {
                             //System.out.printf("Error printing: (%d, %d)\n", x, y);
                         }
@@ -85,7 +86,7 @@ public class Monitor implements IMonitorProvider, ResizeListener {
             for (int y = 0; y < window.height * TerminalWindow.fontHeight; y++) {
                 pixels = terminal.getPixelLine(y).toString().toCharArray();
                 for (int x = 0; x < pixels.length && x < window.width * TerminalWindow.fontWidth; x++) {
-                    window.panel.pixels[x][y] = pixels[x];
+                    window.panel.pixels[x][y] = (char)((byte)pixels[x]);
                 }
             }
             window.panel.isPixel = terminal.getGraphicsMode();

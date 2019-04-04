@@ -17,6 +17,14 @@ if peripheral.getType( sName ) ~= "monitor" then
 end
 
 local sProgram = tArgs[2]
+if sProgram == "resolution" then
+    if tArgs[3] == nil or tonumber(tArgs[3]) == nil then
+        print("Text scale required as number")
+        return
+    end
+    peripheral.call(sName, "setTextScale", tonumber(tArgs[3]))
+    return
+end
 local sPath = shell.resolveProgram( sProgram )
 if sPath == nil then
     print( "No such program: "..sProgram )

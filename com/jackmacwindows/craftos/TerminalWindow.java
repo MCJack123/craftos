@@ -18,10 +18,11 @@ class TerminalWindow {
     static final int fontWidth = 6;
     static final int fontHeight = 9;
     static final int fontScale = 1;
-    private int charScale = 2;
+    int charScale = 2;
     int charWidth = fontWidth * fontScale * charScale;
     int charHeight = fontHeight * fontScale * charScale;
     TestPane panel;
+    private TerminalFrame frame;
     //private int column = 0;
     //private int row = 0;
     private Color[] colors = new Color[16];
@@ -39,7 +40,7 @@ class TerminalWindow {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ignored) {
             }
-            TerminalFrame frame = new TerminalFrame(title);
+            frame = new TerminalFrame(title);
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setLayout(new BorderLayout());
             panel = new TestPane(colors);
@@ -98,11 +99,13 @@ class TerminalWindow {
         charScale = scale;
         charWidth = fontWidth * fontScale * charScale;
         charHeight = fontHeight * fontScale * charScale;
+        //frame.setSize((width * charWidth) + (4 * fontScale * charScale), (height * charHeight) + (4 * fontScale * charScale));
+        frame.pack();
     }
 
     private void resize() {
-        int newWidth = (panel.getWidth() - 4*fontScale) / charWidth;
-        int newHeight = (panel.getHeight() - 4*fontScale) / charHeight;
+        int newWidth = (panel.getWidth() - 4*fontScale*charScale) / charWidth;
+        int newHeight = (panel.getHeight() - 4*fontScale*charScale) / charHeight;
         if (newWidth == this.width && newHeight == this.height) return;
         this.width = newWidth;
         this.height = newHeight;
@@ -134,7 +137,7 @@ class TerminalWindow {
         char[][] screen = new char[width][height];
         // upper nybble is bg, lower nybble is fg
         char[][] colors = new char[width][height];
-        char[][] pixels = new char[width*TerminalWindow.fontWidth][height*TerminalWindow.fontHeight];
+        char[][] pixels = new char[width*fontWidth][height*fontHeight];
         boolean isPixel = false;
         public static final long serialVersionUID = 26;
         Color[] palette;
@@ -168,7 +171,7 @@ class TerminalWindow {
 
         @Override
         public Dimension getPreferredSize() {
-            return new Dimension(width*charWidth+(4 * TerminalWindow.fontScale), height*charHeight+(4 * TerminalWindow.fontScale));
+            return new Dimension(width*charWidth+(4 * charScale), height*charHeight+(4 * charScale));
         }
 
         @Override
@@ -188,13 +191,13 @@ class TerminalWindow {
             if (isPixel) {
                 g2d.setXORMode(Color.white);
                 g2d.setColor(palette[15]);
-                g2d.fillRect(0, 0, (width+1)*fontWidth*fontScale, (height+1)*fontHeight*fontScale);
+                g2d.fillRect(0, 0, (width+1)*charWidth, (height+1)*charHeight);
                 g2d.setXORMode(palette[15]);
-                for (int x = 0; x < width * TerminalWindow.fontWidth * fontScale; x+=fontScale) {
-                    for (int y = 0; y < height * TerminalWindow.fontHeight * fontScale; y+=fontScale) {
-                        char c = pixels[x/fontScale][y/fontScale];
+                for (int x = 0; x < width * charWidth; x+=fontScale*charScale) {
+                    for (int y = 0; y < height * charHeight; y+=fontScale*charScale) {
+                        char c = pixels[x/fontScale/charScale][y/fontScale/charScale];
                         g2d.setColor(palette[c]);
-                        g2d.fillRect(x + (2 * TerminalWindow.fontScale * charScale), y + (2 * TerminalWindow.fontScale * charScale), TerminalWindow.fontScale, TerminalWindow.fontScale);
+                        g2d.fillRect(x + (2 * TerminalWindow.fontScale * charScale), y + (2 * TerminalWindow.fontScale * charScale), TerminalWindow.fontScale * charScale, TerminalWindow.fontScale * charScale);
                         /*if (x == 0)
                             g2d.fillRect(0, y + (2 * TerminalWindow.fontScale * charScale), 2 * TerminalWindow.fontScale * charScale, TerminalWindow.fontScale);
                         if (y == 0)

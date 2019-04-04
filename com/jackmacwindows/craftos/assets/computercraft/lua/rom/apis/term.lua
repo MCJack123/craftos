@@ -21,7 +21,7 @@ native.redirect = function( target )
     end
     --traceback("redirecting")
 	for k,v in pairs( native ) do
-		if type( k ) == "string" and type( v ) == "function" then
+		if type( k ) == "string" and type( v ) == "function" and k ~= "native" and k ~= "current" and k ~= "redirect" then
 			if type( target[k] ) ~= "function" then
 				target[k] = function()
 					error( "Redirect object is missing method "..k..".", 2 )
@@ -29,6 +29,9 @@ native.redirect = function( target )
 			end
 		end
 	end
+	target.native = redirectTarget.native
+	target.current = redirectTarget.current
+	target.redirect = redirectTarget.redirect
 	local oldRedirectTarget = redirectTarget
 	redirectTarget = target
 	return oldRedirectTarget

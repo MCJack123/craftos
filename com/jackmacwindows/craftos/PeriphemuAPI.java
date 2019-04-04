@@ -94,9 +94,15 @@ public class PeriphemuAPI implements ILuaAPI {
                 String type = (String)arguments[1];
                 switch (type) {
                     case "monitor":
+                        if (peripherals.containsKey(sides.get(side)) && peripherals.get(sides.get(side)) instanceof MonitorPeripheral) {
+                            return new Object[] {false};
+                        }
                         peripheral = new MonitorPeripheral(new Monitor(this, side));
                         break;
                     case "printer":
+                        if (peripherals.containsKey(sides.get(side)) && peripherals.get(sides.get(side)) instanceof PrinterPeripheral) {
+                            return new Object[] {false};
+                        }
                         if (arguments.length < 3) {
                             throw new LuaException("expected 3 arguments, got 2");
                         }
@@ -108,6 +114,9 @@ public class PeriphemuAPI implements ILuaAPI {
                         }
                         break;
                     case "speaker":
+                        if (peripherals.containsKey(sides.get(side)) && peripherals.get(sides.get(side)) instanceof SpeakerPeripheral) {
+                            return new Object[] {false};
+                        }
                         peripheral = new SpeakerPeripheral(new Speaker(environment));
                         break;
                     default:
@@ -115,7 +124,7 @@ public class PeriphemuAPI implements ILuaAPI {
                 }
                 computer.setPeripheral(sides.get(side), peripheral);
                 peripherals.put(sides.get(side), peripheral);
-                break;
+                return new Object[] {true};
             case 1:
                 // remove(side)
                 if (arguments.length != 1) throw new LuaException("expected 1 argument, got " + arguments.length);
