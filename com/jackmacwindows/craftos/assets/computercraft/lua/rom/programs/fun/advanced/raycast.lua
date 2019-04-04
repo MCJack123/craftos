@@ -186,7 +186,7 @@ for y = 0, (height - 2), 2 * g do
 end
 
 os.pullEvent("char")
-term.setGraphicsMode(false)
 os.pullEvent("char")
-print(width)
-print(height)
+term.setGraphicsMode(false)
+--print(width)
+--print(height)

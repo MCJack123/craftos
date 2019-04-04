@@ -880,7 +880,7 @@ end
 -- Load APIs
 local bAPIError = false
 --os.debug("Loading APIs")
-local tApis = fs.list( "rom/apis" )
+local tApis = fs.list( "/rom/apis" )
 for n,sFile in ipairs( tApis ) do
     if string.sub( sFile, 1, 1 ) ~= "." then
         --os.debug("Loading " .. sFile .. " API")

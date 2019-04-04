@@ -181,29 +181,29 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
 
     private int convertX(int x) {
         if (comp_term.getGraphicsMode()) {
-            if (x < 2 * TerminalWindow.fontScale) return 0;
-            else if (x >= term.charWidth * term.width + 2 * TerminalWindow.fontScale)
+            if (x < 2 * term.charScale) return 0;
+            else if (x >= term.charWidth * term.width + 2 * term.charScale)
                 return TerminalWindow.fontWidth * term.width - 1;
-            return (x - (2 * TerminalWindow.fontScale)) / TerminalWindow.fontScale;
+            return (x - (2 * term.charScale)) / term.charScale;
         } else {
-            if (x < 2 * TerminalWindow.fontScale) x = 2 * TerminalWindow.fontScale;
-            else if (x > term.charWidth * term.width + 2 * TerminalWindow.fontScale)
-                x = term.charWidth * term.width + 2 * TerminalWindow.fontScale;
-            return (x - 2 * TerminalWindow.fontScale) / term.charWidth + 1;
+            if (x < 2 * term.charScale) x = 2 * term.charScale;
+            else if (x > term.charWidth * term.width + 2 * term.charScale)
+                x = term.charWidth * term.width + 2 * term.charScale;
+            return (x - 2 * term.charScale) / term.charWidth + 1;
         }
     }
 
     private int convertY(int x) {
         if (comp_term.getGraphicsMode()) {
-            if (x < 2 * TerminalWindow.fontScale) return 0;
-            else if (x >= term.charHeight * term.height + 2 * TerminalWindow.fontScale)
+            if (x < 2 * term.charScale) return 0;
+            else if (x >= term.charHeight * term.height + 2 * term.charScale)
                 return TerminalWindow.fontHeight * term.height - 1;
-            return (x - (2 * TerminalWindow.fontScale)) / TerminalWindow.fontScale;
+            return (x - (2 * term.charScale)) / term.charScale;
         } else {
-            if (x < 2 * TerminalWindow.fontScale) x = 2 * TerminalWindow.fontScale;
-            else if (x > term.charHeight * term.height + 2 * TerminalWindow.fontScale)
-                x = term.charHeight * term.height + 2 * TerminalWindow.fontScale;
-            return (x - 2 * TerminalWindow.fontScale) / term.charHeight + 1;
+            if (x < 2 * term.charScale) x = 2 * term.charScale;
+            else if (x > term.charHeight * term.height + 2 * term.charScale)
+                x = term.charHeight * term.height + 2 * term.charScale;
+            return (x - 2 * term.charScale) / term.charHeight + 1;
         }
     }
 

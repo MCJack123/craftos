@@ -332,7 +332,7 @@ public class TermAPI implements ILuaAPI
                     }
                     int x = getInt(args, 0);
                     int y = getInt(args, 1);
-                    if (x >= m_terminal.m_width * 6 || y >= m_terminal.m_height * 9 || x < 0 || y < 0)
+                    if (x >= m_terminal.getWidth() * 6 || y >= m_terminal.getHeight() * 9 || x < 0 || y < 0)
                         throw new LuaException("Position " + x + ", " + y + " out of bounds");
                     m_terminal.setPixel(x, y, (char)colour);
                 }

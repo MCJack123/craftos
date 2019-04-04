@@ -122,6 +122,7 @@ public class Configuration implements Serializable {
     }
 
     public Configuration(String file) {
+        this();
         ObjectInputStream objectinputstream = null;
         try {
             FileInputStream streamIn = new FileInputStream(file);
@@ -138,9 +139,7 @@ public class Configuration implements Serializable {
             this.http_whitelist = obj.http_whitelist;
             this.http_blacklist = obj.http_blacklist;
         } catch (Exception e) {
-            if (e instanceof java.io.InvalidClassException)
-                (new File(file)).delete(); // destructive but fixes it
-            e.printStackTrace();
+            return;
         } finally {
             if(objectinputstream != null){
                 try {

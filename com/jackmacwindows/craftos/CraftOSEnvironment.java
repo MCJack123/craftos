@@ -34,7 +34,7 @@ class CraftOSEnvironment implements IComputerEnvironment {
         return new FileMount(new File(getWorldDir().getAbsolutePath() + "/" + subPath), capacity);
     }
     public IMount createResourceMount( String domain, String subPath ) {
-        return new FileMount(new File(getClass().getResource("assets/" + domain + "/" + subPath).toString().replaceAll("file:\\\\", "").replaceAll("file:/", "")), 0);/*
+        return new FileMount(new File(getClass().getResource("assets/" + domain + "/" + subPath).toString().replaceAll("file:\\\\", "").replaceAll("file:", "")), 0);/*
         try {
             return new JarMount(new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath()), "assets/" + domain + "/" + subPath);
         } catch (java.io.IOException e) {

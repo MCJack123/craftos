@@ -133,7 +133,7 @@ class TerminalWindow {
 
     public class TestPane extends JPanel implements ResizeListener {
 
-        private BufferedImage img;
+        private boolean[][][] characters = new boolean[256][fontWidth][fontHeight];
         char[][] screen = new char[width][height];
         // upper nybble is bg, lower nybble is fg
         char[][] colors = new char[width][height];
@@ -147,7 +147,15 @@ class TerminalWindow {
 
         TestPane(Color[] p) {
             try {
-                img = ImageIO.read(getClass().getResourceAsStream("craftos.png"));
+                BufferedImage img = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("craftos.png")));
+                for (char i = 0; i < 255; i++) {
+                    BufferedImage ch = convert(img, i);
+                    for (int x = 0; x < fontWidth; x++) {
+                        for (int y = 0; y < fontHeight; y++) {
+                            characters[i][x][y] = (new Color(ch.getRGB(x, y), true)).getAlpha() > 0x7F;
+                        }
+                    }
+                }
             } catch (IOException ex) {
                 ex.printStackTrace();
                 System.err.println("Failed to read font");
@@ -160,7 +168,7 @@ class TerminalWindow {
             }
         }
 
-        BufferedImage convert(char c) {
+        BufferedImage convert(BufferedImage img, char c) {
             /*System.out.print(c);
             System.out.print(' ');
             System.out.print(8*(c >> 4));
@@ -169,9 +177,47 @@ class TerminalWindow {
             return img.getSubimage(((TerminalWindow.fontWidth + 2) * fontScale)*(c & 0x0F)+fontScale, ((TerminalWindow.fontHeight + 2) * fontScale)*(c >> 4)+fontScale, fontWidth * fontScale, fontHeight * fontScale);
         }
 
+        void drawChar(Graphics2D g2d, char c, int x, int y, Color fg, Color bg) {
+            for (int px = 0; px < charWidth; px+=charScale) {
+                for (int py = 0; py < charHeight; py+=charScale) {
+                    if (!characters[c][px/charScale][py/charScale] && bg == null) continue;
+                    g2d.setColor(characters[c][px/charScale][py/charScale] ? fg : bg);
+                    g2d.fillRect(x * charWidth + (2 * charScale * fontScale) + px, y * charHeight + (2 * charScale * fontScale) + py, charScale, charScale);
+                }
+            }
+        }
+
         @Override
         public Dimension getPreferredSize() {
             return new Dimension(width*charWidth+(4 * charScale), height*charHeight+(4 * charScale));
+        }
+
+        private BufferedImage toCompatibleImage(BufferedImage image) {
+            // obtain the current system graphical settings
+            GraphicsConfiguration gfxConfig = GraphicsEnvironment.
+                    getLocalGraphicsEnvironment().getDefaultScreenDevice().
+                    getDefaultConfiguration();
+
+            /*
+             * if image is already compatible and optimized for current system
+             * settings, simply return it
+             */
+            if (image.getColorModel().equals(gfxConfig.getColorModel()))
+                return image;
+
+            // image is not optimized, so create a new image that is
+            BufferedImage newImage = gfxConfig.createCompatibleImage(
+                    image.getWidth(), image.getHeight(), image.getTransparency());
+
+            // get the graphics context of the new image to draw the old image on
+            Graphics2D g2d = newImage.createGraphics();
+
+            // actually draw the image and dispose of context no longer needed
+            g2d.drawImage(image, 0, 0, null);
+            g2d.dispose();
+
+            // return the new optimized image
+            return newImage;
         }
 
         @Override
@@ -188,13 +234,16 @@ class TerminalWindow {
                 g2d.drawImage(img, x, y, this);
                 x += img.getWidth();
             }*/
+            //long paintStart = System.nanoTime();
             if (isPixel) {
                 g2d.setXORMode(Color.white);
                 g2d.setColor(palette[15]);
                 g2d.fillRect(0, 0, (width+1)*charWidth, (height+1)*charHeight);
                 g2d.setXORMode(palette[15]);
+                //long pixelStart = System.nanoTime();
                 for (int x = 0; x < width * charWidth; x+=fontScale*charScale) {
                     for (int y = 0; y < height * charHeight; y+=fontScale*charScale) {
+                        long indivStart = System.nanoTime();
                         char c = pixels[x/fontScale/charScale][y/fontScale/charScale];
                         g2d.setColor(palette[c]);
                         g2d.fillRect(x + (2 * TerminalWindow.fontScale * charScale), y + (2 * TerminalWindow.fontScale * charScale), TerminalWindow.fontScale * charScale, TerminalWindow.fontScale * charScale);
@@ -214,15 +263,19 @@ class TerminalWindow {
                             g2d.fillRect((x + fontScale) + (2 * TerminalWindow.fontScale * charScale), 0, 2 * TerminalWindow.fontScale * charScale, 2 * TerminalWindow.fontScale * charScale);
                         if (x + fontScale == width * TerminalWindow.fontWidth * fontScale && y + fontScale == height * fontScale * TerminalWindow.fontHeight)
                             g2d.fillRect((x + fontScale) + (2 * TerminalWindow.fontScale * charScale), (y + fontScale) + (2 * TerminalWindow.fontScale * charScale), 2 * TerminalWindow.fontScale * charScale, 2 * TerminalWindow.fontScale * charScale);*/
+                        if (x == 0 && y == 0) System.out.println("Time to paint individual pixel: " + ((System.nanoTime() - indivStart) / 1000000.0) + " ms");
                     }
                 }
+                //System.out.println("Time to paint pixels: " + ((System.nanoTime() - pixelStart) / 1000000.0) + " ms");
             } else {
                 for (int x = 0; x < width; x++) {
+                    //long rowStart = System.nanoTime();
                     for (int y = 0; y < height; y++) {
-                        BufferedImage c = convert(screen[x][y]);
+                        //BufferedImage c = convert(screen[x][y]);
+                        //if (x == 0 && y == 0) System.out.println("Time to convert character: " + ((System.nanoTime() - indivStart) / 1000000.0) + " ms");
                         g2d.setColor(palette[colors[x][y] >> 4]);
                         g2d.setXORMode(Color.white);
-                        g2d.fillRect(x * charWidth + (2 * TerminalWindow.fontScale * charScale), y * charHeight + (2 * TerminalWindow.fontScale * charScale), charWidth, charHeight);
+                        //g2d.fillRect(x * charWidth + (2 * TerminalWindow.fontScale * charScale), y * charHeight + (2 * TerminalWindow.fontScale * charScale), charWidth, charHeight);
                         if (x == 0)
                             g2d.fillRect(0, y * charHeight + (2 * TerminalWindow.fontScale * charScale), 2 * TerminalWindow.fontScale * charScale, charHeight);
                         if (y == 0)
@@ -239,20 +292,26 @@ class TerminalWindow {
                             g2d.fillRect((x + 1) * charWidth + (2 * TerminalWindow.fontScale * charScale), 0, 2 * TerminalWindow.fontScale * charScale, 2 * TerminalWindow.fontScale * charScale);
                         if (x + 1 == width && y + 1 == height)
                             g2d.fillRect((x + 1) * charWidth + (2 * TerminalWindow.fontScale * charScale), (y + 1) * charHeight + (2 * TerminalWindow.fontScale * charScale), 2 * TerminalWindow.fontScale * charScale, 2 * TerminalWindow.fontScale * charScale);
-                        g2d.setXORMode(invertColor(palette[colors[x][y] & 0x0F], palette[colors[x][y] >> 4]));
-                        g2d.setColor(palette[0]);
-                        g2d.drawImage(c, x * charWidth + (2 * TerminalWindow.fontScale * charScale), y * charHeight + (2 * TerminalWindow.fontScale * charScale), charWidth, charHeight, this);
-                        g2d.setXORMode(Color.white);
+                        //g2d.setXORMode(invertColor(palette[colors[x][y] & 0x0F], palette[colors[x][y] >> 4]));
+                        //g2d.setColor(palette[0]);
+                        //long indivStart = System.nanoTime();
+                        //g2d.drawImage(c, x * charWidth + (2 * TerminalWindow.fontScale * charScale), y * charHeight + (2 * TerminalWindow.fontScale * charScale), charWidth, charHeight, this);
+                        drawChar(g2d, screen[x][y], x, y, palette[colors[x][y] & 0x0F], palette[colors[x][y] >> 4]);
+                        //g2d.setXORMode(Color.white);
+                        //if (x == 0 && y == 0) System.out.println("Time to paint individual character: " + ((System.nanoTime() - indivStart) / 1000000.0) + " ms");
                     }
+                    //System.out.println("Time to paint row: " + ((System.nanoTime() - rowStart) / 1000000.0) + " ms");
                 }
                 if (blink) {
-                    g2d.setXORMode(invertColor(palette[0], palette[colors[blinkX][blinkY] >> 4]));
-                    g2d.setColor(Color.white);
-                    g2d.drawImage(convert('_'), blinkX * charWidth + (2 * TerminalWindow.fontScale * charScale), blinkY * charHeight + (2 * TerminalWindow.fontScale * charScale), charWidth, charHeight, this);
-                    g2d.setXORMode(Color.white);
+                    //g2d.setXORMode(invertColor(palette[0], palette[colors[blinkX][blinkY] >> 4]));
+                    //g2d.setColor(Color.white);
+                    //g2d.drawImage(convert('_'), blinkX * charWidth + (2 * TerminalWindow.fontScale * charScale), blinkY * charHeight + (2 * TerminalWindow.fontScale * charScale), charWidth, charHeight, this);
+                    drawChar(g2d, '_', blinkX, blinkY, Color.black, null);
+                    //g2d.setXORMode(Color.white);
                 }
             }
             g2d.dispose();
+            //System.out.println("Time to paint: " + ((System.nanoTime() - paintStart) / 1000000.0) + " ms");
         }
 
         private Color invertColor(Color src, Color mod) {
