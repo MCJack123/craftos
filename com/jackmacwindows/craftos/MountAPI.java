@@ -15,8 +15,8 @@ import java.util.Map;
 public class MountAPI implements ILuaAPI {
 
     private FileSystem fs;
-    private Map<String, IWritableMount> mounts = new HashMap<>();
-    private Map<String, Boolean> isReadOnly = new HashMap<>();
+    private final Map<String, IWritableMount> mounts = new HashMap<>();
+    private final Map<String, Boolean> isReadOnly = new HashMap<>();
 
     MountAPI(FileSystem fs) {
         this.fs = fs;

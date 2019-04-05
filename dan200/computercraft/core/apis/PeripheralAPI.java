@@ -30,14 +30,14 @@ public class PeripheralAPI implements ILuaAPI, IAPIEnvironment.IPeripheralChange
         private final String m_side;
         private final IPeripheral m_peripheral;
 
-        private String m_type;
-        private String[] m_methods;
+        private final String m_type;
+        private final String[] m_methods;
         private Map<String, Integer> m_methodMap;
         private boolean m_attached;
         
         private Set<String> m_mounts;
         
-        public PeripheralWrapper( IPeripheral peripheral, String side )
+        PeripheralWrapper(IPeripheral peripheral, String side)
         {
             m_side = side;
             m_peripheral = peripheral;
@@ -63,28 +63,28 @@ public class PeripheralAPI implements ILuaAPI, IAPIEnvironment.IPeripheralChange
             return m_peripheral;
         }
         
-        public String getType()
+        String getType()
         {
             return m_type;
         }
                 
-        public String[] getMethods()
+        String[] getMethods()
         {
             return m_methods;
         }
         
-        public synchronized boolean isAttached()
+        synchronized boolean isAttached()
         {
             return m_attached;
         }
         
-        public synchronized void attach()
+        synchronized void attach()
         {
             m_attached = true;
             m_peripheral.attach( this );
         }
         
-        public synchronized void detach()
+        synchronized void detach()
         {
             // Call detach
             m_peripheral.detach( this );
@@ -98,7 +98,7 @@ public class PeripheralAPI implements ILuaAPI, IAPIEnvironment.IPeripheralChange
             m_mounts.clear();
         }
         
-        public Object[] call( ILuaContext context, String methodName, Object[] arguments ) throws LuaException, InterruptedException
+        Object[] call(ILuaContext context, String methodName, Object[] arguments) throws LuaException, InterruptedException
         {
             int method = -1;
             synchronized( this )            

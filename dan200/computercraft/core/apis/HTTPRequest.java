@@ -14,11 +14,12 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HTTPRequest
+class HTTPRequest
 {
     public static URL checkURL( String urlString ) throws HTTPRequestException
     {
@@ -99,14 +100,7 @@ public class HTTPRequest
                 {
                     OutputStream os = connection.getOutputStream();
                     OutputStreamWriter osw;
-                    try
-                    {
-                        osw = new OutputStreamWriter( os, "UTF-8" );
-                    }
-                    catch( UnsupportedEncodingException e )
-                    {
-                        osw = new OutputStreamWriter( os );
-                    }
+                    osw = new OutputStreamWriter( os, StandardCharsets.UTF_8);
                     BufferedWriter writer = new BufferedWriter( osw );
                     writer.write( postText, 0, postText.length() );
                     writer.close();

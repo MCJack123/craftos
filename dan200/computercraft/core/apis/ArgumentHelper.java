@@ -17,7 +17,7 @@ public final class ArgumentHelper
     }
 
     @Nonnull
-    public static String getType( @Nullable Object type )
+    private static String getType(@Nullable Object type)
     {
         if( type == null ) return "nil";
         if( type instanceof String ) return "string";
@@ -55,7 +55,7 @@ public final class ArgumentHelper
         return new LuaException( "bad argument #" + (index + 1) + " (" + expected + " expected, got " + actual + ")" );
     }
 
-    public static double getNumber( @Nonnull Object[] args, int index ) throws LuaException
+    private static double getNumber(@Nonnull Object[] args, int index) throws LuaException
     {
         if( index >= args.length ) throw badArgument( index, "number", "nil" );
         Object value = args[ index ];
@@ -133,7 +133,7 @@ public final class ArgumentHelper
         }
     }
 
-    public static double optNumber( @Nonnull Object[] args, int index, double def ) throws LuaException
+    private static double optNumber(@Nonnull Object[] args, int index, double def) throws LuaException
     {
         Object value = index < args.length ? args[ index ] : null;
         if( value == null )

@@ -7,7 +7,7 @@ import java.io.*;
 public class TextPrinter implements IStyledPrinter {
 
     private Terminal currentPage;
-    private OutputStreamWriter file;
+    private final OutputStreamWriter file;
 
     public TextPrinter(OutputStream f) {
         file = new OutputStreamWriter(f);

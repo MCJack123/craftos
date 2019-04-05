@@ -339,7 +339,7 @@ public class Terminal
         m_changed = false;
     }
 
-    public NBTTagCompound writeToNBT( NBTTagCompound nbttagcompound )
+    public void writeToNBT(NBTTagCompound nbttagcompound )
     {
         nbttagcompound.setInteger( "term_cursorX", m_cursorX );
         nbttagcompound.setInteger( "term_cursorY", m_cursorY );
@@ -356,7 +356,6 @@ public class Terminal
         {
             m_palette.writeToNBT( nbttagcompound );
         }
-        return nbttagcompound;
     }
 
     public void readFromNBT( NBTTagCompound nbttagcompound )

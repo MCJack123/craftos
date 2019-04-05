@@ -45,7 +45,7 @@ public class ConfigAPI implements ILuaAPI {
 
     @Nullable
     @Override
-    public Object[] callMethod(@Nonnull ILuaContext context, int method, @Nonnull Object[] arguments) throws LuaException, InterruptedException {
+    public Object[] callMethod(@Nonnull ILuaContext context, int method, @Nonnull Object[] arguments) throws LuaException {
         switch (method) {
             case 0:
                 // get

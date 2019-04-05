@@ -4,7 +4,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nonnull;
 
-public final class ColourUtils
+final class ColourUtils
 {
     private static final String[] DYES = new String[] {
         "dyeBlack", "dyeRed", "dyeGreen", "dyeBrown",

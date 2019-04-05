@@ -128,10 +128,14 @@ end
 local function completeMonitor( shell, nIndex, sText )
     if nIndex == 1 then
         return completePeripheralName( sText, true )
-    elseif nIndex == 2 and string.find("resolution", sText) == 1 then
-        return string.sub("resolution ", string.len(sText))
     elseif nIndex == 2 then
-        return shell.completeProgram( sText )
+        local retval = shell.completeProgram( sText )
+        if sText == "" then
+            table.insert(retval, "resolution ")
+        elseif string.find("resolution", sText) == 1 then
+            table.insert(retval, string.sub("resolution ", string.len(sText) + 1))
+        end
+        return retval
     end
 end
 local tRedstoneOptions = { "probe", "set ", "pulse " }
@@ -183,7 +187,7 @@ end
 local tPeripherals = {"monitor", "speaker", "printer"}
 local function completeAttach(_, nIndex, sText)
     if nIndex == 1 then
-        return completePeripheralName(sText, true)
+        return completeMultipleChoice(sText, {"left", "right", "top", "bottom", "front", "back"}, true)
     elseif nIndex == 2 then
         return completeMultipleChoice(sText, tPeripherals)
     end

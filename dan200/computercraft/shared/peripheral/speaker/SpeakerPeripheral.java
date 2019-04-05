@@ -16,10 +16,10 @@ import javax.annotation.Nonnull;
 public class SpeakerPeripheral implements IPeripheral {
     private ISpeakerProvider m_speaker;
     private long m_clock;
-    private long m_lastPlayTime;
+    private final long m_lastPlayTime;
     private int m_notesThisTick;
 
-    public SpeakerPeripheral()
+    private SpeakerPeripheral()
     {
         m_clock = 0;
         m_lastPlayTime = 0;

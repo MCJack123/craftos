@@ -24,12 +24,12 @@ public class JarMount implements IMount
 {    
     private class FileInZip
     {
-        private String m_path;
-        private boolean m_directory;
-        private long m_size;
-        private Map<String, FileInZip> m_children;
+        private final String m_path;
+        private final boolean m_directory;
+        private final long m_size;
+        private final Map<String, FileInZip> m_children;
         
-        public FileInZip( String path, boolean directory, long size )
+        FileInZip(String path, boolean directory, long size)
         {
             m_path = path;
             m_directory = directory;
@@ -37,33 +37,33 @@ public class JarMount implements IMount
             m_children = new LinkedHashMap<>();
         }
         
-        public String getPath()
+        String getPath()
         {
             return m_path;
         }
         
-        public boolean isDirectory()
+        boolean isDirectory()
         {
             return m_directory;
         }
                 
-        public long getSize()
+        long getSize()
         {
             return m_size;
         }
         
-        public void list( List<String> contents )
+        void list(List<String> contents)
         {
             contents.addAll( m_children.keySet() );
         }
                 
-        public void insertChild( FileInZip child )
+        void insertChild(FileInZip child)
         {
             String localPath = FileSystem.toLocal( child.getPath(), m_path );
             m_children.put( localPath, child );
         }
 
-        public FileInZip getFile( String path ) 
+        FileInZip getFile(String path)
         {
             // If we've reached the target, return this
             if( path.equals( m_path ) )
@@ -89,7 +89,7 @@ public class JarMount implements IMount
             return null;
         }
         
-        public FileInZip getParent( String path )
+        FileInZip getParent(String path)
         {
             if( path.length() == 0 )
             {
@@ -176,15 +176,13 @@ public class JarMount implements IMount
     // IMount implementation
     
     @Override
-    public boolean exists( @Nonnull String path ) throws IOException
-    {
+    public boolean exists( @Nonnull String path ) {
         FileInZip file = m_root.getFile( path );
         return file != null;
     }
     
     @Override
-    public boolean isDirectory( @Nonnull String path ) throws IOException
-    {
+    public boolean isDirectory( @Nonnull String path ) {
         FileInZip file = m_root.getFile( path );
         if( file != null )
         {

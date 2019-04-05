@@ -12,7 +12,7 @@ public class EncodedInputHandle extends HandleGeneric
 {
     private final BufferedReader m_reader;
 
-    public EncodedInputHandle( BufferedReader reader )
+    private EncodedInputHandle(BufferedReader reader)
     {
         super( reader );
         this.m_reader = reader;
@@ -84,7 +84,7 @@ public class EncodedInputHandle extends HandleGeneric
                 checkOpen();
                 try
                 {
-                    StringBuilder result = new StringBuilder( "" );
+                    StringBuilder result = new StringBuilder();
                     String line = m_reader.readLine();
                     while( line != null )
                     {

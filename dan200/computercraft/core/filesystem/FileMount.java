@@ -14,14 +14,14 @@ import java.util.List;
 
 public class FileMount implements IWritableMount
 {
-    private static int MINIMUM_FILE_SIZE = 500;
+    private static final int MINIMUM_FILE_SIZE = 500;
     
     private class CountingOutputStream extends OutputStream
     {
-        private OutputStream m_innerStream;
+        private final OutputStream m_innerStream;
         private long m_ignoredBytesLeft;
         
-        public CountingOutputStream( OutputStream innerStream, long bytesToIgnore )
+        CountingOutputStream(OutputStream innerStream, long bytesToIgnore)
         {
             m_innerStream = innerStream;
             m_ignoredBytesLeft = bytesToIgnore;
@@ -81,8 +81,8 @@ public class FileMount implements IWritableMount
         }
     }
     
-    public File m_rootPath;
-    private long m_capacity;
+    public final File m_rootPath;
+    private final long m_capacity;
     private long m_usedSpace;
     
     public FileMount( File rootPath, long capacity )
@@ -351,18 +351,18 @@ public class FileMount implements IWritableMount
         return Math.max( m_capacity - m_usedSpace, 0 );
     }
     
-    public File getRealPath( String path )
+    private File getRealPath(String path)
     {
         return new File( m_rootPath, path );
     }
     
-    public boolean created()
+    private boolean created()
     {
         //System.out.println(m_rootPath.toString());
         return m_rootPath.exists();
     }
     
-    public void create() throws IOException
+    private void create() throws IOException
     {
         if( !m_rootPath.exists() )
         {

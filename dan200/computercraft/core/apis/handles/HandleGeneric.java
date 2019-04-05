@@ -6,7 +6,7 @@ import dan200.computercraft.api.lua.LuaException;
 import java.io.Closeable;
 import java.io.IOException;
 
-public abstract class HandleGeneric implements ILuaObject
+abstract class HandleGeneric implements ILuaObject
 {
     protected final Closeable m_closable;
     protected boolean m_open = true;

@@ -16,8 +16,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class HTTPServer {
-    private IAPIEnvironment env;
-    private HashMap<Integer, HttpServer> serverList;
+    private final IAPIEnvironment env;
+    private final HashMap<Integer, HttpServer> serverList;
 
     public HTTPServer(IAPIEnvironment e) {
         env = e;

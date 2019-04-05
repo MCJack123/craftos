@@ -22,9 +22,9 @@ class TerminalWindow {
     int charHeight = fontHeight * fontScale * charScale;
     TestPane panel;
     private TerminalFrame frame;
-    private Color[] colors = new Color[16];
-    public Palette p = Palette.DEFAULT;
-    private ResizeListener delegate;
+    private final Color[] colors = new Color[16];
+    public final Palette p = Palette.DEFAULT;
+    private final ResizeListener delegate;
 
     TerminalWindow(ResizeListener d, String title) {
         for (int i = 0; i < 16; i++) {
@@ -73,7 +73,7 @@ class TerminalWindow {
         delegate.didResizeWindow(this.width, this.height);
     }
 
-    public class TerminalFrame extends JFrame {
+    class TerminalFrame extends JFrame {
         TerminalFrame(String title) {
             super(title);
             addComponentListener(new ComponentAdapter() {

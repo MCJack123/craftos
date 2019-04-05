@@ -113,7 +113,7 @@ public class ServerComputer extends ServerTerminal
         ComputerCraft.sendToAllPlayers( packet );
     }
 
-    public void sendState( int player )
+    private void sendState(int player)
     {
         // Send state to client
         ComputerCraftPacket packet = new ComputerCraftPacket();
@@ -250,7 +250,7 @@ public class ServerComputer extends ServerTerminal
         return m_computer.getPeripheral( side );
     }
 
-    public void setLabel( String label )
+    private void setLabel(String label)
     {
         m_computer.setLabel( label );
     }

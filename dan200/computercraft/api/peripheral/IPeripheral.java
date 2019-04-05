@@ -66,13 +66,10 @@ public interface IPeripheral
      * @throws LuaException         If you throw any exception from this function, a lua error will be raised with the
      *                              same message as your exception. Use this to throw appropriate errors if the wrong
      *                              arguments are supplied to your method.
-     * @throws InterruptedException If the user shuts down or reboots the computer the coroutine is suspended,
-     *                              InterruptedException will be thrown. This exception must not be caught or
-     *                              intercepted, or the computer will leak memory and end up in a broken state.
      * @see #getMethodNames
      */
     @Nullable
-    Object[] callMethod( @Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments ) throws LuaException, InterruptedException;
+    Object[] callMethod( @Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments ) throws LuaException;
 
     /**
      * Is called when canAttachToSide has returned true, and a computer is attaching to the peripheral.

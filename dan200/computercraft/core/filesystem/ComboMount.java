@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class ComboMount implements IMount
 {    
-    private IMount[] m_parts;
+    private final IMount[] m_parts;
     
     public ComboMount( IMount[] parts )
     {

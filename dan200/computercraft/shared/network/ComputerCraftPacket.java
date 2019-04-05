@@ -14,8 +14,8 @@ import net.minecraft.network.PacketBuffer;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
- 
+import java.nio.charset.StandardCharsets;
+
 public class ComputerCraftPacket
 {
     // Packet types
@@ -26,7 +26,7 @@ public class ComputerCraftPacket
     public static final byte QueueEvent = 4;
     public static final byte RequestComputerUpdate = 5;
     public static final byte SetLabel = 6;
-    public static final byte RequestTileEntityUpdate = 9;
+    private static final byte RequestTileEntityUpdate = 9;
 
     // To client
     public static final byte ComputerChanged = 7;
@@ -36,7 +36,7 @@ public class ComputerCraftPacket
     public byte m_packetType;
     public String[] m_dataString;
     public int[] m_dataInt;
-    public byte[][] m_dataByte;
+    private byte[][] m_dataByte;
     public NBTTagCompound m_dataNBT;
 
     public ComputerCraftPacket()
@@ -81,17 +81,10 @@ public class ComputerCraftPacket
             {
                 if( s != null )
                 {
-                    try
-                    {
-                        byte[] b = s.getBytes( "UTF-8" );
-                        buffer.writeBoolean( true );
-                        buffer.writeInt( b.length );
-                        buffer.writeBytes( b );
-                    }
-                    catch( UnsupportedEncodingException e )
-                    {
-                        buffer.writeBoolean( false );
-                    }
+                    byte[] b = s.getBytes(StandardCharsets.UTF_8);
+                    buffer.writeBoolean( true );
+                    buffer.writeInt( b.length );
+                    buffer.writeBytes( b );
                 }
                 else
                 {
@@ -163,14 +156,7 @@ public class ComputerCraftPacket
                     int len = buffer.readInt();
                     byte[] b = new byte[len];
                     buffer.readBytes( b );
-                    try
-                    {
-                        m_dataString[ k ] = new String( b, "UTF-8" );
-                    }
-                    catch( UnsupportedEncodingException e )
-                    {
-                        m_dataString[ k ] = null;
-                    }
+                    m_dataString[ k ] = new String( b, StandardCharsets.UTF_8);
                 }
             }
         }

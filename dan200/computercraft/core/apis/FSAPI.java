@@ -25,7 +25,7 @@ import static dan200.computercraft.core.apis.ArgumentHelper.getString;
 
 public class FSAPI implements ILuaAPI
 {
-    private IAPIEnvironment m_env;
+    private final IAPIEnvironment m_env;
     private FileSystem m_fileSystem;
     
     public FSAPI( IAPIEnvironment _env )

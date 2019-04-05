@@ -8,7 +8,7 @@ package dan200.computercraft.shared.util;
 
 import java.util.Calendar;
 
-public class HolidayUtil
+class HolidayUtil
 {
     public static Holiday getCurrentHoliday()
     {

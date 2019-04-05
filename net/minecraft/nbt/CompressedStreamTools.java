@@ -70,7 +70,7 @@ public class CompressedStreamTools
         }
     }
 
-    public static void write(NBTTagCompound compound, File fileIn) throws IOException
+    private static void write(NBTTagCompound compound, File fileIn) throws IOException
     {
         DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(fileIn));
 

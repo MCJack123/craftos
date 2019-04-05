@@ -14,7 +14,7 @@ public class Configuration implements Serializable {
 
     public int computerSpaceLimit;
     public int maximumFilesOpen;
-    public int maxNotesPerTick;
+    private int maxNotesPerTick;
     public int clockSpeed;
 
     public Object get(String name) {

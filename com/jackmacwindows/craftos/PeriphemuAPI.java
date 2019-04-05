@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class PeriphemuAPI implements ILuaAPI {
 
-    private Map<Integer, IPeripheral> peripherals = new HashMap<>();
+    private final Map<Integer, IPeripheral> peripherals = new HashMap<>();
     private Computer computer;
     private IComputerEnvironment environment;
 

@@ -8,7 +8,7 @@ package dan200.computercraft.core.terminal;
 
 public class TextBuffer
 {
-    public char[] m_text;
+    private final char[] m_text;
 
     public TextBuffer( char c, int length )
     {
@@ -42,7 +42,7 @@ public class TextBuffer
         this( text, 1 );
     }
 
-    public TextBuffer( TextBuffer text, int repetitions )
+    private TextBuffer(TextBuffer text, int repetitions)
     {
         int textLength = text.length();
         m_text = new char[ textLength * repetitions ];
@@ -110,7 +110,7 @@ public class TextBuffer
         write( text, start, start + text.length() );
     }
 
-    public void write( TextBuffer text, int start, int end )
+    private void write(TextBuffer text, int start, int end)
     {
         int pos = start;
         start = Math.max( start, 0 );
@@ -175,7 +175,7 @@ public class TextBuffer
         fill( text, start, m_text.length );
     }
 
-    public void fill( TextBuffer text, int start, int end )
+    private void fill(TextBuffer text, int start, int end)
     {
         int pos = start;
         start = Math.max( start, 0 );

@@ -7,10 +7,10 @@ import java.util.Date;
 
 public class Monitor implements IMonitorProvider, ResizeListener {
 
-    private TerminalWindow window;
-    private Terminal terminal;
-    private PeriphemuAPI api;
-    private String side;
+    private final TerminalWindow window;
+    private final Terminal terminal;
+    private final PeriphemuAPI api;
+    private final String side;
     private long lastBlink = 0;
 
     public Monitor(PeriphemuAPI p, String s) {

@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class ComputerRegistry<TComputer extends IComputer>
+class ComputerRegistry<TComputer extends IComputer>
 {
-    private Map<Integer, TComputer> m_computers;
+    private final Map<Integer, TComputer> m_computers;
     private int m_nextUnusedInstanceID;
     private int m_sessionID;
 
@@ -82,10 +82,7 @@ public class ComputerRegistry<TComputer extends IComputer>
 
     public void remove( int instanceID )
     {
-        if( m_computers.containsKey( instanceID ) )
-        {
-            m_computers.remove( instanceID );
-        }
+        m_computers.remove( instanceID );
     }
 
     public void reset()

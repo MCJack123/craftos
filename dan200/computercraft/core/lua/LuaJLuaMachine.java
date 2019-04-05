@@ -32,14 +32,14 @@ import java.util.Map;
 
 public class LuaJLuaMachine implements ILuaMachine
 {
-    private Computer m_computer;
+    private final Computer m_computer;
 
-    private LuaValue m_globals;
-    private LuaValue m_loadString;
+    private final LuaValue m_globals;
+    private final LuaValue m_loadString;
     private LuaValue m_assert;
-    private LuaValue m_coroutine_create;
-    private LuaValue m_coroutine_resume;
-    private LuaValue m_coroutine_yield;
+    private final LuaValue m_coroutine_create;
+    private final LuaValue m_coroutine_resume;
+    private final LuaValue m_coroutine_yield;
     
     private LuaValue m_mainRoutine;
     private String m_eventFilter;

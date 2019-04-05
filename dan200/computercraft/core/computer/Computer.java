@@ -46,7 +46,7 @@ public class Computer
         private Computer m_computer;
         private IAPIEnvironment.IPeripheralChangeListener m_peripheralListener;
         
-        public APIEnvironment( Computer computer )
+        APIEnvironment(Computer computer)
         {
             m_computer = computer;
             m_peripheralListener = null;
@@ -166,7 +166,7 @@ public class Computer
             m_computer.setLabel( label );
         }
 
-        public void onPeripheralChanged( int side, IPeripheral peripheral )
+        void onPeripheralChanged(int side, IPeripheral peripheral)
         {
             synchronized( m_computer.m_peripherals )
             {

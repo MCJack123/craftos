@@ -25,7 +25,7 @@ public abstract class NBTBase
     /**
      * Creates a new NBTBase object that corresponds with the passed in id.
      */
-    protected static NBTBase createNewByType(byte id)
+    static NBTBase createNewByType(byte id)
     {
         switch (id)
         {
@@ -127,7 +127,7 @@ public abstract class NBTBase
     /**
      * Creates a clone of the tag.
      */
-    public abstract NBTBase copy();
+    protected abstract NBTBase copy();
 
     /**
      * Return whether this compound has no tags.
@@ -147,7 +147,7 @@ public abstract class NBTBase
         return this.getId();
     }
 
-    protected String getString()
+    String getString()
     {
         return this.toString();
     }

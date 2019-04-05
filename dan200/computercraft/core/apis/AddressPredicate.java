@@ -24,7 +24,7 @@ public class AddressPredicate
             this.max = max;
         }
 
-        public boolean contains( InetAddress address )
+        boolean contains(InetAddress address)
         {
             byte[] entry = address.getAddress();
             if( entry.length != min.length ) return false;
@@ -156,12 +156,8 @@ public class AddressPredicate
         if( matchesAddress( address ) ) return true;
 
         // If we're an IPv4 address in disguise then let's check that.
-        if( address instanceof Inet6Address && InetAddresses.is6to4Address( (Inet6Address) address )
-            && matchesAddress( InetAddresses.get6to4IPv4Address( (Inet6Address) address ) ) )
-        {
-            return true;
-        }
+        return address instanceof Inet6Address && InetAddresses.is6to4Address((Inet6Address) address)
+                && matchesAddress(InetAddresses.get6to4IPv4Address((Inet6Address) address));
 
-        return false;
     }
 }

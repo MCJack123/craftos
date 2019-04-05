@@ -28,7 +28,6 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
         ServerComputer server = new ServerComputer(0, "Computer", 0, ComputerFamily.Advanced, term.width, term.height);
         ComputerCraft.instance = new ComputerCraft();
         ComputerCraft.instance.preInit();
-        ComputerCraft.instance.init(); // does nothing right now, but it might later?
         ComputerCraft.networkEventChannel.setServer(server);
         comp_term = server.getTerminal();
         computer = new Computer(env, comp_term, 0);

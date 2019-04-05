@@ -3,6 +3,7 @@ package dan200.computercraft.shared.util;
 import dan200.computercraft.ComputerCraft;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class IDAssigner
 {
@@ -65,14 +66,7 @@ public class IDAssigner
             {
                 FileInputStream in = new FileInputStream( lastidFile );
                 InputStreamReader isr;
-                try
-                {
-                    isr = new InputStreamReader( in, "UTF-8" );
-                }
-                catch( UnsupportedEncodingException e )
-                {
-                    isr = new InputStreamReader( in );
-                }
+                isr = new InputStreamReader( in, StandardCharsets.UTF_8);
                 try( BufferedReader br = new BufferedReader( isr ) )
                 {
                     idString = br.readLine();

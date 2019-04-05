@@ -9,27 +9,27 @@ public class ResourceMount implements IMount {
 
 
     @Override
-    public boolean exists(String path) throws IOException {
+    public boolean exists(String path) {
         return false;
     }
 
     @Override
-    public boolean isDirectory(String path) throws IOException {
+    public boolean isDirectory(String path) {
         return false;
     }
 
     @Override
-    public void list(String path, List<String> contents) throws IOException {
+    public void list(String path, List<String> contents) {
 
     }
 
     @Override
-    public long getSize(String path) throws IOException {
+    public long getSize(String path) {
         return 0;
     }
 
     @Override
-    public InputStream openForRead(String path) throws IOException {
+    public InputStream openForRead(String path) {
         return null;
     }
 }

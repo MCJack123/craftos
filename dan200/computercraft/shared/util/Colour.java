@@ -45,8 +45,8 @@ public enum Colour
         return null;
     }
 
-    private int m_hex;
-    private float[] m_rgb;
+    private final int m_hex;
+    private final float[] m_rgb;
 
     Colour( int hex )
     {

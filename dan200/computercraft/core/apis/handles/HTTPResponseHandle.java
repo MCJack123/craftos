@@ -15,8 +15,8 @@ import java.nio.charset.StandardCharsets;
 import static dan200.computercraft.core.apis.ArgumentHelper.getString;
 
 public class HTTPResponseHandle extends HandleGeneric {
-    private HttpExchange m_exchange;
-    private ByteArrayOutputStream m_writer;
+    private final HttpExchange m_exchange;
+    private final ByteArrayOutputStream m_writer;
     private int m_off = 0;
     private int m_statusCode = 200;
 

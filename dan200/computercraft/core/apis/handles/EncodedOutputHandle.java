@@ -10,7 +10,7 @@ public class EncodedOutputHandle extends HandleGeneric
 {
     private final BufferedWriter m_writer;
 
-    public EncodedOutputHandle( BufferedWriter writer )
+    private EncodedOutputHandle(BufferedWriter writer)
     {
         super( writer );
         this.m_writer = writer;
@@ -21,7 +21,7 @@ public class EncodedOutputHandle extends HandleGeneric
         this( stream, "UTF-8" );
     }
 
-    public EncodedOutputHandle( OutputStream stream, String encoding )
+    private EncodedOutputHandle(OutputStream stream, String encoding)
     {
         this( makeWriter( stream, encoding ) );
     }

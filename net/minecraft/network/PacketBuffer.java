@@ -62,7 +62,7 @@ public class PacketBuffer extends ByteBuf
         return this.readByteArray(this.readableBytes());
     }
 
-    public byte[] readByteArray(int maxLength)
+    private byte[] readByteArray(int maxLength)
     {
         int i = this.readVarIntFromBuffer();
 
@@ -98,7 +98,7 @@ public class PacketBuffer extends ByteBuf
         return this.readVarIntArray(this.readableBytes());
     }
 
-    public int[] readVarIntArray(int maxLength)
+    private int[] readVarIntArray(int maxLength)
     {
         int i = this.readVarIntFromBuffer();
 
@@ -142,7 +142,7 @@ public class PacketBuffer extends ByteBuf
         return this.readLongArray(array, this.readableBytes() / 8);
     }
 
-    public long[] readLongArray(@Nullable long[] p_189423_1_, int p_189423_2_)
+    private long[] readLongArray(@Nullable long[] p_189423_1_, int p_189423_2_)
     {
         int i = this.readVarIntFromBuffer();
 
@@ -166,7 +166,7 @@ public class PacketBuffer extends ByteBuf
 
     public <T extends Enum<T>> T readEnumValue(Class<T> enumClass)
     {
-        return (T)((Enum[])enumClass.getEnumConstants())[this.readVarIntFromBuffer()];
+        return enumClass.getEnumConstants()[this.readVarIntFromBuffer()];
     }
 
     public PacketBuffer writeEnumValue(Enum<?> value)
@@ -178,7 +178,7 @@ public class PacketBuffer extends ByteBuf
      * Reads a compressed int from the buffer. To do so it maximally reads 5 byte-sized chunks whose most significant
      * bit dictates whether another byte should be read.
      */
-    public int readVarIntFromBuffer()
+    private int readVarIntFromBuffer()
     {
         int i = 0;
         int j = 0;
@@ -244,7 +244,7 @@ public class PacketBuffer extends ByteBuf
      * whether the next byte is part of that same int. Micro-optimization for int values that are expected to have
      * values below 128.
      */
-    public PacketBuffer writeVarIntToBuffer(int input)
+    private PacketBuffer writeVarIntToBuffer(int input)
     {
         while ((input & -128) != 0)
         {
@@ -297,8 +297,7 @@ public class PacketBuffer extends ByteBuf
     /**
      * Reads a compressed NBTTagCompound from this buffer
      */
-    public NBTTagCompound readNBTTagCompoundFromBuffer() throws IOException
-    {
+    public NBTTagCompound readNBTTagCompoundFromBuffer() {
         int i = this.readerIndex();
         byte b0 = this.readByte();
 

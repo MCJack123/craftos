@@ -137,10 +137,7 @@ public class PrinterPeripheral implements IPeripheral
         if( other instanceof PrinterPeripheral )
         {
             PrinterPeripheral otherPrinter = (PrinterPeripheral)other;
-            if( otherPrinter.m_printer == this.m_printer )
-            {
-                return true;
-            }
+            return otherPrinter.m_printer == this.m_printer;
         }
         return false;
     }

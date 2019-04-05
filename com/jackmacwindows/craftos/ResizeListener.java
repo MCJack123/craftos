@@ -1,4 +1,4 @@
-public interface ResizeListener {
+interface ResizeListener {
     void didResizeWindow(int width, int height);
     void willClose();
 }

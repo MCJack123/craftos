@@ -1,10 +1,10 @@
 package dan200.computercraft.shared.util;
 
 /**
- * A reimplementation of the colour system in {@link net.minecraft.item.crafting.RecipesArmorDyes}, but
+ * A reimplementation of the colour system in net.minecraft.item.crafting.RecipesArmorDyes, but
  * bundled together as an object.
  */
-public class ColourTracker
+class ColourTracker
 {
     private int total;
     private int totalR;

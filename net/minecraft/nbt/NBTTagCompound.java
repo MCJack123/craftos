@@ -16,7 +16,7 @@ public class NBTTagCompound extends NBTBase
 {
     private static final Logger field_191551_b = LogManager.getLogger();
     private static final Pattern field_193583_c = Pattern.compile("[A-Za-z0-9._+-]+");
-    private final Map<String, NBTBase> tagMap = Maps.<String, NBTBase>newHashMap();
+    private final Map<String, NBTBase> tagMap = Maps.newHashMap();
 
     /**
      * Write the actual data contents of the tag, implemented in NBT extension classes
@@ -88,7 +88,7 @@ public class NBTTagCompound extends NBTBase
     /**
      * Stores a new NBTTagByte with the given byte value into the map with the given string key.
      */
-    public void setByte(String key, byte value)
+    private void setByte(String key, byte value)
     {
         this.tagMap.put(key, new NBTTagByte(value));
     }
@@ -193,7 +193,7 @@ public class NBTTagCompound extends NBTBase
     /**
      * Gets the ID byte for the given tag key
      */
-    public byte getTagId(String key)
+    private byte getTagId(String key)
     {
         NBTBase nbtbase = this.tagMap.get(key);
         return nbtbase == null ? 0 : nbtbase.getId();
@@ -233,7 +233,7 @@ public class NBTTagCompound extends NBTBase
     /**
      * Retrieves a byte value using the specified key, or 0 if no such key was stored.
      */
-    public byte getByte(String key)
+    private byte getByte(String key)
     {
         try
         {
@@ -244,7 +244,6 @@ public class NBTTagCompound extends NBTBase
         }
         catch (ClassCastException var3)
         {
-            ;
         }
 
         return 0;
@@ -264,7 +263,6 @@ public class NBTTagCompound extends NBTBase
         }
         catch (ClassCastException var3)
         {
-            ;
         }
 
         return 0;
@@ -284,7 +282,6 @@ public class NBTTagCompound extends NBTBase
         }
         catch (ClassCastException var3)
         {
-            ;
         }
 
         return 0;
@@ -304,7 +301,6 @@ public class NBTTagCompound extends NBTBase
         }
         catch (ClassCastException var3)
         {
-            ;
         }
 
         return 0L;
@@ -324,7 +320,6 @@ public class NBTTagCompound extends NBTBase
         }
         catch (ClassCastException var3)
         {
-            ;
         }
 
         return 0.0F;
@@ -344,7 +339,6 @@ public class NBTTagCompound extends NBTBase
         }
         catch (ClassCastException var3)
         {
-            ;
         }
 
         return 0.0D;
@@ -359,12 +353,11 @@ public class NBTTagCompound extends NBTBase
         {
             if (this.hasKey(key, 8))
             {
-                return ((NBTBase)this.tagMap.get(key)).getString();
+                return this.tagMap.get(key).getString();
             }
         }
         catch (ClassCastException var3)
         {
-            ;
         }
 
         return "";
@@ -542,7 +535,7 @@ public class NBTTagCompound extends NBTBase
 
         for (String s : this.tagMap.keySet())
         {
-            nbttagcompound.setTag(s, ((NBTBase)this.tagMap.get(s)).copy());
+            nbttagcompound.setTag(s, this.tagMap.get(s).copy());
         }
 
         return nbttagcompound;
@@ -579,7 +572,7 @@ public class NBTTagCompound extends NBTBase
         return input.readUTF();
     }
 
-    static NBTBase readNBT(byte id, String key, DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException
+    private static NBTBase readNBT(byte id, String key, DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException
     {
         NBTBase nbtbase = NBTBase.createNewByType(id);
 
@@ -602,7 +595,7 @@ public class NBTTagCompound extends NBTBase
      * Merges this NBTTagCompound with the given compound. Any sub-compounds are merged using the same methods, other
      * types of tags are overwritten from the given compound.
      */
-    public void merge(NBTTagCompound other)
+    private void merge(NBTTagCompound other)
     {
         for (String s : other.tagMap.keySet())
         {
@@ -627,7 +620,7 @@ public class NBTTagCompound extends NBTBase
         }
     }
 
-    protected static String func_193582_s(String p_193582_0_)
+    private static String func_193582_s(String p_193582_0_)
     {
         return field_193583_c.matcher(p_193582_0_).matches() ? p_193582_0_ : NBTTagString.func_193588_a(p_193582_0_);
     }

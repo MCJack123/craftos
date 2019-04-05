@@ -90,8 +90,8 @@ public class ComputerCraft
     public static int floppySpaceLimit = 125 * 1000;
     public static int maximumFilesOpen = 128;
 
-    public static int maxNotesPerTick = 8;
-    public static int clockSpeed = 20;
+    public static final int maxNotesPerTick = 8;
+    public static final int clockSpeed = 20;
 
     public static NetworkManager networkEventChannel;
 
@@ -225,38 +225,6 @@ public class ComputerCraft
         config.serialize(getWorldDir().toString() + "/config.ser");
     }
 
-    //@Mod.EventHandler
-    public void init( /*FMLInitializationEvent event*/ )
-    {
-        //proxy.init();
-        //turtleProxy.init();
-    }
-
-    //@Mod.EventHandler
-    public void onServerStarting( /*FMLServerStartingEvent event*/ )
-    {
-    }
-
-    //@Mod.EventHandler
-    public void onServerStart( /*FMLServerStartedEvent event*/ )
-    {
-        //if( FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER )
-        {
-           // ComputerCraft.serverComputerRegistry.reset();
-            
-        }
-    }
-
-    //@Mod.EventHandler
-    public void onServerStopped( /*FMLServerStoppedEvent event*/ )
-    {
-        //if( FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER )
-        {
-            //ComputerCraft.serverComputerRegistry.reset();
-            
-        }
-    }
-
     public static String getVersion()
     {
         return "${version}";
@@ -331,17 +299,17 @@ public class ComputerCraft
         player.openGui( ComputerCraft.instance, ComputerCraft.pocketComputerGUIID, player.getEntityWorld(), hand.ordinal(), 0, 0 );
     }
 */
-    public static File getBaseDir()
+    private static File getBaseDir()
     {
         return new File(System.getProperty("user.home").concat("/.craftos"));
     }
 
-    public static File getResourcePackDir()
+    private static File getResourcePackDir()
     {
         return new File( getBaseDir(), "resourcepacks" );
     }
 
-    public static File getWorldDir()
+    private static File getWorldDir()
     {
         return new File(System.getProperty("user.home").concat("/.craftos"));
     }

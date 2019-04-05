@@ -16,7 +16,7 @@ public class ClientTerminal implements ITerminal
     private boolean m_terminalChanged;
     private boolean m_terminalChangedLastFrame;
 
-    public ClientTerminal( boolean colour )
+    protected ClientTerminal(boolean colour)
     {
         m_colour = colour;
         m_terminal = null;

@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public final class NBTUtil
+final class NBTUtil
 {
     private static final Logger field_193591_a = LogManager.getLogger();
 

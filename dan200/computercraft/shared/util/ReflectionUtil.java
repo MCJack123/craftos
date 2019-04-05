@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-public class ReflectionUtil
+class ReflectionUtil
 {
     public static Class<?> getOptionalClass( String name )
     {

@@ -10,7 +10,7 @@ import javax.sound.sampled.Clip;
 
 public class Speaker implements ISpeakerProvider {
 
-    private IComputerEnvironment env;
+    private final IComputerEnvironment env;
 
     public Speaker(IComputerEnvironment e) {
         env = e;
@@ -24,7 +24,7 @@ public class Speaker implements ISpeakerProvider {
 
     @Nonnull
     @Override
-    public Object[] playSound(Object[] arguments, ILuaContext context, boolean isNote) throws LuaException {
+    public Object[] playSound(Object[] arguments, ILuaContext context, boolean isNote) {
         //new Thread(new Runnable() {
             // The wrapper thread is unnecessary, unless it blocks on the
             // Clip finishing; see comments.

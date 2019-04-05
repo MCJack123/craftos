@@ -9,5 +9,5 @@ public interface ISpeakerProvider {
     @Nonnull
     Object[] playNote( Object[] arguments, ILuaContext context ) throws LuaException;
     @Nonnull
-    Object[] playSound( Object[] arguments, ILuaContext context, boolean isNote ) throws LuaException;
+    Object[] playSound( Object[] arguments, ILuaContext context, boolean isNote );
 }

@@ -17,7 +17,7 @@ import static dan200.computercraft.core.apis.ArgumentHelper.*;
 
 public class OSAPI implements ILuaAPI
 {
-    private IAPIEnvironment m_apiEnvironment;
+    private final IAPIEnvironment m_apiEnvironment;
 
     private final Map<Integer, Timer> m_timers;
     private final Map<Integer, Alarm> m_alarms;
@@ -30,9 +30,9 @@ public class OSAPI implements ILuaAPI
     
     private static class Timer
     {
-        public int m_ticksLeft;
+        int m_ticksLeft;
 
-        public Timer( int ticksLeft )
+        Timer(int ticksLeft)
         {
             m_ticksLeft = ticksLeft;
         }
@@ -40,10 +40,10 @@ public class OSAPI implements ILuaAPI
     
     private class Alarm implements Comparable<Alarm>
     {
-        public final double m_time;
-        public final int m_day;
+        final double m_time;
+        final int m_day;
 
-        public Alarm( double time, int day )
+        Alarm(double time, int day)
         {
             m_time = time;
             m_day = day;

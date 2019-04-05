@@ -27,7 +27,7 @@ public class Palette
         }
     }
 
-    public void setColour(int i, Colour colour)
+    private void setColour(int i, Colour colour)
     {
         setColour( i, colour.getR(), colour.getG(), colour.getB() );
     }
@@ -41,7 +41,7 @@ public class Palette
         return null;
     }
 
-    public void resetColour( int i )
+    private void resetColour(int i)
     {
         if( i >= 0 && i < colours.length )
         {
@@ -76,7 +76,7 @@ public class Palette
         };
     }
 
-    public NBTTagCompound writeToNBT( NBTTagCompound nbt )
+    public void writeToNBT(NBTTagCompound nbt )
     {
         int[] rgb8 = new int[colours.length];
 
@@ -86,7 +86,6 @@ public class Palette
         }
 
         nbt.setIntArray( "term_palette", rgb8 );
-        return nbt;
     }
 
     public void readFromNBT( NBTTagCompound nbt )

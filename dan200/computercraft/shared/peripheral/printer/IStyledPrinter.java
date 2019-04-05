@@ -2,7 +2,7 @@ package dan200.computercraft.shared.peripheral.printer;
 
 import dan200.computercraft.core.terminal.Terminal;
 
-public interface IStyledPrinter {
+interface IStyledPrinter {
     Terminal getCurrentPage();
     boolean startNewPage();
     boolean endCurrentPage();

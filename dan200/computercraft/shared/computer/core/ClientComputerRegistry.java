@@ -29,19 +29,5 @@ public class ClientComputerRegistry extends ComputerRegistry<ClientComputer>
         //System.out.println( getComputers().size() + " CLIENT COMPUTERS" );
     }
 
-    @Override
-    public void remove( int instanceID )
-    {
-        //System.out.println( "REMOVE CLIENT COMPUTER " + instanceID );
-        super.remove( instanceID );
-        //System.out.println( getComputers().size() + " CLIENT COMPUTERS" );
-    }
-
-    @Override
-    public void reset()
-    {
-        //System.out.println( "RESET CLIENT COMPUTERS" );
-        super.reset();
-        //System.out.println( getComputers().size() + " CLIENT COMPUTERS" );
-    }
+    
 }

@@ -18,13 +18,13 @@ public class FileSystem
 {    
     private class MountWrapper
     {
-        private String m_label;
-        private String m_location;
+        private final String m_label;
+        private final String m_location;
         
-        private IMount m_mount;
+        private final IMount m_mount;
         private IWritableMount m_writableMount;
         
-        public MountWrapper( String label, String location, IMount mount )
+        MountWrapper(String label, String location, IMount mount)
         {
             m_label = label;
             m_location = location;
@@ -32,23 +32,23 @@ public class FileSystem
             m_writableMount = null;
         }
 
-        public MountWrapper( String label, String location, IWritableMount mount )
+        MountWrapper(String label, String location, IWritableMount mount)
         {
             this( label, location, (IMount)mount );
             m_writableMount = mount;
         }
         
-        public String getLabel()
+        String getLabel()
         {
             return m_label;
         }
 
-        public String getLocation()
+        String getLocation()
         {
             return m_location;
         }
         
-        public long getFreeSpace()
+        long getFreeSpace()
         {
             if( m_writableMount == null )
             {
@@ -65,13 +65,13 @@ public class FileSystem
             }
         }
         
-        public boolean isReadOnly( String path ) {
+        boolean isReadOnly(String path) {
             return (m_writableMount == null);
         }
                 
         // IMount forwarders:
         
-        public boolean exists( String path ) throws FileSystemException
+        boolean exists(String path) throws FileSystemException
         {
             path = toLocal( path );
             try
@@ -84,7 +84,7 @@ public class FileSystem
             }
         }
         
-        public boolean isDirectory( String path ) throws FileSystemException
+        boolean isDirectory(String path) throws FileSystemException
         {
             path = toLocal( path );
             try
@@ -97,7 +97,7 @@ public class FileSystem
             }
         }
         
-        public void list( String path, List<String> contents ) throws FileSystemException
+        void list(String path, List<String> contents) throws FileSystemException
         {
             //System.out.println("toLocal");
             path = toLocal( path );
@@ -121,7 +121,7 @@ public class FileSystem
             }
         }
         
-        public long getSize( String path ) throws FileSystemException
+        long getSize(String path) throws FileSystemException
         {
             path = toLocal( path );
             try
@@ -148,7 +148,7 @@ public class FileSystem
             }
         }
     
-        public InputStream openForRead( String path ) throws FileSystemException
+        InputStream openForRead(String path) throws FileSystemException
         {
             path = toLocal( path );
             try
@@ -170,7 +170,7 @@ public class FileSystem
         
         // IWritableMount forwarders:
                 
-        public void makeDirectory( String path ) throws FileSystemException
+        void makeDirectory(String path) throws FileSystemException
         {
             if( m_writableMount == null )
             {
@@ -197,7 +197,7 @@ public class FileSystem
             }
         }
                 
-        public void delete( String path ) throws FileSystemException
+        void delete(String path) throws FileSystemException
         {
             if( m_writableMount == null )
             {
@@ -217,7 +217,7 @@ public class FileSystem
             }
         }
     
-        public OutputStream openForWrite( String path ) throws FileSystemException
+        OutputStream openForWrite(String path) throws FileSystemException
         {
             if( m_writableMount == null )
             {
@@ -249,7 +249,7 @@ public class FileSystem
             }
         }
         
-        public OutputStream openForAppend( String path ) throws FileSystemException
+        OutputStream openForAppend(String path) throws FileSystemException
         {
             if( m_writableMount == null )
             {
@@ -813,7 +813,7 @@ public class FileSystem
         return result.toString();
     }
     
-    public static boolean contains( String pathA, String pathB )
+    private static boolean contains(String pathA, String pathB)
     {
         pathA = sanitizePath( pathA );
         pathB = sanitizePath( pathB );
@@ -856,7 +856,7 @@ public class FileSystem
 
     private class ClosingInputStream extends FilterInputStream
     {
-        protected ClosingInputStream( InputStream in )
+        ClosingInputStream(InputStream in)
         {
             super( in );
         }
@@ -871,7 +871,7 @@ public class FileSystem
 
     private class ClosingOutputStream extends FilterOutputStream
     {
-        protected ClosingOutputStream( OutputStream out )
+        ClosingOutputStream(OutputStream out)
         {
             super( out );
         }

@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class JsonToNBT
+class JsonToNBT
 {
     private static final Pattern field_193615_a = Pattern.compile("[-+]?(?:[0-9]+[.]|[0-9]*[.][0-9]+)(?:e[-+]?[0-9]+)?", 2);
     private static final Pattern field_193616_b = Pattern.compile("[-+]?(?:[0-9]+[.]?|[0-9]*[.][0-9]+)(?:e[-+]?[0-9]+)?d", 2);
@@ -138,7 +138,6 @@ public class JsonToNBT
         }
         catch (NumberFormatException var3)
         {
-            ;
         }
 
         return new NBTTagString(p_193596_1_);
@@ -198,7 +197,6 @@ public class JsonToNBT
 
         for (i = this.field_193623_i; this.func_193612_g() && this.func_193599_a(this.func_193598_n()); ++this.field_193623_i)
         {
-            ;
         }
 
         return this.field_193622_h.substring(i, this.field_193623_i);
@@ -342,7 +340,7 @@ public class JsonToNBT
 
     private <T extends Number> List<T> func_193603_a(byte p_193603_1_, byte p_193603_2_) throws NBTException
     {
-        List<T> list = Lists.<T>newArrayList();
+        List<T> list = Lists.newArrayList();
 
         while (true)
         {

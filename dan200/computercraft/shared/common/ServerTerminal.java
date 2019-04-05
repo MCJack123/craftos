@@ -24,7 +24,7 @@ public class ServerTerminal implements ITerminal
         m_terminalChangedLastFrame = false;
     }
 
-    public ServerTerminal( boolean colour, int terminalWidth, int terminalHeight )
+    protected ServerTerminal(boolean colour, int terminalWidth, int terminalHeight)
     {
         m_colour = colour;
         m_terminal = new Terminal( terminalWidth, terminalHeight );

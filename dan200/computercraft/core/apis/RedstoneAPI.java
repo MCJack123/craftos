@@ -18,7 +18,7 @@ import static dan200.computercraft.core.apis.ArgumentHelper.*;
 
 public class RedstoneAPI implements ILuaAPI
 {
-    private IAPIEnvironment m_environment;
+    private final IAPIEnvironment m_environment;
 
     public RedstoneAPI( IAPIEnvironment environment )
     {

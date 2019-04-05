@@ -20,9 +20,9 @@ public class BufferAPI implements ILuaAPI
 {
     private static class BufferLuaObject implements ILuaObject
     {
-        private TextBuffer m_buffer;
+        private final TextBuffer m_buffer;
 
-        public BufferLuaObject( TextBuffer buffer )
+        BufferLuaObject(TextBuffer buffer)
         {
             m_buffer = buffer;
         }
@@ -41,8 +41,7 @@ public class BufferAPI implements ILuaAPI
         }
 
         @Override
-        public Object[] callMethod( @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments ) throws LuaException, InterruptedException
-        {
+        public Object[] callMethod( @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments ) throws LuaException {
             switch( method )
             {
                 case 0:
@@ -125,8 +124,7 @@ public class BufferAPI implements ILuaAPI
     }
 
     @Override
-    public Object[] callMethod( @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments ) throws LuaException, InterruptedException
-    {
+    public Object[] callMethod( @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments ) throws LuaException {
         switch( method )
         {
             case 0:

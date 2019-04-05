@@ -1,6 +1,6 @@
 package net.minecraft.nbt;
 
-public class NBTException extends Exception
+class NBTException extends Exception
 {
     public NBTException(String p_i47523_1_, String p_i47523_2_, int p_i47523_3_)
     {
@@ -17,7 +17,7 @@ public class NBTException extends Exception
             stringbuilder.append("...");
         }
 
-        stringbuilder.append(p_193592_0_.substring(Math.max(0, i - 35), i));
+        stringbuilder.append(p_193592_0_, Math.max(0, i - 35), i);
         stringbuilder.append("<--[HERE]");
         return stringbuilder.toString();
     }
