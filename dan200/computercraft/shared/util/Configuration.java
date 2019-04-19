@@ -11,6 +11,8 @@ public class Configuration implements Serializable {
     public boolean disable_lua51_features;
     public String default_computer_settings;
     public boolean logPeripheralErrors;
+    public boolean showFPS;
+    public boolean readFail = false;
 
     public int computerSpaceLimit;
     public int maximumFilesOpen;
@@ -39,13 +41,17 @@ public class Configuration implements Serializable {
                 return http_whitelist;
             case "http_blacklist":
                 return http_blacklist;
+            case "showFPS":
+                return showFPS;
+            case "readFail":
+                return readFail;
             default:
                 return null;
         }
     }
 
     public String[] list() {
-        return new String[] {"http_enable", "disable_lua51_features", "default_computer_settings", "logPeripheralErrors", "computerSpaceLimit", "maximumFilesOpen", "maxNotesPerTick", "clockSpeed", "http_whitelist", "http_blacklist"};
+        return new String[] {"http_enable", "disable_lua51_features", "default_computer_settings", "logPeripheralErrors", "computerSpaceLimit", "maximumFilesOpen", "maxNotesPerTick", "clockSpeed", "http_whitelist", "http_blacklist", "showFPS"};
     }
 
     public int getType(String name) {
@@ -70,6 +76,8 @@ public class Configuration implements Serializable {
                 return 3;
             case "http_blacklist":
                 return 3;
+            case "showFPS":
+                return 0;
             default:
                 return -1;
         }
@@ -98,6 +106,8 @@ public class Configuration implements Serializable {
                 http_whitelist = (String[]) value;
             case "http_blacklist":
                 http_blacklist = (String[]) value;
+            case "showFPS":
+                showFPS = (boolean) value;
         }
     }
 
@@ -138,7 +148,9 @@ public class Configuration implements Serializable {
             this.clockSpeed = obj.clockSpeed;
             this.http_whitelist = obj.http_whitelist;
             this.http_blacklist = obj.http_blacklist;
+            this.showFPS = obj.showFPS;
         } catch (Exception e) {
+            readFail = true;
             return;
         } finally {
             if(objectinputstream != null){
@@ -162,5 +174,6 @@ public class Configuration implements Serializable {
         clockSpeed = ComputerCraft.clockSpeed;
         http_whitelist = ComputerCraft.DEFAULT_HTTP_WHITELIST;
         http_blacklist = ComputerCraft.DEFAULT_HTTP_BLACKLIST;
+        showFPS = false;
     }
 }

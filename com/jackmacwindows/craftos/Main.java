@@ -133,7 +133,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                     term.panel.blink = !term.panel.blink;
                 } else if (!comp_term.getCursorBlink()) term.panel.blink = false;
                 if (changed) {term.panel.repaint(); System.gc(); Runtime.getRuntime().gc();}
-                if (computer.isOff()) {
+                if (computer.isOff() && !computer.m_startRequested) {
                     return !computer.isCrashed();
                 }
                 lastTick = (new Date()).getTime();

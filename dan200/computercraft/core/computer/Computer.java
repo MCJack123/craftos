@@ -185,7 +185,7 @@ public class Computer
     private final IComputerEnvironment m_environment;
 
     private int m_ticksSinceStart;
-    private boolean m_startRequested;
+    public boolean m_startRequested;
     private State m_state;
     private boolean m_blinking;
     private boolean m_crashed;

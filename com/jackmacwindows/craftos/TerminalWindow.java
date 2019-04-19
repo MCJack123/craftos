@@ -1,3 +1,4 @@
+import dan200.computercraft.ComputerCraft;
 import dan200.computercraft.shared.util.Palette;
 
 import javax.imageio.ImageIO;
@@ -9,6 +10,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Date;
 
 class TerminalWindow {
 
@@ -103,6 +105,9 @@ class TerminalWindow {
         int blinkX = 0;
         int blinkY = 0;
         boolean blink = false;
+        int lastFPS = 0;
+        int currentFPS = 0;
+        int lastSecond = (new Date()).getSeconds();
 
         TestPane(Color[] p) {
             try {
@@ -131,7 +136,7 @@ class TerminalWindow {
             return img.getSubimage(((TerminalWindow.fontWidth + 2) * fontScale)*(c & 0x0F)+fontScale, ((TerminalWindow.fontHeight + 2) * fontScale)*(c >> 4)+fontScale, fontWidth * fontScale, fontHeight * fontScale);
         }
 
-        void drawChar(Graphics2D g2d, char c, int x, int y, Color fg, Color bg) {
+        void drawChar(Graphics g2d, char c, int x, int y, Color fg, Color bg) {
             for (int px = 0; px < charWidth; px+=charScale) {
                 for (int py = 0; py < charHeight; py+=charScale) {
                     if (!characters[c][px/charScale][py/charScale] && bg == null) continue;
@@ -175,15 +180,16 @@ class TerminalWindow {
         }
 
         @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2d = (Graphics2D) g.create();
-            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        protected void paintComponent(Graphics g2d) {
+            super.paintComponent(g2d);
+            g2d.setPaintMode();
+            //Graphics2D g2d = (Graphics2D) g.create();
+            //g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             if (isPixel) {
-                g2d.setXORMode(Color.white);
+                //g2d.setXORMode(Color.white);
                 g2d.setColor(palette[15]);
                 g2d.fillRect(0, 0, (width+1)*charWidth, (height+1)*charHeight);
-                g2d.setXORMode(palette[15]);
+                //g2d.setXORMode(palette[15]);
                 for (int x = 0; x < width * charWidth; x+=fontScale*charScale) {
                     for (int y = 0; y < height * charHeight; y += fontScale * charScale) {
                         char c = pixels[x / fontScale / charScale][y / fontScale / charScale];
@@ -192,10 +198,10 @@ class TerminalWindow {
                     }
                 }
             } else {
+                //g2d.setXORMode(Color.white);
                 for (int x = 0; x < width; x++) {
                     for (int y = 0; y < height; y++) {
                         g2d.setColor(palette[colors[x][y] >> 4]);
-                        g2d.setXORMode(Color.white);
                         if (x == 0)
                             g2d.fillRect(0, y * charHeight + (2 * TerminalWindow.fontScale * charScale), 2 * TerminalWindow.fontScale * charScale, charHeight);
                         if (y == 0)
@@ -215,7 +221,21 @@ class TerminalWindow {
                         drawChar(g2d, screen[x][y], x, y, palette[colors[x][y] & 0x0F], palette[colors[x][y] >> 4]);
                     }
                 }
-                if (blink) drawChar(g2d, '_', blinkX, blinkY, Color.black, null);
+                if (blink) drawChar(g2d, '_', blinkX, blinkY, Color.white, null);
+            }
+            currentFPS++;
+            if (lastSecond != (new Date()).getSeconds()) {
+                lastSecond = (new Date()).getSeconds();
+                lastFPS = currentFPS;
+                currentFPS = 0;
+            }
+            if (ComputerCraft.config.showFPS) {
+                String fps = String.valueOf(lastFPS);
+                g2d.setColor(Color.BLACK);
+                g2d.fillRect(0, 0, g2d.getFontMetrics().stringWidth(fps) + 4 + fps.length(), 16);
+                g2d.setColor(Color.WHITE);
+                g2d.setFont(new Font(g2d.getFont().getFontName(), Font.BOLD, 12));
+                g2d.drawString(fps, g2d.getFontMetrics().stringWidth(fps) - (9 * fps.length()) + 3, 13);
             }
             g2d.dispose();
         }
