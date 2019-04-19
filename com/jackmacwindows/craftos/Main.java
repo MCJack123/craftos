@@ -3,12 +3,13 @@ import dan200.computercraft.core.computer.Computer;
 import dan200.computercraft.core.terminal.Terminal;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
 import dan200.computercraft.shared.computer.core.ServerComputer;
+import dan200.computercraft.shared.util.IConfigurationListener;
 
 import java.awt.event.*;
 import java.io.File;
 import java.util.Date;
 
-public class Main implements KeyListener, MouseListener, MouseWheelListener, MouseMotionListener, ResizeListener {
+public class Main implements KeyListener, MouseListener, MouseWheelListener, MouseMotionListener, ResizeListener, IConfigurationListener {
 
     private final TerminalWindow term;
     private final Terminal comp_term;
@@ -82,6 +83,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
             term.panel.addKeyListener(this);
             term.panel.addMouseWheelListener(this);
             term.panel.addMouseMotionListener(this);
+            ComputerCraft.config.delegate = this;
             setListeners = true;
         }
         while (true) {
@@ -230,5 +232,11 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     @Override
     public void willClose() {
         System.exit(0);
+    }
+
+    @Override
+    public void didUpdateConfig() {
+        ComputerCraft.config.serialize(ComputerCraft.getWorldDir().toString() + "/config.ser");
+        System.out.println("Updated");
     }
 }

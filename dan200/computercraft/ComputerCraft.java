@@ -16,8 +16,8 @@ import dan200.computercraft.shared.computer.core.ClientComputerRegistry;
 import dan200.computercraft.shared.computer.core.ServerComputerRegistry;
 import dan200.computercraft.shared.network.ComputerCraftPacket;
 import dan200.computercraft.shared.network.NetworkManager;
-import dan200.computercraft.shared.util.IDAssigner;
 import dan200.computercraft.shared.util.Configuration;
+import dan200.computercraft.shared.util.IDAssigner;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -309,7 +309,7 @@ public class ComputerCraft
         return new File( getBaseDir(), "resourcepacks" );
     }
 
-    private static File getWorldDir()
+    public static File getWorldDir()
     {
         return new File(System.getProperty("user.home").concat("/.craftos"));
     }

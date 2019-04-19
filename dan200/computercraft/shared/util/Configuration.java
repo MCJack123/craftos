@@ -18,6 +18,7 @@ public class Configuration implements Serializable {
     public int maximumFilesOpen;
     private int maxNotesPerTick;
     public int clockSpeed;
+    public transient IConfigurationListener delegate;
 
     public Object get(String name) {
         switch (name) {
@@ -84,7 +85,6 @@ public class Configuration implements Serializable {
     }
 
     public void set(String name, Object value) {
-
         switch (name) {
             case "http_enable":
                 http_enable = (boolean) value;
@@ -109,11 +109,13 @@ public class Configuration implements Serializable {
             case "showFPS":
                 showFPS = (boolean) value;
         }
+        if (delegate != null) delegate.didUpdateConfig();
     }
 
     public void serialize(String file) {
         ObjectOutputStream oos = null;
         FileOutputStream fout = null;
+        (new File(file)).delete();
         try{
             fout = new FileOutputStream(file, true);
             oos = new ObjectOutputStream(fout);
@@ -124,6 +126,7 @@ public class Configuration implements Serializable {
             if(oos != null){
                 try {
                     oos.close();
+                    System.out.println("Saved");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -151,6 +154,7 @@ public class Configuration implements Serializable {
             this.showFPS = obj.showFPS;
         } catch (Exception e) {
             readFail = true;
+            e.printStackTrace();
             return;
         } finally {
             if(objectinputstream != null){
