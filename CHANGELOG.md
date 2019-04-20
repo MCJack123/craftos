@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Config changes are now saved immediately instead of on shutdown, which was unreliable
 - Reduced the complexity of the rendering backend, hopefully making things a bit smoother
+- Old config files will now be replaced on the next save
 ### Fixed
 - `os.reboot` no longer shuts down the computer entirely
 
