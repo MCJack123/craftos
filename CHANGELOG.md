@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [ 1.2.1 ] - 2019-04-20
+### Added
+- There is now a `showFPS` config option to enable an FPS display in the top-left corner
+### Changed
+- Config changes are now saved immediately instead of on shutdown, which was unreliable
+- Reduced the complexity of the rendering backend, hopefully making things a bit smoother
+### Fixed
+- `os.reboot` no longer shuts down the computer entirely
+
 ## [ 1.2.0 ] - 2019-04-04
 ### Added
 - `attach`/`detach` programs for creating and removing peripherals
