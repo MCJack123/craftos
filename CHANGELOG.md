@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [ 1.2.2 ] - 2019-05-24
+### Changed
+- Left/right modifier keys are now discriminated in key events
+- Shift key presses now send key events
+- Pressing alt no longer loses focus
+### Fixed
+- `key_up` events now send the correct key when pressing modifier keys
+
 ## [ 1.2.1 ] - 2019-04-20
 ### Added
 - There is now a `showFPS` config option to enable an FPS display in the top-left corner
