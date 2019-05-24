@@ -56,20 +56,20 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
         String s = String.valueOf(c);
-        computer.queueEvent("key", new Object[]{(new ComputerKey(e)).intValue(), false});
-        if (c >= 32 && c < 128) computer.queueEvent("char", new Object[]{s});
+        if (c == 't' && e.isControlDown()) computer.queueEvent("terminate", new Object[]{});
+        else if (c >= 32 && c < 128) computer.queueEvent("char", new Object[]{s});
     }
 
     /** Handle the key-pressed event from the text field. */
     public void keyPressed(KeyEvent e) {
-        char c = e.getKeyChar();
-        if (c == 't' && e.isControlDown()) computer.queueEvent("terminate", new Object[]{});
-        else computer.queueEvent("key", new Object[]{(new ComputerKey(e)).intValue(), true});
+        computer.queueEvent("key", new Object[]{(new ComputerKey(e)).intValue(), true});
+        if (e.getKeyCode() == 18) e.consume();
     }
 
     /** Handle the key-released event from the text field. */
     public void keyReleased(KeyEvent e) {
         computer.queueEvent("key_up", new Object[]{(new ComputerKey(e)).intValue()});
+        if (e.getKeyCode() == 18) e.consume();
     }
 
     private boolean runLoop() {

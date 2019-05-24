@@ -4,15 +4,14 @@ import java.util.Map;
 
 class ComputerKey extends Number {
 
-    private int orig_key;
     private int new_key;
     // these just have to be unique, doesn't matter what number it'll be since it'll be converted internally
-    private static final int VK_LEFT_CONTROL = 41291213;
-    private static final int VK_RIGHT_CONTROL = 5390248;
-    private static final int VK_LEFT_SHIFT = 4180142;
-    private static final int VK_RIGHT_SHIFT = 21940241;
-    private static final int VK_LEFT_ALT = 4218947;
-    private static final int VK_RIGHT_ALT = 21984412;
+    private static final int VK_LEFT_CONTROL = 17;
+    private static final int VK_RIGHT_CONTROL = 317;
+    private static final int VK_LEFT_SHIFT = 16;
+    private static final int VK_RIGHT_SHIFT = 316;
+    private static final int VK_LEFT_ALT = 18;
+    private static final int VK_RIGHT_ALT = 318;
 
     private static final Map<Integer, Integer> mappings = new HashMap<>();
     static {
@@ -127,7 +126,6 @@ class ComputerKey extends Number {
         mappings.put(KeyEvent.VK_PAGE_DOWN, 209);
         mappings.put(KeyEvent.VK_INSERT, 210);
         mappings.put(KeyEvent.VK_DELETE, 211);
-
     }
 
 // --Commented out by Inspection START (10/14/18 22:46):
@@ -137,14 +135,10 @@ class ComputerKey extends Number {
 //    }
 // --Commented out by Inspection STOP (10/14/18 22:46)
 
-    public ComputerKey(KeyEvent e) {
-        orig_key = e.getKeyCode();
-        if (e.isAltDown()) orig_key = VK_LEFT_ALT;
-        if (e.isControlDown()) orig_key = VK_LEFT_CONTROL;
-        if (e.isShiftDown()) orig_key = VK_LEFT_SHIFT;
-        //System.out.printf("Original key: %d", orig_key);
+    ComputerKey(KeyEvent e) {
+        int orig_key = e.getKeyCode();
+        if (e.getKeyLocation() != 2 && orig_key >= 16 && orig_key <= 18) orig_key += 300;
         new_key = mappings.getOrDefault(orig_key, 0);
-        //System.out.printf(", new key: %d\n", new_key);
     }
 
     @Override
