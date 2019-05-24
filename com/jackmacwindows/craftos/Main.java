@@ -59,7 +59,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     /** Handle the key-pressed event from the text field. */
     public void keyPressed(KeyEvent e) {
         char c = e.getKeyChar();
-        if (e.isControlDown() && e.getKeyCode() >= 32 && e.getKeyCode() < 128) {
+        if (e.isControlDown() && e.getKeyCode() >= 32 && e.getKeyCode() < 112) {
             c = (char)e.getKeyCode();
             if (!e.isShiftDown()) c = String.valueOf(c).toLowerCase().charAt(0);
             else if (c == '6') c = '^';
