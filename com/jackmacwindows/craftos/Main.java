@@ -9,7 +9,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.Date;
 
-public class Main implements KeyListener, MouseListener, MouseWheelListener, MouseMotionListener, ResizeListener, IConfigurationListener {
+public class Main implements KeyListener, MouseListener, MouseWheelListener, MouseMotionListener, ResizeListener, IConfigurationListener, FocusListener {
 
     private final TerminalWindow term;
     private final Terminal comp_term;
@@ -17,11 +17,12 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     private final MountAPI mounter;
     private long lastTick;
     private long lastBlink;
-    private boolean setListeners = false;
     private int lastDragX = -1;
     private int lastDragY = -1;
     private int lastDragButton = 1;
+    private int terminatePressed = 0;
     private boolean setMounter = false;
+    private boolean setListeners = false;
 
     private Main() {
         term = new TerminalWindow(this, "CraftOS Terminal");
@@ -53,22 +54,37 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     }
 
     /** Handle the key typed event from the text field. */
-    public void keyTyped(KeyEvent e) {
-        char c = e.getKeyChar();
-        String s = String.valueOf(c);
-        if (c == 't' && e.isControlDown()) computer.queueEvent("terminate", new Object[]{});
-        else if (c >= 32 && c < 128) computer.queueEvent("char", new Object[]{s});
-    }
+    public void keyTyped(KeyEvent e) {}
 
     /** Handle the key-pressed event from the text field. */
     public void keyPressed(KeyEvent e) {
+        char c = e.getKeyChar();
+        if (e.isControlDown() && e.getKeyCode() >= 32 && e.getKeyCode() < 128) {
+            c = (char)e.getKeyCode();
+            if (!e.isShiftDown()) c = String.valueOf(c).toLowerCase().charAt(0);
+            else if (c == '6') c = '^';
+            else if (c == '-') c = '_';
+        }
         computer.queueEvent("key", new Object[]{(new ComputerKey(e)).intValue(), true});
+        if (c == 't' && e.isControlDown() ) {
+            if (terminatePressed == 1) {
+                computer.queueEvent("terminate", new Object[]{});
+                terminatePressed = 2;
+            } else {
+                if (terminatePressed == 0) terminatePressed = 1;
+                computer.queueEvent("char", new Object[]{String.valueOf(c)});
+            }
+        } else {
+            terminatePressed = 0;
+            if (c >= 32 && c < 128) computer.queueEvent("char", new Object[]{String.valueOf(c)});
+        }
         if (e.getKeyCode() == 18) e.consume();
     }
 
     /** Handle the key-released event from the text field. */
     public void keyReleased(KeyEvent e) {
         computer.queueEvent("key_up", new Object[]{(new ComputerKey(e)).intValue()});
+        if (e.getKeyCode() == KeyEvent.VK_T || e.getKeyCode() == KeyEvent.VK_CONTROL) terminatePressed = 0;
         if (e.getKeyCode() == 18) e.consume();
     }
 
@@ -83,6 +99,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
             term.panel.addKeyListener(this);
             term.panel.addMouseWheelListener(this);
             term.panel.addMouseMotionListener(this);
+            term.panel.addFocusListener(this);
             ComputerCraft.config.delegate = this;
             setListeners = true;
         }
@@ -239,4 +256,12 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
         ComputerCraft.config.serialize(ComputerCraft.getWorldDir().toString() + "/config.ser");
         System.out.println("Updated");
     }
+    @Override
+    public void focusGained(FocusEvent focusEvent) {}
+
+    @Override
+    public void focusLost(FocusEvent focusEvent) {
+        computer.queueEvent("key_up", new Object[]{56});
+    }
+
 }
