@@ -98,6 +98,7 @@ class TerminalWindow {
         boolean isPixel = false;
         public static final long serialVersionUID = 26;
         Color[] palette;
+        Color background = Color.BLACK;
         int blinkX = 0;
         int blinkY = 0;
         boolean blink = false;
@@ -179,6 +180,7 @@ class TerminalWindow {
         protected void paintComponent(Graphics g2d) {
             super.paintComponent(g2d);
             g2d.setPaintMode();
+            setBackground(background);
             //Graphics2D g2d = (Graphics2D) g.create();
             //g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             if (isPixel) {

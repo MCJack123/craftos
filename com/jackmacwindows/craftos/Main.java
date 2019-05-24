@@ -59,12 +59,17 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
     /** Handle the key-pressed event from the text field. */
     public void keyPressed(KeyEvent e) {
         char c = e.getKeyChar();
-        if (e.isControlDown() && e.getKeyCode() >= 32 && e.getKeyCode() < 112) {
-            c = (char)e.getKeyCode();
-            if (!e.isShiftDown()) c = String.valueOf(c).toLowerCase().charAt(0);
-            else if (c == '6') c = '^';
-            else if (c == '-') c = '_';
-        }
+        System.out.println((int)e.getKeyChar());
+        if (e.isControlDown() && c > 0 && c <= 26 && e.getKeyCode() != 10 && e.getKeyCode() != 9) c += 96 - (e.isShiftDown() ? 32 : 0);
+        else if (e.isControlDown() && e.getKeyCode() == '6' && e.isShiftDown()) c = '^';
+        else if (e.isControlDown() && e.getKeyCode() == '6') c = '6';
+        else if (e.isControlDown() && e.getKeyCode() == ']' && e.isShiftDown()) c = '}';
+        else if (e.isControlDown() && e.getKeyCode() == ']') c = ']';
+        else if (e.isControlDown() && e.getKeyCode() == '\\' && e.isShiftDown()) c = '|';
+        else if (e.isControlDown() && e.getKeyCode() == '\\') c = '\\';
+        else if (e.isControlDown() && e.getKeyCode() == '-' && e.isShiftDown()) c = '_';
+        else if (e.isControlDown() && e.getKeyCode() == '-') c = '-';
+        else if (e.isControlDown() && e.getKeyCode() == '0' && e.isShiftDown()) c = ')';
         computer.queueEvent("key", new Object[]{(new ComputerKey(e)).intValue(), true});
         if (c == 't' && e.isControlDown() ) {
             if (terminatePressed == 1) {
@@ -78,14 +83,14 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
             terminatePressed = 0;
             if (c >= 32 && c < 128) computer.queueEvent("char", new Object[]{String.valueOf(c)});
         }
-        if (e.getKeyCode() == 18) e.consume();
+        if (e.getKeyCode() == 18 || e.getKeyCode() == KeyEvent.VK_F10) e.consume();
     }
 
     /** Handle the key-released event from the text field. */
     public void keyReleased(KeyEvent e) {
         computer.queueEvent("key_up", new Object[]{(new ComputerKey(e)).intValue()});
         if (e.getKeyCode() == KeyEvent.VK_T || e.getKeyCode() == KeyEvent.VK_CONTROL) terminatePressed = 0;
-        if (e.getKeyCode() == 18) e.consume();
+        if (e.getKeyCode() == 18 || e.getKeyCode() == KeyEvent.VK_F10) e.consume();
     }
 
     private boolean runLoop() {
@@ -120,6 +125,7 @@ public class Main implements KeyListener, MouseListener, MouseWheelListener, Mou
                         if (comp_term.getChanged()) {
                             changed = true;
                             if (comp_term.getPalette() != term.p) term.setPalette(comp_term.getPalette());
+                            term.panel.background = term.panel.palette[comp_term.getBackgroundColour()];
                             char[] text, bg, fg, pixels;
                                 for (int y = 0; y < term.height; y++) {
                                     text = comp_term.getLine(y).toString().toCharArray();

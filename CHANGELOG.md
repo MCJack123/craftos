@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [ 1.2.2 ] - 2019-05-24
 ### Added
 - Holding Ctrl-T terminates the running program
+- Unused resized terminal space will now be the same color as the background
 ### Changed
 - Left/right modifier keys are now discriminated in key events
 - Shift key presses now send key events
