@@ -787,7 +787,15 @@ if http then
                 http.removeListener( _port )
                 break
             elseif ev == "http_request" and p1 == _port then
-                _callback( p2, p3 )
+                local ok, err = pcall( function() _callback( p2, p3 ) end )
+                if not ok then
+                    http.removeListener( _port )
+                    printError( err )
+                    return
+                elseif err == true then
+                    http.removeListener( _port )
+                    return
+                end
             end
         end
     end
