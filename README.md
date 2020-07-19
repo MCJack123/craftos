@@ -1,6 +1,6 @@
 # CraftOS-PC Classic
 ## Disclaimer: CraftOS-PC 2
-I am currently working on [CraftOS-PC 2](https://github.com/MCJack123/craftos2), which is a complete rewrite of CraftOS-PC in C/C++ designed for speed. CraftOS-PC Classic will remain in development, but it will be restricted to occasional backports of features that appear first in CraftOS-PC 2. If you want to have the latest features with fast speeds, please switch to CraftOS-PC 2. (Switching will not cause data loss as the save files are in the same location.) CraftOS-PC Classic will still be available for users who wish to stay on a stable and fully compliant version of CraftOS.  
+I am currently working on [CraftOS-PC 2](https://github.com/MCJack123/craftos2), which is a complete rewrite of CraftOS-PC in C/C++ designed for speed. CraftOS-PC Classic is no longer in development, and is archived. If you want to have the latest features (including CC: Tweaked support) with fast speeds, please switch to CraftOS-PC 2. (Switching will not cause data loss as the save files will automatically be migrated.) CraftOS-PC Classic will still be available for users who wish to stay on a stable and fully compliant version of CraftOS.
 
 -----------
 CraftOS-PC is a port of the CraftOS operating system from the popular Minecraft mod [ComputerCraft](https://github.com/dan200/ComputerCraft). This is a mostly full port of the mod to desktop, removing the parts that only work in a Minecraft world.  
